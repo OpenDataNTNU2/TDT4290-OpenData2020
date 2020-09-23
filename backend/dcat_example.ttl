@@ -499,6 +499,9 @@ foaf:primaryTopic dct:identifier "foaf:primaryTopic"@en;
                                          foaf:maker [foaf:name "DCAT-AP Working Group" ; 
                                                      foaf:page <https://joinup.ec.europa.eu/node/63580>].
 <https://joinup.ec.europa.eu/sites/default/files/imagecache/community_logo/DCAT_application_profile_for_European_data_portals_logo_0.png> :label "DCAT-AP logo".
+<https://www.opendata.no/agent/trondheim> dct:identifier foaf:Agent;
+                                          foaf:name "Trondheim kommune".
 <https://www.opendata.no/catalog> dct:description "OpenData is a data catalog containing open data from municipalities in Norway. Both published and not yet published.";
                                   dct:identifier dcat:Catalog;
+                                  dct:publisher <https://www.opendata.no/agent/trondheim>;
                                   dct:title "OpenData".
