@@ -12,7 +12,8 @@ namespace Supermarket.API.Resources
         [Required]
         public string Uri { get; set; }
 
-        public EFileFormat FileFormat { get; set; }
+        [Range(1, 2)]
+        public int FileFormat { get; set; }
         public int DatasetId {get;set;}
     }
 }
