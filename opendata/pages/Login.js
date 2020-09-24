@@ -1,24 +1,103 @@
 import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import Alert from '@material-ui/lab/Alert'
+import Snackbar from '@material-ui/core/Snackbar';
 
-const Login = () => (
-    <Grid
-        container
-        spacing={0}
-        direction="column"
-        alignItems="center"
-        justify="center"
-        style={{ minHeight: '70vh', minWidth: '90vh'}}
-    >
-                <h2 style={{fontWeight: "normal"}}>Logg inn</h2>
-                <form noValidate autoComplete="off" style={{width: "50vh"}}>
-                    <TextField id="outlined-basic" label="Brukernavn" size="large" variant="outlined" fullWidth="true"/>
-                </form><br/>
-                <Button variant="contained" color="primary">Logg inn</Button><br/>
-                <p>For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_kommune </p>
-    </Grid> 
-)
+import { useState } from "react";
 
-export default Login;
+
+export default function Login(){
+
+    // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
+    // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
+    const [open, setOpen] = useState(false);
+    const [username, setUsername] = useState("");
+    const [loggedUsername, setLoggedUsername] = useState("");
+    const [loggedIn, setLoggedIn] = useState(false)
+    const [notEligUsername, setNotEligUsername] = useState(false)
+
+
+    // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut. 
+    const handleLoginClick = () => {
+        if(!loggedIn){
+            if(checkUsernameElig(username)){
+                setLoggedUsername(username);
+                setLoggedIn(true);
+                setOpen(true);
+                setNotEligUsername(false);
+            }
+            else setNotEligUsername(true); 
+        }
+    }
+
+    // resetter alle statsene når bruker trykker på logg ut
+    const handleLogoutClick = () => {
+        setLoggedUsername("");
+        setUsername("");
+        setOpen(false);
+        setLoggedIn(false);
+    }
+
+    // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.
+    const checkUsernameElig = (username) => {
+        if(username.length === 0){
+            return false
+        }
+        return true
+    }
+
+    return(
+        <Grid
+            container
+            spacing={0}
+            direction="column"
+            alignItems="center"
+            justify="center"
+            style={{ minHeight: '70vh', minWidth: '90vh'}}
+        >
+            
+            {loggedIn ? 
+                <h2 style={{fontWeight: "normal"}}>Logget inn som {loggedUsername}</h2> 
+            :   <h2 style={{fontWeight: "normal"}}>Logg inn</h2>
+            }
+                
+            {loggedIn ? 
+                null 
+            :   <form noValidate autoComplete="off" style={{width: "50vh"}}>
+                    <TextField 
+                        id="outlined-basic" 
+                        label="Brukernavn" 
+                        size="large" 
+                        variant="outlined" 
+                        fullWidth="true" 
+                        value={username} 
+                        onChange={(e) => setUsername(e.target.value)}
+                    />
+                </form>
+            }
+            <br/>
+            {loggedIn ? 
+                <Button variant="contained" color="secondary" onClick={handleLogoutClick}>Logg ut</Button>
+            :   <Button variant="contained" color="primary" onClick={handleLoginClick}>Logg inn</Button>
+            }
+            <br/>
+                
+            {loggedIn ? 
+                null 
+            :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_kommune</Alert>
+            }
+
+            <Snackbar open={notEligUsername} autoHideDuration={6000}>
+                <Alert elevation={1} severity="error">Ikke gyldig brukernavn (sjekker bare om det er noe skrevet eller ikke atm){loggedUsername}</Alert>
+            </Snackbar>
+
+            <Snackbar open={open} autoHideDuration={6000}>
+                <Alert elevation={1} severity="success">Innlogging vellykket, velkommen {loggedUsername}</Alert>
+            </Snackbar>
+                  
+            
+        </Grid> 
+    )
+}
+
