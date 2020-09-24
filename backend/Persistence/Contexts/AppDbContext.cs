@@ -40,13 +40,17 @@ namespace Supermarket.API.Persistence.Contexts
                 {
                     Id = 100,
                     Title = "URL til json fil",
-                    DatasetId = 100
+                    DatasetId = 100,
+                    Uri = "http://www.opendata.no/files/100.json",
+                    FileFormat = EFileFormat.json
                 },
                 new Distribution
                 {
                     Id = 101,
                     Title = "URL til xml fil",
-                    DatasetId = 101
+                    DatasetId = 101,
+                    Uri = "http://www.opendata.no/files/101.xml",
+                    FileFormat = EFileFormat.xml
                 }
             );
         }
