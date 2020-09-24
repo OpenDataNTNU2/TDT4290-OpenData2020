@@ -5,29 +5,7 @@ import Paper from '@material-ui/core/Paper';
 
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home() {
-
-  const uri = 'https://localhost:5001/api/datasets';
-  const [datasets, setDatasets] = useState("empty");
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    if(!isLoaded){
-      getDatasets();
-    }
-    console.log(datasets);
-  });
-
-  function getDatasets() {
-    fetch(uri)
-      .then(response => response.json())
-      .then((data) => {
-        setIsLoaded(true);
-        setDatasets(data);
-      })
-      .catch(error => console.error('Unable to get datasets.', error));
-  }
-
+export default function Home({data}) {
 
   return (
     <div>
@@ -50,8 +28,8 @@ export default function Home() {
           alignItems="stretch"
           style={{width: '80%'}}
         >
-          {!isLoaded ? <p>Loading...</p> : 
-          Object.values(datasets).map(dataset => (
+          {
+          Object.values(data).map(dataset => (
             <Grid item key={dataset.id}>
               <Paper style={{width: '100%', height: '100px', margin: '0 0 0 50px', backgroundColor: 'lightBlue'}}>
                 <h3>{dataset.title}</h3>
@@ -64,4 +42,26 @@ export default function Home() {
     </Grid> 
     </div>
   )
+}
+
+// ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
+function createRequestOptions(skipHttpsValidation) {
+  const isNode = typeof window === 'undefined';
+  if (isNode) {
+      var Agent = (require('https')).Agent;
+      return {
+          agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
+      };
+  }
+}
+
+// This gets called on every request
+export async function getServerSideProps() {
+  // Fetch data from external API
+  const uri = 'https://localhost:5001/api/datasets';
+  const res = await fetch(uri, createRequestOptions(true))
+  const data = await res.json()
+
+  // Pass data to the page via props
+  return { props: { data } }
 }
