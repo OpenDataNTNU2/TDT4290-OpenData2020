@@ -51,9 +51,12 @@ namespace Supermarket.API.Services
                 var existingDataset = await _datasetRepository.FindByIdAsync(distribution.DatasetId);
                 if (existingDataset == null)
                     return new DistributionResponse("Invalid dataset.");
+                
+                existingDataset.Distributions.Add(distribution);
 
                 await _distributionRepository.AddAsync(distribution);
                 await _unitOfWork.CompleteAsync();
+                _datasetRepository.Update(existingDataset);
 
                 return new DistributionResponse(distribution);
             }
