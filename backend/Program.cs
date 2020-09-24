@@ -3,12 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Supermarket.API.Persistence.Contexts;
 
-using System;
-using System.Collections.Generic;
-using VDS.RDF;
-using VDS.RDF.Writing;
-using VDS.RDF.Parsing;
-
 namespace Supermarket.API
 {
 
@@ -25,8 +19,8 @@ namespace Supermarket.API
                 context.Database.EnsureCreated();
             }
             
-            DCATExample dcatExample = new DCATExample();
-            dcatExample.dcatExample();
+            RdfFileHandler rdfFileHandler = new RdfFileHandler();
+            rdfFileHandler.example();
 
             host.Run();
         }

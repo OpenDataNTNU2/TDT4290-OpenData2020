@@ -1,10 +1,4 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Supermarket.API.Persistence.Contexts;
-
-using System;
-using System.Collections.Generic;
+﻿using System;
 using VDS.RDF;
 using VDS.RDF.Writing;
 using VDS.RDF.Parsing;
@@ -13,45 +7,54 @@ namespace Supermarket.API
 {
 
 #pragma warning disable CS1591
-    public class DCATExample
+    public class RdfFileHandler
     {
-        public void dcatExample()
-        {
-            //TEST OMRÅDE START
-            // Graph g = new Graph();
-            // RdfXmlParser parser = new RdfXmlParser();
-            // Load RDF content from URI
-            // UriLoader.Load(g, new Uri("https://raw.githubusercontent.com/SEMICeu/DCAT-AP/master/releases/1.1/dcat-ap_1.1.rdf"), parser);
+        // Load RDF content from URI
+        public Graph loadFromUriXml(String uri) {
+            Graph g = new Graph();
+            UriLoader.Load(g, new Uri(uri), new RdfXmlParser());
+            return g;
+        }
 
-            // CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
-            // Save RDF content as turtle
-            // turtleWriter.Save(g, "dcat-ap_1.1.ttl");
-
-            // To string
-            // String data = VDS.RDF.Writing.StringWriter.Write(g, turtleWriter);
-
-            // TripleStore store = new TripleStore();
-
-            IGraph h = new Graph();
+        // Load RDF content from file
+        public Graph loadFromFileTurtle(String fileName) {
+            Graph g = new Graph();
             TurtleParser ttlparser = new TurtleParser();
-            //Load RDF content from file
-            ttlparser.Load(h, "dcat-ap_1.1.ttl");
+            ttlparser.Load(g, fileName);
+            return g;
+        }
+
+        // Save RDF content to file as turtle
+        public void saveToFileTurtle(Graph g, String fileName) {
+            CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
+            turtleWriter.Save(g, fileName);
+        }
+
+        public String graphToString(Graph g) {
+            CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
+            return VDS.RDF.Writing.StringWriter.Write(g, turtleWriter);
+        }
+
+        
+        public void example()
+        {   
+            Graph dcatAp = loadFromUriXml("https://raw.githubusercontent.com/SEMICeu/DCAT-AP/master/releases/1.1/dcat-ap_1.1.rdf");
+
+            Graph g = loadFromFileTurtle("dcat_example.ttl");
+
             // Select some node from URI
-            // IUriNode u = h.GetUriNode("dcat:Catalog");
+            // IUriNode u = ex.GetUriNode("dcat:Catalog");
             // Select some triples from node URI
-            // IUriNode select = h.CreateUriNode("dcat:Dataset");
-            // IEnumerable<Triple> ts = h.GetTriples(select);
+            // IUriNode select = ex.CreateUriNode("dcat:Dataset");
+            // IEnumerable<Triple> ts = ex.GetTriples(select);
             // foreach (Triple t in ts){
             //     Console.WriteLine(t.ToString());
             // }
 
-            Graph g = new Graph();
-            ttlparser.Load(g, "dcat_example.ttl");
+
             IUriNode catalog = g.CreateUriNode(UriFactory.Create("https://www.opendata.no/catalog"));
             IUriNode dctIdentifier = g.GetUriNode("dct:identifier");
             IUriNode dcatCatalog = g.GetUriNode("dcat:Catalog");
-
-            ILiteralNode a = g.CreateLiteralNode("a");
 
             IUriNode dctTitle = g.GetUriNode("dct:title");
             ILiteralNode catalogTitle = g.CreateLiteralNode("OpenData");
@@ -75,11 +78,9 @@ namespace Supermarket.API
             IUriNode dctPublisher = g.GetUriNode("dct:publisher");
             g.Assert(new Triple(catalog, dctPublisher, trondheim));
 
-            CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
-            turtleWriter.Save(g, "dcat_example.ttl");
 
+            saveToFileTurtle(g, "dcat_example.ttl");
 
-            //TEST OMRÅDE SLUTT
         }
 
     }
