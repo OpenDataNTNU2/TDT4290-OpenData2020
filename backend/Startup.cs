@@ -49,6 +49,11 @@ namespace Supermarket.API
             services.AddScoped<IDistributionService, DistributionService>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddCors(c =>  
+            {  
+                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
+            });  
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -57,6 +62,8 @@ namespace Supermarket.API
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(options => options.AllowAnyOrigin());  
 
             app.UseCustomSwagger();
 
