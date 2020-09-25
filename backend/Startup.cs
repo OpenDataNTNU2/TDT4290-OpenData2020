@@ -63,11 +63,11 @@ namespace Supermarket.API
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseRouting();
+
             app.UseCors(options => options.AllowAnyOrigin());  
 
             app.UseCustomSwagger();
-
-            app.UseRouting();
 
             app.UseAuthorization();
 

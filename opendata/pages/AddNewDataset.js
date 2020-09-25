@@ -25,17 +25,13 @@ export default function AddNewDataset(){
         try{
             const response = await fetch('https://localhost:5001/api/datasets', {
                 method: 'POST',
-                mode: 'no-cors',
                 headers: {
-                    "access-control-allow-origin": "*",
-                    'Accept': 'application/json',
-                    'content-type': 'application/json; charset=utf-8' 
+                    'Content-Type': 'application/json',
                 },
-                
                 body: JSON.stringify(data)
-            } )
+            })
             console.log("klarte å fetche")
-            console.log(data)
+            console.log(response)
             
         }
         catch(_){
