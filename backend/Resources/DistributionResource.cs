@@ -8,6 +8,6 @@ namespace Supermarket.API.Resources
         public string Title { get; set; }
         public string Uri { get; set; }
         public string FileFormat { get; set; }
-        public DatasetResource Dataset {get;set;}
+        // public DatasetResource Dataset {get;set;}
     }
 }
