@@ -24,7 +24,7 @@ namespace Supermarket.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim"}, // Id set manually due to in-memory provider
+                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim" }, // Id set manually due to in-memory provider
                 new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Oslo" }
             );
 
@@ -40,17 +40,13 @@ namespace Supermarket.API.Persistence.Contexts
                 {
                     Id = 100,
                     Title = "URL til json fil",
-                    DatasetId = 100,
-                    Uri = "http://www.opendata.no/files/100.json",
-                    FileFormat = EFileFormat.json
+                    DatasetId = 100
                 },
                 new Distribution
                 {
                     Id = 101,
                     Title = "URL til xml fil",
-                    DatasetId = 101,
-                    Uri = "http://www.opendata.no/files/101.xml",
-                    FileFormat = EFileFormat.xml
+                    DatasetId = 101
                 }
             );
         }

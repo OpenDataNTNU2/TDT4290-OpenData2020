@@ -11,8 +11,8 @@ namespace Supermarket.API.Mapping
         {
             CreateMap<SaveDatasetResource, Dataset>();
 
-            CreateMap<SaveDistributionResource, Distribution>()
-                .ForMember(src => src.FileFormat, opt => opt.MapFrom(src => (EFileFormat)src.FileFormat));
+            CreateMap<SaveDistributionResource, Distribution>();
+                // .ForMember(src => src.UnitOfMeasurement, opt => opt.MapFrom(src => (EUnitOfMeasurement)src.UnitOfMeasurement));
 
             CreateMap<DistributionQueryResource, DistributionQuery>();
         }

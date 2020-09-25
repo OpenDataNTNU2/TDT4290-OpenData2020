@@ -28,7 +28,7 @@ namespace Supermarket.API.Services
             // Here I try to get the datasets list from the memory cache. If there is no data in cache, the anonymous method will be
             // called, setting the cache to expire one minute ahead and returning the Task that lists the datasets from the repository.
             var datasets = await _cache.GetOrCreateAsync(CacheKeys.DatasetList, (entry) => {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
                 return _datasetRepository.ListAsync();
             });
             

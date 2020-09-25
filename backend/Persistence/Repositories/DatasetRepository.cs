@@ -14,9 +14,8 @@ namespace Supermarket.API.Persistence.Repositories
         public async Task<IEnumerable<Dataset>> ListAsync()
         {
             return await _context.Datasets
-                                .Include(d => d.Distributions)
-                                .AsNoTracking()
-                                .ToListAsync();
+                                 .AsNoTracking()
+                                 .ToListAsync();
 
             // AsNoTracking tells EF Core it doesn't need to track changes on listed entities. Disabling entity
             // tracking makes the code a little faster

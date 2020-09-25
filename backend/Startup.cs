@@ -54,10 +54,6 @@ namespace Supermarket.API
             {  
                 c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
             });  
-
-            services.AddControllers().AddNewtonsoftJson(options =>
-                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
-            );
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
