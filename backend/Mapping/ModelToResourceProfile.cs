@@ -12,9 +12,9 @@ namespace Supermarket.API.Mapping
         {
             CreateMap<Dataset, DatasetResource>();
 
-            CreateMap<Distribution, DistributionResource>();
-                // .ForMember(src => src.UnitOfMeasurement,
-                //            opt => opt.MapFrom(src => src.UnitOfMeasurement.ToDescriptionString()));
+            CreateMap<Distribution, DistributionResource>()
+                .ForMember(src => src.FileFormat,
+                           opt => opt.MapFrom(src => src.FileFormat.ToDescriptionString()));
 
             CreateMap<QueryResult<Distribution>, QueryResultResource<DistributionResource>>();
         }
