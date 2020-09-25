@@ -5,15 +5,44 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
 import { useState } from "react";
+import Alert from '@material-ui/lab/Alert'
 
 export default function AddNewDataset(){
     
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     
-    const handleChange = () => {
-        // add til databasen her
-        // kjør ett eller annet post(title: {title}, description: {description})
+    
+
+    const handleChange = async () => {
+        
+        const data = {
+            "identifier": "stringeling",
+            "title": title,
+            "description": description
+        }
+        
+        try{
+            const response = await fetch('https://localhost:5001/api/datasets', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    "access-control-allow-origin": "*",
+                    'Accept': 'application/json',
+                    'content-type': 'application/json; charset=utf-8' 
+                },
+                
+                body: JSON.stringify(data)
+            } )
+            console.log("klarte å fetche")
+            console.log(data)
+            
+        }
+        catch(_){
+            alert("failed")
+            console.log("failed")
+        }
+        
     }
 
     return(
