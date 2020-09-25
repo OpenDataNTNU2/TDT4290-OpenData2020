@@ -1,45 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import Head from 'next/head'
+import React from 'react';
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper';
+import Filter from '../Components/Filter'
 
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home({data}) {
+export default function Home({ data }) {
 
   return (
-    <div>
+    <div className='datakatalog'>
       <Grid
         container
-        direction="row"
-        justify="space-evenly"
-        alignItems="flex-start"
-        style={{width: '80%', margin: '50px 0 0 50px' }}
+        style={{ padding: '3%' }}
+        justify='space-evenly'
       >
-        <Grid item>
-          <Paper style={{width: '100px', height: '400px', backgroundColor: 'lightBlue'}}>
-              <p>Filter</p>
+        <Grid item xs={2} >
+          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
+            <Filter />
           </Paper>
         </Grid>
         <Grid
           container
           direction="column"
-          justify="flex-start"
-          alignItems="stretch"
-          style={{width: '80%'}}
+          xs={8}
+          spacing={3}
         >
           {
-          Object.values(data).map(dataset => (
-            <Grid item key={dataset.id}>
-              <Paper style={{width: '100%', height: '100px', margin: '0 0 0 50px', backgroundColor: 'lightBlue'}}>
-                <h3>{dataset.title}</h3>
-                <p>{dataset.description}</p>
-              </Paper>
-            </Grid>
-          ))
+            Object.values(data).map(dataset => (
+              <Grid item key={dataset.id}>
+                <Paper variant='outlined' style={{ height: '15vh', padding: '1%' }}>
+                  <Grid container alignItems='center'>
+                    <Grid item xs={9}>
+                      <h3>{dataset.title}</h3>
+                      <p>{dataset.description}</p>
+                    </Grid>
+                    <Grid item xs={2}>
+                      <Paper elevation={0} style={{ backgroundColor: '#D6FFD2', textAlign: 'center', padding: '3%', marginBottom: '3%' }}>Publisert</Paper>
+                      <Paper elevation={0} style={{ backgroundColor: '#EBE4FF', textAlign: 'center', padding: '3%' }}>Samordna</Paper>
+                    </Grid>
+                  </Grid>
+
+                </Paper>
+              </Grid>
+            ))
           }
         </Grid>
-    </Grid> 
+      </Grid>
     </div>
   )
 }
@@ -48,16 +54,17 @@ export default function Home({data}) {
 function createRequestOptions(skipHttpsValidation) {
   const isNode = typeof window === 'undefined';
   if (isNode) {
-      var Agent = (require('https')).Agent;
-      return {
-          agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
-      };
+    var Agent = (require('https')).Agent;
+    return {
+      agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
+    };
   }
 }
 
 // This gets called on every request
 export async function getServerSideProps() {
   // Fetch data from external API
+  // Should be changed to host link when this is done, not localhost.
   const uri = 'https://localhost:5001/api/datasets';
   const res = await fetch(uri, createRequestOptions(true))
   const data = await res.json()
