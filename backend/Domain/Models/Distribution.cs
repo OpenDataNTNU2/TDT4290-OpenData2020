@@ -12,5 +12,6 @@ namespace Supermarket.API.Domain.Models
         [ForeignKey("Dataset")]
         public int DatasetId { get; set; }
         public Dataset Dataset { get; set; }
+        
     }
 }
