@@ -21,7 +21,7 @@ export default function Header() {
             <Grid
                 container
                 alignItems="center"
-                style={{ minHeight: '10vh', backgroundColor:'#90C7EF' }}
+                style={{  backgroundColor:'#90C7EF' }}
             >
                 <Grid item xs={10} >
                     <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
