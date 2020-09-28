@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Supermarket.API.Domain.Models;
 using Supermarket.API.Domain.Services;
 using Supermarket.API.Resources;
+using Microsoft.AspNetCore.Cors;
 
 namespace Supermarket.API.Controllers
 {

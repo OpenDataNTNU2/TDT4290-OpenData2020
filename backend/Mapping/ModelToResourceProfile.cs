@@ -17,6 +17,8 @@ namespace Supermarket.API.Mapping
                            opt => opt.MapFrom(src => src.FileFormat.ToDescriptionString()));
 
             CreateMap<QueryResult<Distribution>, QueryResultResource<DistributionResource>>();
+
+            CreateMap<User, UserResource>();
         }
     }
 }

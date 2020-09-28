@@ -7,6 +7,8 @@ namespace Supermarket.API.Persistence.Contexts
     public class AppDbContext : DbContext
     {
         public DbSet<Dataset> Datasets { get; set; }
+
+        public DbSet<User> Users { get; set; }
         public DbSet<Distribution> Distributions { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
@@ -14,6 +16,16 @@ namespace Supermarket.API.Persistence.Contexts
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            builder.Entity<User>().ToTable("Users");
+            builder.Entity<User>().HasKey(p => p.Id);
+            builder.Entity<User>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<User>().Property(p => p.Username).IsRequired();
+
+            builder.Entity<User>().HasData(
+                new User { Id = 100, Username = "Testbruker1" },
+                new User { Id = 101, Username = "Testbruker2" }
+            );
             
             builder.Entity<Dataset>().ToTable("Datasets");
             builder.Entity<Dataset>().HasKey(p => p.Id);

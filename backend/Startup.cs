@@ -17,6 +17,7 @@ namespace Supermarket.API
 {
     public class Startup
     {
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -26,6 +27,17 @@ namespace Supermarket.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                                builder =>
+                                {
+                                    builder.WithOrigins("http://localhost:3000")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                });
+            }); 
+            
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
@@ -43,17 +55,14 @@ namespace Supermarket.API
 
             services.AddScoped<IDatasetRepository, DatasetRepository>();
             services.AddScoped<IDistributionRepository, DistributionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(typeof(Startup));
-
-            services.AddCors(c =>  
-            {  
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
-            });  
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
@@ -67,11 +76,11 @@ namespace Supermarket.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCors(options => options.AllowAnyOrigin());  
+            app.UseRouting();
+
+            app.UseCors();
 
             app.UseCustomSwagger();
-
-            app.UseRouting();
 
             app.UseAuthorization();
 

@@ -15,6 +15,8 @@ namespace Supermarket.API.Mapping
                 .ForMember(src => src.FileFormat, opt => opt.MapFrom(src => (EFileFormat)src.FileFormat));
 
             CreateMap<DistributionQueryResource, DistributionQuery>();
+
+            CreateMap<SaveUserResource, User>();
         }
     }
 }
