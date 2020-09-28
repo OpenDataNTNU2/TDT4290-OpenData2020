@@ -8,6 +8,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import Select from '@material-ui/core/Select'
+import InputLabel from '@material-ui/core/InputLabel'
 
 import { useState } from "react";
 
@@ -15,8 +17,20 @@ export default function AddNewDataset(){
     
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    // denne vil være enten "published" eller "not published"
     const [published, setPublished] = useState("not published");
+    const [publishedStatus, setPublishedStatus] = useState("")
+    
+    /*
+    const [status, setStatus] = useState({
+        published: false,
+        notPublished: {
+            willBePublished: false,
+            underEvaluation: false,
+            cannotPublish: false
+        }
+    });
+    */
+
     
 
     const handleChange = async () => {
@@ -83,12 +97,13 @@ export default function AddNewDataset(){
                         <FormControlLabel value="published" control={<Radio />} label="Publisert" />
                         <FormControlLabel value="not published" control={<Radio />} label="Ikke publisert" />
                     </RadioGroup>
-                    {published === "not published" ? 
+                    
+                    {published !== "published" ? 
                     <div style={{marginLeft: "5vh"}}>
-                        <RadioGroup>
-                            <FormControlLabel value="1" control={<Radio style={{backgroundColor: "green"}} size="small"/>} label="skal publiseres"/>
-                            <FormControlLabel value="2" control={<Radio style={{backgroundColor: "yellow"}} size="small"/>} label="under vurdering"/>
-                            <FormControlLabel value="3" control={<Radio style={{backgroundColor: "red"}} size="small"/>} label="kan ikke publiseres"/>
+                        <RadioGroup value={publishedStatus} onChange={(e) => setPublishedStatus(e.target.value)}>
+                            <FormControlLabel value="willBePublished" control={<Radio size="small"/>} label="Skal publiseres" />
+                            <FormControlLabel value="underEvaluation" control={<Radio size="small"/>} label="Under vurdering"/>
+                            <FormControlLabel value="cannotPublish" control={<Radio size="small"/>} label="Kan ikke publiseres"/>
                         </RadioGroup>
                     </div>
                 : null }
@@ -117,11 +132,70 @@ export default function AddNewDataset(){
 
             
             
+           
+        
+            <Grid><br/>
+                <FormControl variant="outlined" style={{width: "50vh"}}>
+                    <InputLabel htmlFor="outlined-age-native-simple">Type</InputLabel>
+                    <Select
+                        native
+                        label="Type"
+                        inputProps={{
+                            name: 'age',
+                            id: 'outlined-age-native-simple',
+                        }}
+                        
+                        >
+                        <option aria-label="None" value="" />
+                        <option value={10}>Option 1</option>
+                        <option value={20}>Option 2</option>
+                        <option value={30}>Option 3</option>
+                    </Select>
+                </FormControl>
+            </Grid>
+
+
+            <Grid><br/>
+                <FormControl variant="outlined" style={{width: "50vh"}}>
+                    <InputLabel htmlFor="outlined-age-native-simple">Kategori</InputLabel>
+                    <Select
+                        native
+                        label="Type"
+                        inputProps={{
+                            name: 'age',
+                            id: 'outlined-age-native-simple',
+                        }}
+                        
+                        >
+                        <option aria-label="None" value="" />
+                        <option value={10}>Option 1</option>
+                        <option value={20}>Option 2</option>
+                        <option value={30}>Option 3</option>
+                    </Select>
+                </FormControl>
+            </Grid>
+
+            <Grid><br/>
+                <form noValidate autoComplete="off" style={{width: "50vh"}}>
+                    <TextField 
+                        id="outlined-basic" 
+                        label="Tags" 
+                        size="large" 
+                        variant="outlined" 
+                        fullWidth="true" 
+                        value={title} 
+                        onChange={(e) => setTitle(e.target.value)}
+                        
+                    />
+                </form>
+            </Grid>
+            
             <Grid> 
                 <br/>
                 <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button>
             </Grid>
-
+        <p>{published}</p>
+        <p>{publishedStatus}</p>
 
         </Grid>
     )
