@@ -4,5 +4,6 @@ namespace Supermarket.API.Infrastructure
     {
         DatasetList,
         DistributionList,
+        UserList,
     }
 }
