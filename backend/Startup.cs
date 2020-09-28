@@ -17,6 +17,7 @@ namespace Supermarket.API
 {
     public class Startup
     {
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -26,6 +27,17 @@ namespace Supermarket.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                                builder =>
+                                {
+                                    builder.WithOrigins("http://localhost:3000")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                });
+            }); 
+            
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
@@ -50,10 +62,7 @@ namespace Supermarket.API
 
             services.AddAutoMapper(typeof(Startup));
 
-            services.AddCors(c =>  
-            {  
-                c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());  
-            });  
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -65,7 +74,7 @@ namespace Supermarket.API
 
             app.UseRouting();
 
-            app.UseCors(options => options.AllowAnyOrigin());  
+            app.UseCors();
 
             app.UseCustomSwagger();
 

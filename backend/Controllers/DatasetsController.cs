@@ -5,14 +5,13 @@ using Microsoft.AspNetCore.Mvc;
 using Supermarket.API.Domain.Models;
 using Supermarket.API.Domain.Services;
 using Supermarket.API.Resources;
-using System.Web.Http.Cors;
+using Microsoft.AspNetCore.Cors;
 
 namespace Supermarket.API.Controllers
 {
     [Route("/api/datasets")]
     [Produces("application/json")]
     [ApiController]
-    [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
     public class DatasetsController : Controller
     {
         private readonly IDatasetService _datasetService;
@@ -44,7 +43,6 @@ namespace Supermarket.API.Controllers
         /// <param name="resource">Dataset data.</param>
         /// <returns>Response for the request.</returns>
         [HttpPost]
-        [EnableCors(origins: "http://localhost:3000", headers: "*", methods: "*")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostAsync([FromBody] SaveDatasetResource resource)
