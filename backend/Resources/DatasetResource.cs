@@ -13,6 +13,8 @@ namespace Supermarket.API.Resources
         public IList<DistributionResource> Distributions { get; set; } = new List<DistributionResource>();
 
         public string PublicationStatus { get; set; }
+        public string DetailedPublicationStatus { get; set; }
+        
 
 
     }
