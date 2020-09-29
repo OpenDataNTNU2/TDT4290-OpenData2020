@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyName>OpenData.API</AssemblyName>
+    <RootNamespace>OpenData.API</RootNamespace>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>bin\Debug\netcoreapp3.1\Supermarket.API.xml</DocumentationFile>
+    <DocumentationFile>bin\Debug\netcoreapp3.1\OpenData.API.xml</DocumentationFile>
     <OutputPath>bin\Debug\netcoreapp3.1\</OutputPath>
     <NoWarn>1701;1702;1591;</NoWarn>
   </PropertyGroup>

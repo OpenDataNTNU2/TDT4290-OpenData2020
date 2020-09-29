@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Models.Queries;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
 
-namespace Supermarket.API.Domain.Repositories
+namespace OpenData.API.Domain.Repositories
 {
     public interface IDistributionRepository
     {

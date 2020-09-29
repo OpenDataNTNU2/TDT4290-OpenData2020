@@ -1,6 +1,6 @@
-using Supermarket.API.Persistence.Contexts;
+using OpenData.API.Persistence.Contexts;
 
-namespace Supermarket.API.Persistence.Repositories
+namespace OpenData.API.Persistence.Repositories
 {
     public abstract class BaseRepository
     {

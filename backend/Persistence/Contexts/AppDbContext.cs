@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
-using Supermarket.API.Domain.Models;
+using OpenData.API.Domain.Models;
 
-namespace Supermarket.API.Persistence.Contexts
+namespace OpenData.API.Persistence.Contexts
 {
     public class AppDbContext : DbContext
     {

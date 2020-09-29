@@ -1,9 +1,9 @@
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Models.Queries;
-using Supermarket.API.Domain.Services.Communication;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
+using OpenData.API.Domain.Services.Communication;
 
-namespace Supermarket.API.Domain.Services
+namespace OpenData.API.Domain.Services
 {
     public interface IDistributionService
     {

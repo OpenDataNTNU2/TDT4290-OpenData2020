@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
-using Supermarket.API.Domain.Models;
+using OpenData.API.Domain.Models;
 
 
-namespace Supermarket.API.Resources
+namespace OpenData.API.Resources
 {
     public class SavePublisherResource
     {

@@ -1,4 +1,4 @@
-namespace Supermarket.API.Domain.Models.Queries
+namespace OpenData.API.Domain.Models.Queries
 {
     public class DistributionQuery : Query
     {

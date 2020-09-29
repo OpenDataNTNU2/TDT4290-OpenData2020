@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Supermarket.API.Controllers.Config;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Extensions;
-using Supermarket.API.Persistence.Contexts;
-using Supermarket.API.Persistence.Repositories;
-using Supermarket.API.Services;
+using OpenData.API.Controllers.Config;
+using OpenData.API.Domain.Repositories;
+using OpenData.API.Domain.Services;
+using OpenData.API.Extensions;
+using OpenData.API.Persistence.Contexts;
+using OpenData.API.Persistence.Repositories;
+using OpenData.API.Services;
 
-namespace Supermarket.API
+namespace OpenData.API
 {
     public class Startup
     {
