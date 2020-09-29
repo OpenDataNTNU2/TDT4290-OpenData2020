@@ -35,6 +35,18 @@ namespace Supermarket.API.Services
             return datasets;
         }
 
+        public async Task<DatasetResponse> FindByIdAsync(int id)
+        {
+            try
+            {
+                return new DatasetResponse(await _datasetRepository.FindByIdAsync(id));
+            }
+            catch (Exception ex)
+            {
+                return new DatasetResponse($"An error occurred when trying to get the dataset: {ex.Message}");
+            }
+        }
+
         public async Task<DatasetResponse> SaveAsync(Dataset dataset)
         {
             try

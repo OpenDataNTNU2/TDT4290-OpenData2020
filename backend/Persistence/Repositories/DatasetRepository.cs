@@ -29,7 +29,9 @@ namespace Supermarket.API.Persistence.Repositories
 
         public async Task<Dataset> FindByIdAsync(int id)
         {
-            return await _context.Datasets.FindAsync(id);
+            return await _context.Datasets
+                                .Include(d => d.Distributions)
+                                .FirstOrDefaultAsync(i => i.Id == id);
         }
 
         public void Update(Dataset dataset)

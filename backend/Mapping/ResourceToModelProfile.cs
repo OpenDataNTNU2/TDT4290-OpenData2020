@@ -9,7 +9,8 @@ namespace Supermarket.API.Mapping
     {
         public ResourceToModelProfile()
         {
-            CreateMap<SaveDatasetResource, Dataset>();
+            CreateMap<SaveDatasetResource, Dataset>()
+                .ForMember(src => src.PublicationStatus, opt => opt.MapFrom(src => (EPublicationStatus)src.PublicationStatus));
 
             CreateMap<SaveDistributionResource, Distribution>()
                 .ForMember(src => src.FileFormat, opt => opt.MapFrom(src => (EFileFormat)src.FileFormat));
