@@ -38,6 +38,22 @@ namespace Supermarket.API.Controllers
         }
 
         /// <summary>
+        /// Find one dataset by id.
+        /// </summary>
+        /// <param name="id">Dataset identifier.</param>
+        /// <returns>Dataset found by id.</returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(DatasetResource), 200)]
+        public async Task<DatasetResource> FindByIdAsync(int id)
+        {
+            var dataset = await _datasetService.FindByIdAsync(id);
+            var resource = _mapper.Map<Dataset, DatasetResource>(dataset.Resource);
+
+            return resource;
+        }
+        
+
+        /// <summary>
         /// Saves a new dataset.
         /// </summary>
         /// <param name="resource">Dataset data.</param>

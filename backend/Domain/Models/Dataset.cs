@@ -10,5 +10,7 @@ namespace Supermarket.API.Domain.Models
         public string Description { get; set; }
         public IList<Distribution> Distributions { get; set; } = new List<Distribution>();
 
+        public EPublicationStatus PublicationStatus { get; set; }
+
     }
 }
