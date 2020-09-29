@@ -15,6 +15,7 @@ namespace Supermarket.API.Persistence.Repositories
         {
             return await _context.Publishers
                                 .Include(d => d.Datasets)
+                                    .ThenInclude(d => d.Distributions)
                                 .AsNoTracking()
                                 .ToListAsync();
 

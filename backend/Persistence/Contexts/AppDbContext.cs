@@ -25,8 +25,8 @@ namespace Supermarket.API.Persistence.Contexts
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
 
             builder.Entity<Publisher>().HasData(
-                new Publisher { Id = 100, Name = "Trondheim" },
-                new Publisher { Id = 101, Name = "Bodø" }
+                new Publisher { Id = 100, Name = "Trondheim kommune" },
+                new Publisher { Id = 101, Name = "Bodø kommune" }
             );
 
             builder.Entity<User>().ToTable("Users");
@@ -48,8 +48,8 @@ namespace Supermarket.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim"}, // Id set manually due to in-memory provider
-                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Oslo" }
+                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublisherId = 100}, // Id set manually due to in-memory provider
+                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Oslo", PublisherId = 101 }
             );
 
             builder.Entity<Distribution>().ToTable("Distributions");

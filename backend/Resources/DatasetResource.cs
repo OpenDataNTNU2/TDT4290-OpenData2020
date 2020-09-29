@@ -9,7 +9,7 @@ namespace Supermarket.API.Resources
         public string Identifier { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        
+        public PublisherResource Publisher { get; set; }
         public IList<DistributionResource> Distributions { get; set; } = new List<DistributionResource>();
 
     }
