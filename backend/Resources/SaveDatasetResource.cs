@@ -14,6 +14,8 @@ namespace Supermarket.API.Resources
         public string Title { get; set; }
         public string Description { get; set; }
         public int PublisherId { get; set; }
+        public int PublicationStatus { get; set; }
+
 
     }
 }

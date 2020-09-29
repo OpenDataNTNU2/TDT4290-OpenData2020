@@ -48,8 +48,8 @@ namespace Supermarket.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublisherId = 100}, // Id set manually due to in-memory provider
-                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Oslo", PublisherId = 101 }
+                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published, PublisherId = 100}, // Id set manually due to in-memory provider
+                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Bodø", PublicationStatus = EPublicationStatus.notPublished, PublisherId = 101}
             );
 
             builder.Entity<Distribution>().ToTable("Distributions");
