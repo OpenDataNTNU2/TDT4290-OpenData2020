@@ -55,10 +55,12 @@ namespace Supermarket.API
 
             services.AddScoped<IDatasetRepository, DatasetRepository>();
             services.AddScoped<IDistributionRepository, DistributionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
+            services.AddScoped<IUserService, UserService>();
 
             services.AddAutoMapper(typeof(Startup));
 

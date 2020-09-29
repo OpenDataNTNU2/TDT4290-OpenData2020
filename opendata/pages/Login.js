@@ -16,18 +16,45 @@ export default function Login(){
     const [loggedUsername, setLoggedUsername] = useState("");
     const [loggedIn, setLoggedIn] = useState(false)
     const [notEligUsername, setNotEligUsername] = useState(false)
+    const [userId, setUserId] = useState(-1)
 
 
     // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut. 
-    const handleLoginClick = () => {
+    const handleLoginClick = async () => {
         if(!loggedIn){
             if(checkUsernameElig(username)){
-                setLoggedUsername(username);
-                setLoggedIn(true);
-                setOpen(true);
-                setNotEligUsername(false);
+                var success = await sendLoginRequest()
+                if (success){
+                    setLoggedUsername(username);
+                    setLoggedIn(true);
+                    setOpen(true);
+                    setNotEligUsername(false);
+                }
             }
             else setNotEligUsername(true); 
+        }
+    }
+
+    const sendLoginRequest = async () => {
+        const data = {
+            "username": username,
+        }
+        try{
+            await fetch('https://localhost:5001/api/users/'+username, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => response.json())
+            .then(data => {console.log(data);setUserId(data.id)})
+            return true
+        }
+        catch(_){
+            alert("failed")
+            console.log("failed")
+            return false
         }
     }
 
@@ -87,6 +114,8 @@ export default function Login(){
                 null 
             :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_kommune</Alert>
             }
+            <br/>
+            <Alert elevation={1} severity="info">UserId: {userId}</Alert>
 
             <Snackbar open={notEligUsername} autoHideDuration={6000}>
                 <Alert elevation={1} severity="error">Ikke gyldig brukernavn (sjekker bare om det er noe skrevet eller ikke atm){loggedUsername}</Alert>

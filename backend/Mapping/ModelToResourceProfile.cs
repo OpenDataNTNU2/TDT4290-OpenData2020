@@ -10,13 +10,17 @@ namespace Supermarket.API.Mapping
     {
         public ModelToResourceProfile()
         {
-            CreateMap<Dataset, DatasetResource>();
+            CreateMap<Dataset, DatasetResource>()
+                .ForMember(src => src.PublicationStatus,
+                           opt => opt.MapFrom(src => src.PublicationStatus.ToDescriptionString()));
 
             CreateMap<Distribution, DistributionResource>()
                 .ForMember(src => src.FileFormat,
                            opt => opt.MapFrom(src => src.FileFormat.ToDescriptionString()));
 
             CreateMap<QueryResult<Distribution>, QueryResultResource<DistributionResource>>();
+
+            CreateMap<User, UserResource>();
         }
     }
 }
