@@ -1,5 +1,4 @@
 import Grid from '@material-ui/core/Grid'
-import Container from '@material-ui/core/Container'
 
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
@@ -10,6 +9,9 @@ import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
+import Divider from '@material-ui/core/Divider';
+import Distribution from '../Components/Forms/Distribution'
+
 
 import { useState } from "react";
 
@@ -17,7 +19,7 @@ export default function AddNewDataset(){
     
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [published, setPublished] = useState("not published");
+    const [published, setPublished] = useState("published");
     const [publishedStatus, setPublishedStatus] = useState("")
     
     /*
@@ -31,7 +33,14 @@ export default function AddNewDataset(){
     });
     */
 
-    
+    const [distribution, setDistribution] = useState(0);
+    const [distTitle, setDistTitle] = useState([""]);
+    const [distUri, setDistUri] = useState([""]);
+    const [distFileFormat, setDistFileFormat] = useState([1]);
+
+
+
+
 
     const handleChange = async () => {
         
@@ -50,14 +59,68 @@ export default function AddNewDataset(){
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(data => console.log(data))
+            .then(data => {
+                for(let i = 0; i < distribution; i++){
+                    try{
+                        addDistributions(data.id, i);
+                    }
+                    catch(_){
+                        alert("failed x2")
+                    }
+                }
+                
+
+            })
+        }
+        catch(_){
+            alert("failed")
+            console.log("failed")
+        }
+       
+        
+        
+    }
+
+
+    const addDistributions = async (id, i) => {
+        const data2 = {
+            
+            "title": distTitle[i],
+            "uri": distUri[i],
+            "fileFormat": distFileFormat[i],
+            "datasetId": id
+        }
+        try{
+            fetch('https://localhost:5001/api/distributions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data2)
+            })
+            .then(response => response.json())
+            .then(data2 => console.log(data2))
             
         }
         catch(_){
             alert("failed")
             console.log("failed")
         }
-        
+    }
+
+
+    const addNewMoreDistributions = () => {
+        setDistribution(distribution + 1)
+        setDistTitle([...distTitle, ""])
+        setDistUri([...distUri, ""])
+        setDistFileFormat([...distFileFormat, 1])
+    }
+
+    const removeDistribution = () => {
+        setDistTitle(distTitle.splice(-1,1))
+        setDistUri(distUri.splice(-1,1))
+        setDistFileFormat(distFileFormat.splice(-1,1))
+        setDistribution(distribution - 1)
     }
 
     return(
@@ -190,12 +253,49 @@ export default function AddNewDataset(){
                 </form>
             </Grid>
             
+        
+            {distribution === 0 ? 
+                <Grid>
+                    <br/>
+                    <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Add distribution</Button>
+                    
+                </Grid>
+
+            :   <Grid><br/>
+                    <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
+                    {Array.from(Array(distribution), (e, i) => {
+                        return <div>
+                                    <Divider variant="middle" />
+                                    <Distribution 
+                                        title={distTitle}
+                                        setTitle={setDistTitle}
+                                        uri={distUri}
+                                        setUri={setDistUri}
+                                        fileFormat={distFileFormat}
+                                        setFileFormat={setDistFileFormat}
+                                        number={i}
+                                    />
+                                </div>
+                    })}
+                    
+                    
+                </Grid>
+            }
+            {distribution !== 0 ? 
+                <div>
+                    <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern</Button>
+                    <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>Legg til</Button>
+                </div>
+            :   null
+            }
+
             <Grid> 
                 <br/>
                 <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button>
+                <br/>
             </Grid>
-        <p>{published}</p>
-        <p>{publishedStatus}</p>
+        
+        
 
         </Grid>
     )
