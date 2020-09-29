@@ -13,7 +13,9 @@ namespace Supermarket.API.Resources
         [MaxLength(60)]
         public string Title { get; set; }
         public string Description { get; set; }
+        public int PublisherId { get; set; }
         public int PublicationStatus { get; set; }
+        public int DetailedPublicationStatus { get; set; }
 
 
     }

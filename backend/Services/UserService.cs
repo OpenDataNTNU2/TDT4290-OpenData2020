@@ -58,6 +58,8 @@ namespace Supermarket.API.Services
             if (existingUser == null)
                 return await SaveAsync(user);
             
+            existingUser.PublisherId = user.PublisherId;
+            
             try
             {
                 await _unitOfWork.CompleteAsync();

@@ -10,6 +10,7 @@ namespace Supermarket.API.Persistence.Contexts
 
         public DbSet<User> Users { get; set; }
         public DbSet<Distribution> Distributions { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -17,14 +18,25 @@ namespace Supermarket.API.Persistence.Contexts
         {
             base.OnModelCreating(builder);
 
+
+            builder.Entity<Publisher>().ToTable("Publishers");
+            builder.Entity<Publisher>().HasKey(p => p.Id);
+            builder.Entity<Publisher>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
+
+            builder.Entity<Publisher>().HasData(
+                new Publisher { Id = 100, Name = "Trondheim kommune" },
+                new Publisher { Id = 101, Name = "Bodø kommune" }
+            );
+
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
             builder.Entity<User>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<User>().Property(p => p.Username).IsRequired();
 
             builder.Entity<User>().HasData(
-                new User { Id = 100, Username = "Testbruker1" },
-                new User { Id = 101, Username = "Testbruker2" }
+                new User { Id = 100, Username = "test_trondheim_kommune", PublisherId = 100 },
+                new User { Id = 101, Username = "test_bodø_kommune", PublisherId = 101 }
             );
             
             builder.Entity<Dataset>().ToTable("Datasets");
@@ -36,8 +48,8 @@ namespace Supermarket.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published}, // Id set manually due to in-memory provider
-                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Oslo", PublicationStatus = EPublicationStatus.notPublished}
+                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published, PublisherId = 100}, // Id set manually due to in-memory provider
+                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Bodø", PublicationStatus = EPublicationStatus.notPublished, DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, PublisherId = 101}
             );
 
             builder.Entity<Distribution>().ToTable("Distributions");

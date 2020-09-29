@@ -7,7 +7,8 @@ namespace Supermarket.API.Resources
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        
+        public Publisher Publisher { get; set; }
+
 
     }
 }
