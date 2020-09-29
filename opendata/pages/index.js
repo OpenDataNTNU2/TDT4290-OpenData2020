@@ -3,11 +3,14 @@ import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper';
 import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
+import {useRouter} from 'next/router'
 
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data }) {
+  const router = useRouter();
 
+  const onClick = (id) => {router.push('/DetailedDataset/'+id)}
   return (
     <div className='datakatalog'>
       <Grid
@@ -26,7 +29,7 @@ export default function Home({ data }) {
         >
           {
             Object.values(data).map(dataset => (
-              <DatasetCard key={dataset.id} dataset={dataset}/>
+              <DatasetCard key={dataset.id} dataset={dataset} onClick={()=>onClick(dataset.id)}/>
             ))
           } 
         </Grid>

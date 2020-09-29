@@ -8,7 +8,7 @@ import { useState } from "react";
 import Alert from '@material-ui/lab/Alert'
 import { Paper } from '@material-ui/core'
 
-export default function DetailedDataset(){
+export default function DetailedDataset({data}){
     
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -53,7 +53,7 @@ export default function DetailedDataset(){
             </Grid>
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
-            <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b> Placeholder {description}</p>
+            <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
             <p><b>Eier:</b> Placeholder {owner}</p>
             <p><b>Type:</b> Placeholder {format}</p>
             <p><b>Språk:</b> Placeholder {language}</p>
@@ -68,11 +68,11 @@ export default function DetailedDataset(){
 
     )
 }
- 
+
 export async function getServerSideProps(id) {
     // Fetch data from external API
     // Should be changed to host link when this is done, not localhost.
-    const uri = 'https://localhost:5001/api/datasets/:id';
+    const uri = 'https://localhost:5001/api/datasets/101';
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
   
