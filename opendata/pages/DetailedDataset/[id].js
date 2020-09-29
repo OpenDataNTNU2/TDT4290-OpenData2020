@@ -5,10 +5,11 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
 import { useState } from "react";
-import Alert from '@material-ui/lab/Alert'
 import { Paper } from '@material-ui/core'
+import { useRouter } from 'next/router'
 
 export default function DetailedDataset({data}){
+    
     
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
@@ -19,20 +20,6 @@ export default function DetailedDataset({data}){
     const [language, setLanguage] = useState("");
     
 
-    const handleChange = async (id) => {
-        
-        const data = {
-            "identifier": "stringeling",
-            "title": title,
-            "description": description,
-            "date": date,
-            "link": distributions,
-            "owner": owner,
-            "format": format,
-            "language": language
-        }
-        
-    }
     
     return(
         <Grid
@@ -69,13 +56,24 @@ export default function DetailedDataset({data}){
     )
 }
 
-export async function getServerSideProps(id) {
+export async function getServerSideProps(context) {
     // Fetch data from external API
     // Should be changed to host link when this is done, not localhost.
-    const uri = 'https://localhost:5001/api/datasets/101';
+    const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
   
     // Pass data to the page via props
     return { props: { data } }
+  }
+
+// ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
+function createRequestOptions(skipHttpsValidation) {
+    const isNode = typeof window === 'undefined';
+    if (isNode) {
+      var Agent = (require('https')).Agent;
+      return {
+        agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
+      };
+    }
   }
