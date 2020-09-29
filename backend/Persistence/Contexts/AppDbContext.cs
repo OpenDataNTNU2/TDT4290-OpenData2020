@@ -35,8 +35,8 @@ namespace Supermarket.API.Persistence.Contexts
             builder.Entity<User>().Property(p => p.Username).IsRequired();
 
             builder.Entity<User>().HasData(
-                new User { Id = 100, Username = "Testbruker1" },
-                new User { Id = 101, Username = "Testbruker2" }
+                new User { Id = 100, Username = "test_trondheim_kommune", PublisherId = 100 },
+                new User { Id = 101, Username = "test_bodø_kommune", PublisherId = 101 }
             );
             
             builder.Entity<Dataset>().ToTable("Datasets");

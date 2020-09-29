@@ -9,7 +9,5 @@ namespace Supermarket.API.Domain.Models
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
 
-        
-
     }
 }

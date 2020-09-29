@@ -14,6 +14,7 @@ namespace Supermarket.API.Persistence.Repositories
         public async Task<IEnumerable<User>> ListAsync()
         {
             return await _context.Users
+                                .Include(u => u.Publisher)
                                 .AsNoTracking()
                                 .ToListAsync();
 
