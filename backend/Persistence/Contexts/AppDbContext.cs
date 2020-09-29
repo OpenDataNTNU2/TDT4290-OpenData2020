@@ -10,12 +10,24 @@ namespace Supermarket.API.Persistence.Contexts
 
         public DbSet<User> Users { get; set; }
         public DbSet<Distribution> Distributions { get; set; }
+        public DbSet<Publisher> Publishers { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+
+            builder.Entity<Publisher>().ToTable("Publishers");
+            builder.Entity<Publisher>().HasKey(p => p.Id);
+            builder.Entity<Publisher>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
+
+            builder.Entity<Publisher>().HasData(
+                new Publisher { Id = 100, Name = "Trondheim" },
+                new Publisher { Id = 101, Name = "Bodø" }
+            );
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);

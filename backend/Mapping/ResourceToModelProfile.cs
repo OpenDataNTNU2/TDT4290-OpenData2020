@@ -17,6 +17,8 @@ namespace Supermarket.API.Mapping
             CreateMap<DistributionQueryResource, DistributionQuery>();
 
             CreateMap<SaveUserResource, User>();
+
+            CreateMap<SavePublisherResource, Publisher>();
         }
     }
 }
