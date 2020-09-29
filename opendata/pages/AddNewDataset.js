@@ -1,11 +1,8 @@
-import Grid from '@material-ui/core/Grid'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
+import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
 import { useState } from "react";
-import Alert from '@material-ui/lab/Alert'
 
 export default function AddNewDataset(){
     
@@ -23,7 +20,7 @@ export default function AddNewDataset(){
         }
         
         try{
-            fetch('https://localhost:5001/api/datasets', {
+            fetch('https://localhost:5000/api/datasets', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

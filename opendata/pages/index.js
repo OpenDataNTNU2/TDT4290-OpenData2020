@@ -2,6 +2,7 @@ import React from 'react';
 import Grid from '@material-ui/core/Grid'
 import Paper from '@material-ui/core/Paper';
 import Filter from '../Components/Filter'
+import DatasetCard from '../Components/DatasetCard';
 
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
@@ -20,30 +21,14 @@ export default function Home({ data }) {
           </Paper>
         </Grid>
         <Grid
-          container
-          direction="column"
+          item
           xs={8}
-          spacing={3}
         >
           {
             Object.values(data).map(dataset => (
-              <Grid item key={dataset.id}>
-                <Paper variant='outlined' style={{ height: '15vh', padding: '1%' }}>
-                  <Grid container alignItems='center'>
-                    <Grid item xs={9}>
-                      <h3>{dataset.title}</h3>
-                      <p>{dataset.description}</p>
-                    </Grid>
-                    <Grid item xs={2}>
-                      <Paper elevation={0} style={{ backgroundColor: '#D6FFD2', textAlign: 'center', padding: '3%', marginBottom: '3%' }}>Publisert</Paper>
-                      <Paper elevation={0} style={{ backgroundColor: '#EBE4FF', textAlign: 'center', padding: '3%' }}>Samordna</Paper>
-                    </Grid>
-                  </Grid>
-
-                </Paper>
-              </Grid>
+              <DatasetCard key={dataset.id} dataset={dataset}/>
             ))
-          }
+          } 
         </Grid>
       </Grid>
     </div>
