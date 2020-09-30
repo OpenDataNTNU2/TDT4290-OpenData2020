@@ -2,12 +2,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Resources;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Services;
+using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
 
-namespace Supermarket.API.Controllers
+namespace OpenData.API.Controllers
 {
     [Route("/api/datasets")]
     [Produces("application/json")]

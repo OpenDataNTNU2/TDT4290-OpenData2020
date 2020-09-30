@@ -1,10 +1,10 @@
 using AutoMapper;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Models.Queries;
-using Supermarket.API.Extensions;
-using Supermarket.API.Resources;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
+using OpenData.API.Extensions;
+using OpenData.API.Resources;
 
-namespace Supermarket.API.Mapping
+namespace OpenData.API.Mapping
 {
     public class ModelToResourceProfile : Profile
     {

@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "Supermarket.API": {
+    "OpenData.API": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",

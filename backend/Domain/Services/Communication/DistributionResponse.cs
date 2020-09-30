@@ -1,6 +1,6 @@
-using Supermarket.API.Domain.Models;
+using OpenData.API.Domain.Models;
 
-namespace Supermarket.API.Domain.Services.Communication
+namespace OpenData.API.Domain.Services.Communication
 {
     public class DistributionResponse : BaseResponse<Distribution>
     {

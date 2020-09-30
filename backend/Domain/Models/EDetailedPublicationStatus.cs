@@ -1,6 +1,6 @@
 using System.ComponentModel;
 
-namespace Supermarket.API.Domain.Models
+namespace OpenData.API.Domain.Models
 {
     public enum EDetailedPublicationStatus : byte
     {

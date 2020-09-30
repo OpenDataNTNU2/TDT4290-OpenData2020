@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Persistence.Contexts;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Repositories;
+using OpenData.API.Persistence.Contexts;
 
-namespace Supermarket.API.Persistence.Repositories
+namespace OpenData.API.Persistence.Repositories
 {
     public class PublisherRepository : BaseRepository, IPublisherRepository
     {
