@@ -58,11 +58,13 @@ namespace OpenData.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IPublisherRepository, PublisherRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ITagsRepository, TagsRepository>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPublisherService, PublisherService>();
+            services.AddScoped<ITagsService, TagsService>();
 
             services.AddAutoMapper(typeof(Startup));
 

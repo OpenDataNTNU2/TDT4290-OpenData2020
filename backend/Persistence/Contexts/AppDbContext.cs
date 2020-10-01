@@ -11,6 +11,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<User> Users { get; set; }
         public DbSet<Distribution> Distributions { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
+        public DbSet<Tags> Tags { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -77,6 +78,34 @@ namespace OpenData.API.Persistence.Contexts
                     FileFormat = EFileFormat.xml
                 }
             );
+            builder.Entity<Tags>().ToTable("Tags");
+            builder.Entity<Tags>().HasKey(p => p.Id);
+            builder.Entity<Tags>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Tags>().Property(p => p.Name).IsRequired();
+            builder.Entity<Tags>().HasData
+            (
+                new Tags
+                {
+                    Id = 100,
+                    Name = "Culture"
+                },
+                new Tags
+                {
+                    Id = 101,
+                    Name = "Bicycle"
+                }
+            );
+            builder.Entity<DatasetTags>()
+                .HasKey(dt => new { dt.DatasetId, dt.TagsId });
+            builder.Entity<DatasetTags>()
+                .HasOne(dt => dt.Dataset)
+                .WithMany(d => d.DatasetTags)
+                .HasForeignKey(dt => dt.DatasetId);
+            builder.Entity<DatasetTags>()
+                .HasOne(dt => dt.Tags)
+                .WithMany(t => t.DatasetTags)
+                .HasForeignKey(dt => dt.TagsId);
+            
         }
     }
 }
