@@ -17,8 +17,8 @@ export default function AddNewDataset(){
     // variables/states for "main data", will add more here
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [published, setPublished] = useState("published");
-    const [publishedStatus, setPublishedStatus] = useState("")
+    const [published, setPublished] = useState("1");
+    const [publishedStatus, setPublishedStatus] = useState("0")
 
     // variables/states for the distribution
     const [distribution, setDistribution] = useState(0);
@@ -27,7 +27,11 @@ export default function AddNewDataset(){
     const [distFileFormat, setDistFileFormat] = useState([1]);
 
 
-
+    // resets the value of publishedStatus to 0 if "published" is selected
+    const handlePublishChange = (value) => {
+        if(value === "1") setPublishedStatus("0")
+        setPublished(value)
+    }
 
     // posts data into the api with datasets 
     // and if successfull runs addDistributions
@@ -35,7 +39,10 @@ export default function AddNewDataset(){
         const data = {
             "identifier": "stringeling",
             "title": title,
-            "description": description
+            "description": description,
+            "publisherId": 100,
+            "publicationStatus": parseInt(published),
+            "detailedPublicationStatus": parseInt(publishedStatus)
         }
         try{
             fetch('https://localhost:5001/api/datasets', {
@@ -124,25 +131,28 @@ export default function AddNewDataset(){
                 multiline={false}
             /><br/>
             
+            
             <FormControl component="fieldset">
                 <FormLabel component="legend">Status for publisering</FormLabel>
                 <RadioInput 
                     mainValue={published}
-                    handleChange={setPublished}
-                    value={["published", "not published"]}
+                    handleChange={handlePublishChange}
+                    value={["1", "2"]}
                     label={["Publisert", "Ikke publisert"]}
                 />
-                {published !== "published" ? 
+                {published !== "1" ? 
                     <div style={{marginLeft: "5vh"}}>
                         <RadioInput 
                             mainValue={publishedStatus}
                             handleChange={setPublishedStatus}
-                            value={["willBePublished", "underEvaluation", "cannotPublish"]}
+                            value={["1", "2", "3"]}
                             label={["Skal publiseres", "Under vurdering", "Kan ikke publiseres"]}
                         />
                     </div>
                 : null }
             </FormControl>
+            
+            
 
             <Input 
                 id="outlined-multiline"
