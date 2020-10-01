@@ -4,11 +4,14 @@ import Button from '@material-ui/core/Button'
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
 import Divider from '@material-ui/core/Divider';
+import Snackbar from '@material-ui/core/Snackbar'
+import Alert from '@material-ui/lab/Alert'
 
 import Distribution from '../Components/Forms/Distribution'
 import Input from '../Components/Forms/Input'
 import RadioInput from '../Components/Forms/RadioInput'
 import SelectInput from '../Components/Forms/SelectInput'
+
 
 import { useState } from "react";
 
@@ -26,6 +29,7 @@ export default function AddNewDataset(){
     const [distUri, setDistUri] = useState([""]);
     const [distFileFormat, setDistFileFormat] = useState([1]);
 
+    const [open, setOpen] = useState(false)
 
     // resets the value of publishedStatus to 0 if "published" is selected
     const handlePublishChange = (value) => {
@@ -59,10 +63,15 @@ export default function AddNewDataset(){
                         addDistributions(data.id, i);
                     }
                     catch(_){
-                        alert("failed x2")
-                    }
+                        alert("failed x2")   
+                    }    
+                }
+                if(distribution===0){
+                    setOpen(true)
+                    clearStates()
                 }
             })
+            
         }
         catch(_){
             alert("failed")
@@ -89,11 +98,14 @@ export default function AddNewDataset(){
             })
             .then(response => response.json())
             .then(data2 => console.log(data2))
+            setOpen(true)
+            clearStates() 
         }
         catch(_){
             alert("failed")
             console.log("failed")
         }
+        
     }
 
 
@@ -110,6 +122,24 @@ export default function AddNewDataset(){
         setDistFileFormat(distFileFormat.splice(-1,1))
         setDistribution(distribution - 1)
     }
+
+    // vet ikke om dette kan gjøres på en annen måte, men lar det stå slik for nå
+    // resets all the states, this is executed after successfully submitting a dataset
+    // it is no restrictions for input fields missing etc, so in theory, it is successfull no matter what now..
+    const clearStates = () => {
+        setTitle("")
+        setDescription("")
+        setPublished("1")
+        setPublishedStatus("0")
+        
+        setDistTitle([""])
+        setDistUri([""])
+        setDistFileFormat([0])
+        setDistribution(0)
+    }
+
+    // TODO: kanskje greit å ha en link brukere kan trykke på etter å ha opprettet et dataset, som tar de til datasettet
+    // venter med dette til vi har dynamic routes ferdig for hvert dataset, men har tilgang på id her, så bør være enkelt
 
     return(
         <Grid
@@ -212,7 +242,10 @@ export default function AddNewDataset(){
             
             <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
             
-        
+                
+            <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
+                <Alert elevation={1} severity="success">Datasett publisert</Alert>
+            </Snackbar>
         </Grid>
     )
 }
