@@ -54,9 +54,15 @@ namespace OpenData.API.Services
         public async Task<UserResponse> UpdateAsync(string username, User user)
         {
             var existingUser = await _userRepository.FindByUsernameAsync(username);
+            
+            if (existingUser == null){
+                int first = user.Username.IndexOf("_");
+                int last = user.Username.LastIndexOf("_");
+                String mun = user.Username.Substring(first,last);
+                Console.WriteLine(mun);
 
-            if (existingUser == null)
                 return await SaveAsync(user);
+            }
             
             
             try
