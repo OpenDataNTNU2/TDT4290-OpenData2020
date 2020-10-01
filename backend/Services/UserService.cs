@@ -58,7 +58,6 @@ namespace OpenData.API.Services
             if (existingUser == null)
                 return await SaveAsync(user);
             
-            existingUser.PublisherId = user.PublisherId;
             
             try
             {
