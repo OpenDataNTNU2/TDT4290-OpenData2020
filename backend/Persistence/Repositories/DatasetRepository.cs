@@ -18,6 +18,7 @@ namespace OpenData.API.Persistence.Repositories
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Publisher)
                                 .Include(d => d.DatasetTags)
+                                    .ThenInclude(d => d.Tags)
                                 .AsNoTracking()
                                 .ToListAsync();
 
@@ -28,13 +29,16 @@ namespace OpenData.API.Persistence.Repositories
         public async Task AddAsync(Dataset dataset)
         {
             await _context.Datasets.AddAsync(dataset);
+            foreach (string idString in dataset.TagsIds.Split(',')){
+                int id = Int32.Parse(idString.Trim());
+                Tags existingTag = await _context.Tags.FindAsync(id);
+                if (existingTag != null){
+                    DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
 
-            DatasetTags datasetTag = new DatasetTags { DatasetId = dataset.Id, TagsId = dataset.TagsId };
-            Console.WriteLine(datasetTag.DatasetId);
-            Console.WriteLine(datasetTag.TagsId);
-
-            await _context.DatasetTags.AddAsync(datasetTag);
-            dataset.DatasetTags.Add(datasetTag);
+                    await _context.DatasetTags.AddAsync(datasetTag);
+                    dataset.DatasetTags.Add(datasetTag);
+                }
+            }
         }
 
         public async Task<Dataset> FindByIdAsync(int id)

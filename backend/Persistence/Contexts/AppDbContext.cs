@@ -50,8 +50,23 @@ namespace OpenData.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published, PublisherId = 100}, // Id set manually due to in-memory provider
-                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Bodø", PublicationStatus = EPublicationStatus.notPublished, DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, PublisherId = 101}
+                new Dataset { 
+                    Id = 100, 
+                    Title = "Strand", 
+                    Identifier = "/api/datasets/100", 
+                    Description = "Strender i Trondheim", 
+                    PublicationStatus = EPublicationStatus.published, 
+                    PublisherId = 100
+                }, // Id set manually due to in-memory provider
+                new Dataset { 
+                    Id = 101, 
+                    Title = "Strand", 
+                    Identifier = "/api/datasets/101", 
+                    Description = "Strender i Bodø", 
+                    PublicationStatus = EPublicationStatus.notPublished,
+                    DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, 
+                    PublisherId = 101
+                }
             );
 
             builder.Entity<Distribution>().ToTable("Distributions");
@@ -94,6 +109,20 @@ namespace OpenData.API.Persistence.Contexts
                 {
                     Id = 101,
                     Name = "Bicycle"
+                }
+            );
+            builder.Entity<DatasetTags>().ToTable("DatasetTags");
+            builder.Entity<DatasetTags>().HasData
+            (
+                new DatasetTags
+                {
+                    DatasetId = 100,
+                    TagsId = 100
+                },
+                new DatasetTags
+                {
+                    DatasetId = 101,
+                    TagsId = 101
                 }
             );
             builder.Entity<DatasetTags>()
