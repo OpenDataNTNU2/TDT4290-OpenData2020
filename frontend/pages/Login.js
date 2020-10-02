@@ -38,6 +38,7 @@ export default function Login(){
     const sendLoginRequest = async () => {
         const data = {
             "username": username,
+            "publisherId": 100
         }
         try{
             await fetch('https://localhost:5001/api/users/'+username, {

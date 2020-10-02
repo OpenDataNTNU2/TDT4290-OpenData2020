@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Supermarket.API.Extensions
+namespace OpenData.API.Extensions
 {
     public static class MiddlewareExtensions
     {
@@ -40,8 +40,8 @@ namespace Supermarket.API.Extensions
         {
             app.UseSwagger().UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Supermarket API");
-                options.DocumentTitle = "Supermarket API";
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "OpenData API");
+                options.DocumentTitle = "OpenData API";
             });
             return app;
         }

@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Domain.Services.Communication;
-using Supermarket.API.Infrastructure;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Repositories;
+using OpenData.API.Domain.Services;
+using OpenData.API.Domain.Services.Communication;
+using OpenData.API.Infrastructure;
 
-namespace Supermarket.API.Services
+namespace OpenData.API.Services
 {
     public class UserService : IUserService
     {
@@ -57,6 +57,8 @@ namespace Supermarket.API.Services
 
             if (existingUser == null)
                 return await SaveAsync(user);
+            
+            existingUser.PublisherId = user.PublisherId;
             
             try
             {

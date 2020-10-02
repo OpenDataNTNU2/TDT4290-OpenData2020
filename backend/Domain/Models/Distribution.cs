@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Supermarket.API.Domain.Models
+namespace OpenData.API.Domain.Models
 {
     public class Distribution
     {

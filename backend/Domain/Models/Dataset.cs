@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Supermarket.API.Domain.Models
+namespace OpenData.API.Domain.Models
 {
     public class Dataset
     {
@@ -8,9 +8,13 @@ namespace Supermarket.API.Domain.Models
         public string Identifier { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
         public IList<Distribution> Distributions { get; set; } = new List<Distribution>();
 
         public EPublicationStatus PublicationStatus { get; set; }
+        public EDetailedPublicationStatus DetailedPublicationStatus { get; set; }
+        public ICollection<DatasetTags> DatasetTags { get; set; }
 
     }
 }

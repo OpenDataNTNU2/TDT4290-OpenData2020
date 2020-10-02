@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Models;
+using OpenData.API.Domain.Models;
 
-namespace Supermarket.API.Domain.Repositories
+namespace OpenData.API.Domain.Repositories
 {
     public interface IUserRepository
     {
