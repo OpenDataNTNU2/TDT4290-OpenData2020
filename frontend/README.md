@@ -12,19 +12,29 @@ yarn dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+## Frontend structure
+__Bold__ is folders.
 
-## Learn More
+Common text is description of content in folder.
 
-To learn more about Next.js, take a look at the following resources:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* __.next__
+  * Not important, contains the next.js files which comes with npm install after creating the next app
+* __Componenets__
+  * __Forms__
+    * Input field components that we create go here
+  * Normal components we create go here, e.g. Header
+  
+* __node_modules__
+    * Comes with node, and is cancer, do not mess with this or else...!!
+* __pages__
+    * __api__
+        * Not important yet, since we are using .NET for backend and api handling
+    * This is where all out pages is located, this allows us to use next features like dynamic routing and SSR
+* __public__
+  * Not important
+* __styles__
+  * Not important, might delete since we are using material ui
+* __utils__
+  * This will handle global state for logged in users
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
