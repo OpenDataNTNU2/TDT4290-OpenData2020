@@ -58,6 +58,8 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Dataset>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();//.HasValueGenerator<InMemoryIntegerValueGenerator<int>>();
             builder.Entity<Dataset>().Property(p => p.Identifier).IsRequired();
             builder.Entity<Dataset>().Property(p => p.Title).IsRequired().HasMaxLength(60);
+            builder.Entity<Dataset>().Property(p => p.PublisherId).IsRequired();
+            builder.Entity<Dataset>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Dataset>().HasMany(p => p.Distributions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
 
             builder.Entity<Dataset>().HasData
