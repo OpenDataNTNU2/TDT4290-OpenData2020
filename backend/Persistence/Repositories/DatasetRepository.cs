@@ -17,6 +17,7 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Datasets
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Publisher)
+                                .Include(d => d.DatasetTags)
                                 .AsNoTracking()
                                 .ToListAsync();
 
