@@ -83,7 +83,7 @@ const SelectTags = (props) => {
                 )}
                 MenuProps={MenuProps}
             >
-                <div style={{display: "inline"}}>
+                
                 <InputForm 
                     id="outlined-basic"
                     label="Lag dine egne tags"
@@ -92,7 +92,7 @@ const SelectTags = (props) => {
                     multiline={false}
                 />
                 <Button onClick={props.submitted(true)}>Legg til</Button>
-                </div>
+                
             {props.tags.map((tag) => (
                 <MenuItem key={tag.name} value={tag.name}>
                     <Checkbox checked={personName.indexOf(tag.name) > -1} />

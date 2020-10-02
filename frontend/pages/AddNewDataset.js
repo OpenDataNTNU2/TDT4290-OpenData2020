@@ -176,7 +176,6 @@ export default function AddNewDataset(){
 
             <Button onClick={getTags}>click to fetch tags</Button>
             
-            {submitted ? <p>create tag: {createdTag}</p> : null}
             <Input 
                 id="outlined-basic"
                 label="Tittel"
