@@ -36,8 +36,8 @@ namespace OpenData.API
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                 });
-            }); 
-            
+            });
+
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
@@ -59,12 +59,14 @@ namespace OpenData.API
             services.AddScoped<IPublisherRepository, PublisherRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITagsRepository, TagsRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IPublisherService, PublisherService>();
             services.AddScoped<ITagsService, TagsService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             services.AddAutoMapper(typeof(Startup));
 
