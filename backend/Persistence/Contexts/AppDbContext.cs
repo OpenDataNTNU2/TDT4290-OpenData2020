@@ -24,6 +24,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().HasKey(p => p.Id);
             builder.Entity<Publisher>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
+            builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<Publisher>().HasData(
                 new Publisher { Id = 100, Name = "Trondheim kommune" },
