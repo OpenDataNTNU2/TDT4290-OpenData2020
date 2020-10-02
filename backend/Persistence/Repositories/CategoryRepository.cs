@@ -15,7 +15,7 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<IEnumerable<Category>> ListAsync()
         {
-            return await _context.Categories.ToListAsync();
+            return await _context.Categories.AsNoTracking().ToListAsync();
         }
 
         public async Task AddAsync(Category category)

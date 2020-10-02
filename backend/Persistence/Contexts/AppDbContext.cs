@@ -42,6 +42,17 @@ namespace OpenData.API.Persistence.Contexts
                 new User { Id = 101, Username = "test_bodø_kommune", PublisherId = 101 }
             );
 
+            builder.Entity<Category>().ToTable("Categories");
+            builder.Entity<Category>().HasKey(p => p.Id);
+            builder.Entity<Category>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Category>().Property(p => p.Name).IsRequired().HasMaxLength(60);
+            builder.Entity<Category>().HasMany(p => p.Datasets).WithOne(p => p.Category).HasForeignKey(p => p.CategoryId);
+
+            builder.Entity<Category>().HasData(
+                new Category { Id = 100, Name = "Landskap" },
+                new Category { Id = 101, Name = "Kultur" }
+            );
+
             builder.Entity<Dataset>().ToTable("Datasets");
             builder.Entity<Dataset>().HasKey(p => p.Id);
             builder.Entity<Dataset>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();//.HasValueGenerator<InMemoryIntegerValueGenerator<int>>();
@@ -51,8 +62,8 @@ namespace OpenData.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published, PublisherId = 100 }, // Id set manually due to in-memory provider
-                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Bodø", PublicationStatus = EPublicationStatus.notPublished, DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, PublisherId = 101 }
+                new Dataset { Id = 100, Title = "Strand", Identifier = "/api/datasets/100", Description = "Strender i Trondheim", PublicationStatus = EPublicationStatus.published, PublisherId = 100, CategoryId = 100 }, // Id set manually due to in-memory provider
+                new Dataset { Id = 101, Title = "Strand", Identifier = "/api/datasets/101", Description = "Strender i Bodø", PublicationStatus = EPublicationStatus.notPublished, DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, PublisherId = 101, CategoryId = 100 }
             );
 
             builder.Entity<Distribution>().ToTable("Distributions");
