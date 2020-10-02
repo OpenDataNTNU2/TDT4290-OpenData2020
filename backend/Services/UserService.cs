@@ -59,26 +59,26 @@ namespace OpenData.API.Services
             var existingUser = await _userRepository.FindByUsernameAsync(username);
             
             if (existingUser == null){
-                try {
-                    String mun = (String) user.Username.Split('_').GetValue(1);
-                    
-                    IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
+                if (user.Username.ToLower().Contains("kommune")){
+                    try {
+                        String mun = (String) user.Username.Split('_').GetValue(1);
+                        
+                        IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
 
-                    foreach (Publisher publisher in existingPublishers){
-                        if (publisher.Name.ToLower().Contains(mun.ToLower())){
-                            user.PublisherId = publisher.Id;
+                        foreach (Publisher publisher in existingPublishers){
+                            if (publisher.Name.ToLower().Contains(mun.ToLower())){
+                                user.PublisherId = publisher.Id;
+                            }
                         }
-                    }
-                    
-                    if (user.PublisherId == 0){
-                        var newPublisher = new Publisher {Name = mun.Substring(0,1).ToUpper() + mun.Substring(1) + " Kommune"};
-                        await _publisherRepository.AddAsync(newPublisher);
-                        await _unitOfWork.CompleteAsync();
-                        Console.WriteLine(newPublisher.Id);
-                        user.PublisherId = newPublisher.Id;
-                    }
-                } catch(Exception e){ Console.WriteLine(e.ToString());}
-                Console.WriteLine(user.PublisherId);
+                        
+                        if (user.PublisherId == 0){
+                            var newPublisher = new Publisher {Name = mun.Substring(0,1).ToUpper() + mun.Substring(1) + " Kommune"};
+                            await _publisherRepository.AddAsync(newPublisher);
+                            await _unitOfWork.CompleteAsync();
+                            user.PublisherId = newPublisher.Id;
+                        }
+                    } catch(Exception e){ Console.WriteLine(e.ToString());}
+                }
 
                 return await SaveAsync(user);
             }
