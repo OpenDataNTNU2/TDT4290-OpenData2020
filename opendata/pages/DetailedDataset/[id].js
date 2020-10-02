@@ -9,18 +9,7 @@ import { Paper } from '@material-ui/core'
 import { useRouter } from 'next/router'
 
 export default function DetailedDataset({data}){
-    
-    
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [date, setDate] = useState("");
-    const [distributions, setLink] = useState("");
-    const [owner, setOwner] = useState("");
-    const [format, setFormat] = useState("");
-    const [language, setLanguage] = useState("");
-    
-
-    
+   
     return(
         <Grid
             container
@@ -35,17 +24,17 @@ export default function DetailedDataset({data}){
             direction="row"
             justify="space-between"
             alignItems="center">
-                <h1 style={{fontWeight: "bold", }}><p>PLACEHOLDER TITLE {title}</p></h1>
-                <p style={{paddingRight: '5%'}}><b>Oppdatert: </b>{date}placeholder</p>
+                <h1 style={{fontWeight: "bold", }}><p>{data.title}</p></h1>
+                <p style={{paddingRight: '5%'}}><b>Oppdatert: </b>{data.date}</p>
             </Grid>
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
             <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
-            <p><b>Eier:</b> Placeholder {owner}</p>
-            <p><b>Type:</b> Placeholder {format}</p>
-            <p><b>Språk:</b> Placeholder {language}</p>
-            <p><b>Dato publisert: </b>Placeholder {date}</p>
-            <p><b>Link til datasett: </b>Placeholder {distributions}</p>
+            <p><b>Eier:</b> {data.owner}</p>
+            <p><b>Type:</b>  {data.format}</p>
+            <p><b>Språk:</b>  {data.Agentlanguage}</p>
+            <p><b>Dato publisert: </b> {data.date}</p>
+            <p><b>Link til datasett: </b> {data.uri} </p>
             </Paper>
 
         </Grid>
