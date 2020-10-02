@@ -31,6 +31,10 @@ export default function AddNewDataset(){
 
     const [tags, setTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
+    const [createdTag, setCreatedTag] = useState("")
+
+    const [submitted, setSubmitted] = useState(false)
+
 
     const [open, setOpen] = useState(false)
 
@@ -172,7 +176,7 @@ export default function AddNewDataset(){
 
             <Button onClick={getTags}>click to fetch tags</Button>
             
-
+            {submitted ? <p>create tag: {createdTag}</p> : null}
             <Input 
                 id="outlined-basic"
                 label="Tittel"
@@ -229,6 +233,9 @@ export default function AddNewDataset(){
                 tags={tags}
                 prevSelected={selectedTags}
                 onChange={setSelectedTags}
+                setCreateTag={setCreatedTag}
+                createTag={createdTag}
+                submitted={setSubmitted}
             /><br/>
             
         

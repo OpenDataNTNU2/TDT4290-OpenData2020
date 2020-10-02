@@ -14,6 +14,7 @@ const Input = (props) => {
                 fullWidth={true} 
                 value={props.value} 
                 onChange={(e) => props.handleChange(e.target.value)}
+                
             />
         </form>
 )

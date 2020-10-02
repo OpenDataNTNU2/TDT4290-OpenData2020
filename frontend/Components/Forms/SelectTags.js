@@ -4,6 +4,10 @@ import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
+import TextField from '@material-ui/core/TextField'
+import Button from '@material-ui/core/Button'
+
+import InputForm from '../Forms/Input'
 
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { useState } from "react";
@@ -38,6 +42,7 @@ const SelectTags = (props) => {
     const classes = useStyles();
     const [personName, setPersonName] = useState(props.tags);
 
+ 
 
     const [checked, setChecked] = useState([false, false, false])
     
@@ -78,6 +83,16 @@ const SelectTags = (props) => {
                 )}
                 MenuProps={MenuProps}
             >
+                <div style={{display: "inline"}}>
+                <InputForm 
+                    id="outlined-basic"
+                    label="Lag dine egne tags"
+                    value={props.createTag}
+                    handleChange={props.setCreateTag}
+                    multiline={false}
+                />
+                <Button onClick={props.submitted(true)}>Legg til</Button>
+                </div>
             {props.tags.map((tag) => (
                 <MenuItem key={tag.name} value={tag.name}>
                     <Checkbox checked={personName.indexOf(tag.name) > -1} />
