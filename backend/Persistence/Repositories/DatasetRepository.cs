@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Repositories;
 using OpenData.API.Persistence.Contexts;
+using System;
 
 namespace OpenData.API.Persistence.Repositories
 {
@@ -26,6 +27,13 @@ namespace OpenData.API.Persistence.Repositories
         public async Task AddAsync(Dataset dataset)
         {
             await _context.Datasets.AddAsync(dataset);
+
+            DatasetTags datasetTag = new DatasetTags { DatasetId = dataset.Id, TagsId = dataset.TagsId };
+            Console.WriteLine(datasetTag.DatasetId);
+            Console.WriteLine(datasetTag.TagsId);
+
+            await _context.DatasetTags.AddAsync(datasetTag);
+            dataset.DatasetTags.Add(datasetTag);
         }
 
         public async Task<Dataset> FindByIdAsync(int id)

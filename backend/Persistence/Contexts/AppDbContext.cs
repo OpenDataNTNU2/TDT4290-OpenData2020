@@ -12,6 +12,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Distribution> Distributions { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
         public DbSet<Tags> Tags { get; set; }
+        public DbSet<DatasetTags> DatasetTags { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
