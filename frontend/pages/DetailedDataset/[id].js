@@ -25,16 +25,16 @@ export default function DetailedDataset({data}){
             justify="space-between"
             alignItems="center">
                 <h1 style={{fontWeight: "bold", }}><p>{data.title}</p></h1>
-                <p style={{paddingRight: '5%'}}><b>Oppdatert: </b>{data.date}</p>
+                <p style={{paddingRight: '5%'}}><b>Oppdatert: </b></p>
             </Grid>
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
             <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
-            <p><b>Eier:</b> {data.owner}</p>
-            <p><b>Type:</b>  {data.format}</p>
-            <p><b>Språk:</b>  {data.Agentlanguage}</p>
-            <p><b>Dato publisert: </b> {data.date}</p>
-            <p><b>Link til datasett: </b> {data.uri} </p>
+            <p><b>Eier:</b> {data.publisher[obj].name}</p>
+            <p><b>Type:</b>  </p>
+            <p><b>Språk:</b> </p>
+            <p><b>Dato publisert: </b> </p>
+            <p><b>Link til datasett: </b> {data.distributions} </p>
             </Paper>
 
         </Grid>
