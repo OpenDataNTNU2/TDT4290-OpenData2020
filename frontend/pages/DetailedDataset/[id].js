@@ -7,9 +7,11 @@ import Button from '@material-ui/core/Button'
 import { useState } from "react";
 import { Paper } from '@material-ui/core'
 import { useRouter } from 'next/router'
+import { toNamespacedPath } from 'path'
 
 export default function DetailedDataset({data}){
-   
+
+
     return(
         <Grid
             container
@@ -30,11 +32,13 @@ export default function DetailedDataset({data}){
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
             <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
-            <p><b>Eier:</b> {data.publisher[obj].name}</p>
-            <p><b>Type:</b>  </p>
-            <p><b>Språk:</b> </p>
+
+            <p><b>Eier:</b> Her må vi fikse publisher, publisher gir bare null i loggen {console.log(data)}</p>
+
+            <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
+            <p><b>Publiseringsstatus: </b><i>{data.publicationStatus}</i></p>
             <p><b>Dato publisert: </b> </p>
-            <p><b>Link til datasett: </b> {data.distributions} </p>
+            <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (distributions.uri )})} </p>
             </Paper>
 
         </Grid>
@@ -51,6 +55,7 @@ export async function getServerSideProps(context) {
     const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
+    console.log(data.publisher)
   
     // Pass data to the page via props
     return { props: { data } }
