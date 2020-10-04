@@ -38,7 +38,6 @@ export default function Login(){
     const sendLoginRequest = async () => {
         const data = {
             "username": username,
-            "publisherId": 100
         }
         try{
             await fetch('https://localhost:5001/api/users/'+username, {
@@ -113,7 +112,7 @@ export default function Login(){
                 
             {loggedIn ? 
                 null 
-            :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_kommune</Alert>
+            :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_[Din kommune]_kommune</Alert>
             }
             <br/>
             <Alert elevation={1} severity="info">UserId: {userId}</Alert>

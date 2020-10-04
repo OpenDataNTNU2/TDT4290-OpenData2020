@@ -19,6 +19,7 @@ namespace OpenData.API.Persistence.Repositories
                                 .Include(d => d.Publisher)
                                 .Include(d => d.DatasetTags)
                                     .ThenInclude(d => d.Tags)
+                                .Include(d => d.Category)
                                 .AsNoTracking()
                                 .ToListAsync();
 

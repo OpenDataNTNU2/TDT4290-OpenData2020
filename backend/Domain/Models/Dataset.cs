@@ -17,6 +17,8 @@ namespace OpenData.API.Domain.Models
 
         public string TagsIds { get; set; }
         public ICollection<DatasetTags> DatasetTags { get; set; }
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
 
     }
 }

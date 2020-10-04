@@ -11,7 +11,7 @@ import Distribution from '../Components/Forms/Distribution'
 import Input from '../Components/Forms/Input'
 import RadioInput from '../Components/Forms/RadioInput'
 import SelectInput from '../Components/Forms/SelectInput'
-
+import SelectTags from '../Components/Forms/SelectTags'
 
 import { useState } from "react";
 
@@ -28,6 +28,9 @@ export default function AddNewDataset(){
     const [distTitle, setDistTitle] = useState([""]);
     const [distUri, setDistUri] = useState([""]);
     const [distFileFormat, setDistFileFormat] = useState([1]);
+
+    const [tags, setTags] = useState([])
+    const [selectedTags, setSelectedTags] = useState([])
 
     const [open, setOpen] = useState(false)
 
@@ -108,6 +111,20 @@ export default function AddNewDataset(){
         
     }
 
+    const getTags = async () => {
+        try{
+            fetch('https://localhost:5001/api/tags', {
+                method: 'GET',    
+            })
+            .then(response => response.json())
+            .then(response => { setTags(response); console.log(response)})
+        }
+        catch(_){
+            console.log("failed to fetch tags")
+        }
+    }
+    
+    
 
     const addNewMoreDistributions = () => {
         setDistribution(distribution + 1)
@@ -152,6 +169,9 @@ export default function AddNewDataset(){
         >
             
             <h1 style={{fontWeight: "normal"}}>Legg til nytt datasett</h1>
+
+            <Button onClick={getTags}>click to fetch tags</Button>
+            
 
             <Input 
                 id="outlined-basic"
@@ -204,12 +224,11 @@ export default function AddNewDataset(){
                 label={["Option 1", "Option 2", "Option 3"]}
             /><br/>
 
-            <Input 
-                id="outlined-multiline"
-                label="Tags: Not relevant yet"
-                value=""
-                handleChange={null}
-                multiline={false}
+            <SelectTags 
+                mainLabel="Tags"
+                tags={tags}
+                prevSelected={selectedTags}
+                onChange={setSelectedTags}
             /><br/>
             
         
@@ -249,5 +268,27 @@ export default function AddNewDataset(){
         </Grid>
     )
 }
+
+function createRequestOptions(skipHttpsValidation) {
+    const isNode = typeof window === 'undefined';
+    if (isNode) {
+      var Agent = (require('https')).Agent;
+      return {
+        agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
+      };
+    }
+  }
+  
+  // This gets called on every request
+  export async function getServerSideProps() {
+    // Fetch data from external API
+    // Should be changed to host link when this is done, not localhost.
+    const uri = 'https://localhost:5001/api/tags';
+    const res = await fetch(uri, createRequestOptions(true))
+    const fuu = await res.json()
+  
+    // Pass data to the page via props
+    return { props: { fuu } }
+  }
  
 
