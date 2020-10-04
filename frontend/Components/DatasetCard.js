@@ -25,64 +25,42 @@ export default function DatasetCard({ dataset }) {
 
     return (
         <div>
-            <Grid item
-                key={
-                    dataset.id
-                }>
+            <Grid item key={dataset.id}>
                 <Paper variant='outlined'
-                    style={
-                        {
-                            padding: '1%',
-                            marginBottom: '2%'
-                        }
-                    }>
+                    style={{padding: '1%', marginBottom: '2%'}}>
                     <Grid container alignItems='flex-end' wrap='wrap'>
-                        <Grid item
-                            xs={9}>
-                            <h3>{
-                                dataset.title
-                            }</h3>
-                            <p>{
-                                cutString(dataset.description)
-                            }</p>
+                        <Grid item xs={9}>
+                            <h3>{dataset.title}</h3>
+                            <p>{cutString(dataset.description)}</p>
                         </Grid>
-                        <Grid item
-                            xs={2}
-                            style={
-                                { margin: '1em' }
-                            }>
+                        <Grid item xs={2} style={{ margin: '1em' }}>
                             <Paper elevation={0}
-                                style={
-                                    {
+                                style={{
                                         backgroundColor: setPublishedColor(dataset.publicationStatus),
                                         textAlign: 'center',
                                         padding: '3%',
                                         marginBottom: '3%'
-                                    }
-                                }>
-                                {
-                                    dataset.publicationStatus
-                                }</Paper>
+                                    }}>
+                                {dataset.publicationStatus}
+                            </Paper>
                             <Paper elevation={0}
                                 style={
-                                    {
-                                        //setSamordnaColor skal ikke hardkodes, venter på backend-verdi
-                                        backgroundColor: setSamordnaColor("Samordna"),
-                                        textAlign: 'center',
-                                        padding: '3%'
-                                    }
-                                }>Samordna</Paper>
+                                    {//setSamordnaColor skal ikke hardkodes, venter på backend-verdi
+                                    backgroundColor: setSamordnaColor("Samordna"),
+                                    textAlign: 'center',
+                                    padding: '3%'
+                                    }}>
+                                Samordna
+                            </Paper>
                         </Grid>
 
-                        {
-                            Object.values(dataset.distributions).map(dist => (
-                                <Grid container>
-                                    <Box border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%'>
-                                        {(dist.fileFormat).toUpperCase()}
-                                    </Box>
-                                </Grid>
-                            ))
-                        } </Grid>
+                        {Object.values(dataset.distributions).map(dist => (
+                            <Grid container key={dist.id}>
+                                <Box border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%'>
+                                    {(dist.fileFormat).toUpperCase()}
+                                </Box>
+                            </Grid>))} 
+                    </Grid>
                 </Paper>
             </Grid>
         </div>
