@@ -43,9 +43,6 @@ export default function DetailedDataset({data}){
 
         </Grid>
 
-        
-
-
     )
 }
 
