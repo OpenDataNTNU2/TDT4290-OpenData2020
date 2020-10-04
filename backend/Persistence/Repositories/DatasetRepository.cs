@@ -32,6 +32,7 @@ namespace OpenData.API.Persistence.Repositories
         {
             return await _context.Datasets
                                 .Include(d => d.Distributions)
+                                .Include(d => d.Publisher)
                                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
