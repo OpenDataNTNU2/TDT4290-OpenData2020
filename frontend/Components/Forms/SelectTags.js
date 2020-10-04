@@ -4,8 +4,9 @@ import Chip from '@material-ui/core/Chip';
 import Input from '@material-ui/core/Input';
 import Checkbox from '@material-ui/core/Checkbox';
 import ListItemText from '@material-ui/core/ListItemText';
-import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import TextField from '@material-ui/core/TextField'
+
 
 import InputForm from '../Forms/Input'
 
@@ -39,19 +40,12 @@ const MenuProps = {
 
 const SelectTags = (props) => {
     
-    const classes = useStyles();
-    const [personName, setPersonName] = useState(props.tags);
-
- 
-
-    const [checked, setChecked] = useState([false, false, false])
-    
-    
+    const classes = useStyles();    
 
    
     // garra en bedre måte å legge til dette på...
     const handleChange = (event) => {
-        setPersonName(event.target.value)
+        props.setPersonName(event.target.value)
         let name = event.target.value
         let newArr = []
         for(let i = 0; i < props.tags.length; i++){
@@ -64,18 +58,27 @@ const SelectTags = (props) => {
         props.onChange(newArr)
     }
 
+    const submitNewTag = (event) => {
+        
+        props.addTags(props.createTag)
+        props.setCreateTag("")
+        props.getTags()
+        
+        
+    }
+
+
     return (  
         <FormControl variant="outlined" style={{width: "50vh"}}>
-            <InputLabel htmlFor="outlined-age-native-simple">Tag</InputLabel>
+            <InputLabel htmlFor="outlined-age-native-simple">Tags</InputLabel>
             <Select
-                labelId="demo-mutiple-checkbox-label"
-                id="outlined-age-native-simple"
+                
                 multiple
-                value={personName}
+                value={props.personName}
                 onChange={handleChange}
-                input={<Input />}
+                label="Tags"
                 renderValue={(selected) => (
-                    <div className={classes.chips}>
+                    <div >
                     {selected.map((value) => (
                         <Chip key={value} label={value} className={classes.chip} />
                     ))}
@@ -83,19 +86,25 @@ const SelectTags = (props) => {
                 )}
                 MenuProps={MenuProps}
             >
-                
-                <InputForm 
-                    id="outlined-basic"
-                    label="Lag dine egne tags"
-                    value={props.createTag}
-                    handleChange={props.setCreateTag}
-                    multiline={false}
-                />
-                <Button onClick={props.submitted(true)}>Legg til</Button>
+                <div style={{display: "inline-block"}}>
+                    <form noValidate autoComplete="off" style={{width: "32vh", display: "inline-block", margin: "0 1vh 0 1vh", padding: "0"}}>
+                        <TextField 
+                            id='outlined-basic' 
+                            label="Egendefinerte tags"
+                            size="medium" 
+                            variant="outlined" 
+                            fullWidth="true" 
+                            value={props.createTag} 
+                            onChange={(e) => props.setCreateTag(e.target.value)}
+                        />
+                    </form>
+                    <Button size="large" variant="contained" color="primary" onClick={submitNewTag} style={{marginTop: "3vh", height: "5.5vh"}}>Lag ny tag</Button>
+                </div>
+
                 
             {props.tags.map((tag) => (
                 <MenuItem key={tag.name} value={tag.name}>
-                    <Checkbox checked={personName.indexOf(tag.name) > -1} />
+                    <Checkbox checked={props.personName.indexOf(tag.name) > -1} />
                     <ListItemText primary={tag.name} />
                 </MenuItem>
             ))}

@@ -29,11 +29,12 @@ export default function AddNewDataset(){
     const [distUri, setDistUri] = useState([""]);
     const [distFileFormat, setDistFileFormat] = useState([1]);
 
+    // variables/states for tags
     const [tags, setTags] = useState([])
     const [selectedTags, setSelectedTags] = useState([])
     const [createdTag, setCreatedTag] = useState("")
-
-    const [submitted, setSubmitted] = useState(false)
+    const [personName, setPersonName] = useState([])
+    
 
 
     const [open, setOpen] = useState(false)
@@ -115,17 +116,35 @@ export default function AddNewDataset(){
         
     }
 
+    
+    
     const getTags = async () => {
         try{
             fetch('https://localhost:5001/api/tags', {
                 method: 'GET',    
             })
             .then(response => response.json())
-            .then(response => { setTags(response); console.log(response)})
+            .then(response => { setTags(response); setPersonName(tags); console.log(response)})
         }
         catch(_){
             console.log("failed to fetch tags")
         }
+    }
+
+    const addTags = async (tag) => {
+        try{
+            fetch('https://localhost:5001/api/tags', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({"name": tag})
+            })
+            .then(response => response.json())
+        }
+        catch(_){
+            console.log("failed to post tags")
+        }   
     }
     
     
@@ -157,6 +176,10 @@ export default function AddNewDataset(){
         setDistUri([""])
         setDistFileFormat([0])
         setDistribution(0)
+
+        setSelectedTags([])
+        setPersonName([])
+
     }
 
     // TODO: kanskje greit å ha en link brukere kan trykke på etter å ha opprettet et dataset, som tar de til datasettet
@@ -173,8 +196,9 @@ export default function AddNewDataset(){
         >
             
             <h1 style={{fontWeight: "normal"}}>Legg til nytt datasett</h1>
-
-            <Button onClick={getTags}>click to fetch tags</Button>
+            
+            <Button variant="contained" color="primary" onClick={getTags}>click to fetch tags, temporary untill we fix onload fetch</Button>
+            <br/>
             
             <Input 
                 id="outlined-basic"
@@ -230,11 +254,15 @@ export default function AddNewDataset(){
             <SelectTags 
                 mainLabel="Tags"
                 tags={tags}
+                setTags={setTags}
                 prevSelected={selectedTags}
                 onChange={setSelectedTags}
                 setCreateTag={setCreatedTag}
                 createTag={createdTag}
-                submitted={setSubmitted}
+                addTags={addTags}
+                getTags={getTags}
+                personName={personName}
+                setPersonName={setPersonName}
             /><br/>
             
         
@@ -275,26 +303,6 @@ export default function AddNewDataset(){
     )
 }
 
-function createRequestOptions(skipHttpsValidation) {
-    const isNode = typeof window === 'undefined';
-    if (isNode) {
-      var Agent = (require('https')).Agent;
-      return {
-        agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
-      };
-    }
-  }
-  
-  // This gets called on every request
-  export async function getServerSideProps() {
-    // Fetch data from external API
-    // Should be changed to host link when this is done, not localhost.
-    const uri = 'https://localhost:5001/api/tags';
-    const res = await fetch(uri, createRequestOptions(true))
-    const fuu = await res.json()
-  
-    // Pass data to the page via props
-    return { props: { fuu } }
-  }
+
  
 
