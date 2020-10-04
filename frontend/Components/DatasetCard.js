@@ -53,13 +53,13 @@ export default function DatasetCard({ dataset }) {
                                 Samordna
                             </Paper>
                         </Grid>
-
-                        {Object.values(dataset.distributions).map(dist => (
-                            <Grid container key={dist.id}>
-                                <Box border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%'>
-                                    {(dist.fileFormat).toUpperCase()}
-                                </Box>
-                            </Grid>))} 
+                        <Grid container direction="row" >
+                            {Object.values(dataset.distributions).map(dist => (
+                                    <Box key={dist.id} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
+                                        {(dist.fileFormat).toUpperCase()}
+                                    </Box>
+                                ))}
+                        </Grid> 
                     </Grid>
                 </Paper>
             </Grid>
