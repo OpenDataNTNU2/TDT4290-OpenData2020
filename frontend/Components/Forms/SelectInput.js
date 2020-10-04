@@ -8,12 +8,13 @@ const SelectInput = (props) => {
                 {props.mainLabel}
             </InputLabel>
             <Select
+                id={props.id}
                 native
                 label={props.mainLabel}
             >
                 <option aria-label="None" value="" />
                 {Array.from(Array(props.value.length), (e,i) => {
-                return <option value={props.value[i]}>{props.label[i]}</option>
+                    return <option value={props.value[i]} key={props.value[i].toString()}>{props.label[i]}</option>
             })}
             </Select>
         </FormControl>

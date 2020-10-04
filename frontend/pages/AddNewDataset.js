@@ -188,7 +188,7 @@ export default function AddNewDataset(){
     return(
         <Grid
             container
-            spacing={0}
+            spacing={1}
             direction="column"
             justify="center"
             alignItems="center"
@@ -201,7 +201,7 @@ export default function AddNewDataset(){
             <br/>
             
             <Input 
-                id="outlined-basic"
+                id="title"
                 label="Tittel"
                 value={title}
                 handleChange={setTitle}
@@ -212,6 +212,7 @@ export default function AddNewDataset(){
             <FormControl component="fieldset">
                 <FormLabel component="legend">Status for publisering</FormLabel>
                 <RadioInput 
+                    id="publishStatus"
                     mainValue={published}
                     handleChange={handlePublishChange}
                     value={["1", "2"]}
@@ -220,6 +221,7 @@ export default function AddNewDataset(){
                 {published !== "1" ? 
                     <div style={{marginLeft: "5vh"}}>
                         <RadioInput 
+                            id="detailedPublishStatus"
                             mainValue={publishedStatus}
                             handleChange={setPublishedStatus}
                             value={["1", "2", "3"]}
@@ -232,7 +234,7 @@ export default function AddNewDataset(){
             
 
             <Input 
-                id="outlined-multiline"
+                id="description"
                 label="Beskrivelse"
                 value={description}
                 handleChange={setDescription}
@@ -240,12 +242,14 @@ export default function AddNewDataset(){
             /><br/>
            
             <SelectInput 
+                id="type"
                 mainLabel="Type: Not relevant yet"
                 value={[10,20,30]}
                 label={["Option 1", "Option 2", "Option 3"]}
             /><br/>
 
             <SelectInput 
+                id="category"
                 mainLabel="Kategori: Not relevant yet"
                 value={[10,20,30]}
                 label={["Option 1", "Option 2", "Option 3"]}
@@ -271,7 +275,7 @@ export default function AddNewDataset(){
             :   <Grid><br/>
                     <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
                     {Array.from(Array(distribution), (e, i) => {
-                        return <div>
+                        return <div key={"dist" + i.toString()}>
                                     <Divider variant="middle" />
                                     <Distribution 
                                         title={distTitle}

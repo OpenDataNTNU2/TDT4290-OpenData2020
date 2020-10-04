@@ -28,11 +28,11 @@ export default function Distribution(props) {
             <div>
                 <form noValidate autoComplete="off" style={{width: "30vh", display: "inline-block", marginRight: "1vh"}}>
                     <TextField 
-                        id="outlined-basic" 
+                        id={"title" + props.number.toString()}  
                         label="Tittel" 
-                        size="large" 
+                        size="medium" 
                         variant="outlined" 
-                        fullWidth="true" 
+                        fullWidth={true}
                         value={props.title[props.number]} 
                         onChange={(e) => handleChange(props.title, props.setTitle, props.number, e, props.title[props.number])}
                         
@@ -42,6 +42,7 @@ export default function Distribution(props) {
                     <InputLabel htmlFor="outlined-age-native-simple">Fil format</InputLabel>
                     <Select
                         native
+                        id={"select" + props.number.toString()}
                         label="Fil format"
                         inputProps={{
                             name: 'type',
@@ -62,11 +63,11 @@ export default function Distribution(props) {
             <br/>
             <form noValidate autoComplete="off" style={{width: "50vh"}}>
                 <TextField 
-                    id="outlined-basic" 
+                    id={"uri" + props.number.toString()} 
                     label="uri" 
-                    size="large" 
+                    size="medium" 
                     variant="outlined" 
-                    fullWidth="true" 
+                    fullWidth={true}
                     value={props.uri[props.number]} 
                     onChange={(e) => handleChange(props.uri, props.setUri, props.number, e, props.uri[props.number])}
                     

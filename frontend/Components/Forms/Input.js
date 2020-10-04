@@ -9,7 +9,7 @@ const Input = (props) => {
                 multiline={props.multiline}
                 rows={4} 
                 label={props.label}
-                size="large" 
+                size="medium" 
                 variant="outlined" 
                 fullWidth={true} 
                 value={props.value} 
