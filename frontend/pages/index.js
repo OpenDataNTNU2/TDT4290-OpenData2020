@@ -10,7 +10,6 @@ export default function Home({ data }) {
 
   return (
     <div className='datakatalog'>
-      {console.log(data)}
       <Grid
         container
         style={{ padding: '3%' }}
