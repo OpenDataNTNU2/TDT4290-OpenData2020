@@ -33,11 +33,11 @@ export default function DetailedDataset({data}){
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
             <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
 
-            <p><b>Eier:</b> Her må vi fikse publisher, publisher gir bare null i loggen {console.log(data)}</p>
+            <p><b>Eier:</b> {data.publisher.name}</p>
 
             <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
             <p><b>Publiseringsstatus: </b><i>{data.publicationStatus}</i></p>
-            <p><b>Dato publisert: </b> </p>
+            <p><b>Dato publisert: </b> {'Placeholder'}</p>
             <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (distributions.uri )})} </p>
             </Paper>
 
