@@ -93,11 +93,11 @@ export default function Login(){
                 null 
             :   <form noValidate autoComplete="off" style={{width: "50vh"}}>
                     <TextField 
-                        id="outlined-basic" 
+                        id="username" 
                         label="Brukernavn" 
-                        size="large" 
+                        size="medium" 
                         variant="outlined" 
-                        fullWidth="true" 
+                        fullWidth={true} 
                         value={username} 
                         onChange={(e) => setUsername(e.target.value)}
                     />

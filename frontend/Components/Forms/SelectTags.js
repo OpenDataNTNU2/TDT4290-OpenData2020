@@ -72,7 +72,7 @@ const SelectTags = (props) => {
         <FormControl variant="outlined" style={{width: "50vh"}}>
             <InputLabel htmlFor="outlined-age-native-simple">Tags</InputLabel>
             <Select
-                
+                id="selectTags"
                 multiple
                 value={props.personName}
                 onChange={handleChange}
