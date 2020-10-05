@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
 using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
@@ -25,16 +26,17 @@ namespace OpenData.API.Services
             _cache = cache;
         }
 
-        public async Task<IEnumerable<Dataset>> ListAsync()
+        public async Task<QueryResult<Dataset>> ListAsync(DatasetQuery query)
         {
             // Here I try to get the datasets list from the memory cache. If there is no data in cache, the anonymous method will be
             // called, setting the cache to expire one minute ahead and returning the Task that lists the datasets from the repository.
-            var datasets = await _cache.GetOrCreateAsync(CacheKeys.DatasetList, (entry) => {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
-                return _datasetRepository.ListAsync();
-            });
             
-            return datasets;
+            // var datasets = await _cache.GetOrCreateAsync(CacheKeys.DatasetList, (entry) => {
+            //     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
+            //     return _datasetRepository.ListAsync();
+            // });
+            
+            return await _datasetRepository.ListAsync(query);
         }
 
         public async Task<DatasetResponse> FindByIdAsync(int id)
