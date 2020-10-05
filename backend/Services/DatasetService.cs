@@ -60,18 +60,20 @@ namespace OpenData.API.Services
                 {
                     foreach (string idString in dataset.TagsIds.Split(','))
                     {
+                        if(idString == null || idString == "") continue;
                         int id = Int32.Parse(idString.Trim());
                         Tags existingTag = await _tagsRepository.FindByIdAsync(id);
                         if (existingTag != null){
                             DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
 
-                            await _datasetRepository.AddDatasetTags(datasetTag);
                             dataset.DatasetTags.Add(datasetTag);
                         }
                     }
+                    await _unitOfWork.CompleteAsync();
                 }
                 catch (Exception ex)
                 {
+                    await _unitOfWork.CompleteAsync();
                     Console.WriteLine(ex.Message);
                 }
 

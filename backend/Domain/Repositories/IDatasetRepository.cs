@@ -8,7 +8,6 @@ namespace OpenData.API.Domain.Repositories
     {
         Task<IEnumerable<Dataset>> ListAsync();
         Task AddAsync(Dataset dataset);
-        Task AddDatasetTags(DatasetTags datasetTags);
         Task<Dataset> FindByIdAsync(int id);
         void Update(Dataset dataset);
         void Remove(Dataset dataset);

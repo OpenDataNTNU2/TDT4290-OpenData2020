@@ -32,11 +32,6 @@ namespace OpenData.API.Persistence.Repositories
             await _context.Datasets.AddAsync(dataset);
         }
 
-        public async Task AddDatasetTags(DatasetTags datasetTags)
-        {
-            await _context.DatasetTags.AddAsync(datasetTags);
-        }
-
         public async Task<Dataset> FindByIdAsync(int id)
         {
             return await _context.Datasets
