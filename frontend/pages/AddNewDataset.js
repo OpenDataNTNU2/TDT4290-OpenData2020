@@ -54,7 +54,8 @@ export default function AddNewDataset(){
             "description": description,
             "publisherId": 100,
             "publicationStatus": parseInt(published),
-            "detailedPublicationStatus": parseInt(publishedStatus)
+            "detailedPublicationStatus": parseInt(publishedStatus),
+            "categoryId": 100,
         }
         try{
             fetch('https://localhost:5001/api/datasets', {
@@ -66,6 +67,7 @@ export default function AddNewDataset(){
             })
             .then(response => response.json())
             .then(data => {
+                console.log(data)
                 for(let i = 0; i < distribution; i++){
                     try{
                         addDistributions(data.id, i);

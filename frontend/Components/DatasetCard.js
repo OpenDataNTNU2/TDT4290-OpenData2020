@@ -3,7 +3,7 @@ import { Grid, Paper, Box } from '@material-ui/core/';
 
 export default function DatasetCard({ dataset }) {
     const cutString = (string) => {
-        if (string.length > 200) {
+        if (string != null && string.length > 200) {
             return string.substr(0, 200) + "\u2026"
         }
         return string
