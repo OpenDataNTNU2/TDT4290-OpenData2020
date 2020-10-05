@@ -79,8 +79,8 @@ const SelectTags = (props) => {
                 label="Tags"
                 renderValue={(selected) => (
                     <div >
-                    {selected.map((value) => (
-                        <Chip key={value} label={value} className={classes.chip} />
+                    {selected.map((value, index) => (
+                        <Chip key={value + index} label={value} className={classes.chip} />
                     ))}
                     </div>
                 )}
@@ -89,11 +89,11 @@ const SelectTags = (props) => {
                 <div style={{display: "inline-block"}}>
                     <form noValidate autoComplete="off" style={{width: "32vh", display: "inline-block", margin: "0 1vh 0 1vh", padding: "0"}}>
                         <TextField 
-                            id='outlined-basic' 
+                            id='tags' 
                             label="Egendefinerte tags"
                             size="medium" 
                             variant="outlined" 
-                            fullWidth="true" 
+                            fullWidth={true}
                             value={props.createTag} 
                             onChange={(e) => props.setCreateTag(e.target.value)}
                         />

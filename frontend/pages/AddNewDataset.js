@@ -13,9 +13,12 @@ import RadioInput from '../Components/Forms/RadioInput'
 import SelectInput from '../Components/Forms/SelectInput'
 import SelectTags from '../Components/Forms/SelectTags'
 
+import Cookie from "js-cookie";
+import { parseCookies } from '../utils/parseCookies'
+
 import { useState } from "react";
 
-export default function AddNewDataset(){
+export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId  }){
     
     // variables/states for "main data", will add more here
     const [title, setTitle] = useState("");
@@ -54,7 +57,8 @@ export default function AddNewDataset(){
             "description": description,
             "publisherId": 100,
             "publicationStatus": parseInt(published),
-            "detailedPublicationStatus": parseInt(publishedStatus)
+            "detailedPublicationStatus": parseInt(publishedStatus),
+            "categoryId": 100
         }
         try{
             fetch('https://localhost:5001/api/datasets', {
@@ -186,127 +190,142 @@ export default function AddNewDataset(){
     // venter med dette til vi har dynamic routes ferdig for hvert dataset, men har tilgang på id her, så bør være enkelt
 
     return(
-        <Grid
-            container
-            spacing={1}
-            direction="column"
-            justify="center"
-            alignItems="center"
-            style={{ minHeight: '70vh', minWidth: '90vh'}}
-        >
-            
-            <h1 style={{fontWeight: "normal"}}>Legg til nytt datasett</h1>
-            
-            <Button variant="contained" color="primary" onClick={getTags}>click to fetch tags, temporary untill we fix onload fetch</Button>
-            <br/>
-            
-            <Input 
-                id="title"
-                label="Tittel"
-                value={title}
-                handleChange={setTitle}
-                multiline={false}
-            /><br/>
-            
-            
-            <FormControl component="fieldset">
-                <FormLabel component="legend">Status for publisering</FormLabel>
-                <RadioInput 
-                    id="publishStatus"
-                    mainValue={published}
-                    handleChange={handlePublishChange}
-                    value={["1", "2"]}
-                    label={["Publisert", "Ikke publisert"]}
-                />
-                {published !== "1" ? 
-                    <div style={{marginLeft: "5vh"}}>
+        <Grid>
+            {JSON.parse(prevPublisherId) <= 99 ? <div><p>No access, please log into a municipality user</p></div> : 
+                <Grid
+                    container
+                    spacing={1}
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    style={{ minHeight: '70vh', minWidth: '90vh'}}
+                >
+                    
+                    <h1 style={{fontWeight: "normal"}}>Legg til nytt datasett</h1>
+                    
+                    
+                    <Button variant="contained" color="primary" onClick={getTags}>click to fetch tags, temporary untill we fix onload fetch</Button>
+                    <br/>
+                    
+                    <Input 
+                        id="title"
+                        label="Tittel"
+                        value={title}
+                        handleChange={setTitle}
+                        multiline={false}
+                    /><br/>
+                    
+                    
+                    <FormControl component="fieldset">
+                        <FormLabel component="legend">Status for publisering</FormLabel>
                         <RadioInput 
-                            id="detailedPublishStatus"
-                            mainValue={publishedStatus}
-                            handleChange={setPublishedStatus}
-                            value={["1", "2", "3"]}
-                            label={["Skal publiseres", "Under vurdering", "Kan ikke publiseres"]}
+                            id="publishStatus"
+                            mainValue={published}
+                            handleChange={handlePublishChange}
+                            value={["1", "2"]}
+                            label={["Publisert", "Ikke publisert"]}
                         />
-                    </div>
-                : null }
-            </FormControl>
-            
-            
+                        {published !== "1" ? 
+                            <div style={{marginLeft: "5vh"}}>
+                                <RadioInput 
+                                    id="detailedPublishStatus"
+                                    mainValue={publishedStatus}
+                                    handleChange={setPublishedStatus}
+                                    value={["1", "2", "3"]}
+                                    label={["Skal publiseres", "Under vurdering", "Kan ikke publiseres"]}
+                                />
+                            </div>
+                        : null }
+                    </FormControl>
+                    
+                    
 
-            <Input 
-                id="description"
-                label="Beskrivelse"
-                value={description}
-                handleChange={setDescription}
-                multiline={true}
-            /><br/>
-           
-            <SelectInput 
-                id="type"
-                mainLabel="Type: Not relevant yet"
-                value={[10,20,30]}
-                label={["Option 1", "Option 2", "Option 3"]}
-            /><br/>
-
-            <SelectInput 
-                id="category"
-                mainLabel="Kategori: Not relevant yet"
-                value={[10,20,30]}
-                label={["Option 1", "Option 2", "Option 3"]}
-            /><br/>
-
-            <SelectTags 
-                mainLabel="Tags"
-                tags={tags}
-                setTags={setTags}
-                prevSelected={selectedTags}
-                onChange={setSelectedTags}
-                setCreateTag={setCreatedTag}
-                createTag={createdTag}
-                addTags={addTags}
-                getTags={getTags}
-                personName={personName}
-                setPersonName={setPersonName}
-            /><br/>
-            
-        
-            {distribution === 0 ? 
-                <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Add distribution</Button>
-            :   <Grid><br/>
-                    <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
-                    {Array.from(Array(distribution), (e, i) => {
-                        return <div key={"dist" + i.toString()}>
-                                    <Divider variant="middle" />
-                                    <Distribution 
-                                        title={distTitle}
-                                        setTitle={setDistTitle}
-                                        uri={distUri}
-                                        setUri={setDistUri}
-                                        fileFormat={distFileFormat}
-                                        setFileFormat={setDistFileFormat}
-                                        number={i}
-                                    />
-                                </div>
-                    })}
-                </Grid> }
-
-            {distribution !== 0 ? 
-                <div>
-                    <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern</Button>
-                    <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>Legg til</Button>
-                </div>
-            :   null }<br/>
-            
-            <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
-            
+                    <Input 
+                        id="description"
+                        label="Beskrivelse"
+                        value={description}
+                        handleChange={setDescription}
+                        multiline={true}
+                    /><br/>
                 
-            <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
-                <Alert elevation={1} severity="success">Datasett publisert</Alert>
-            </Snackbar>
+                    <SelectInput 
+                        id="type"
+                        mainLabel="Type: Not relevant yet"
+                        value={[10,20,30]}
+                        label={["Option 1", "Option 2", "Option 3"]}
+                    /><br/>
+
+                    <SelectInput 
+                        id="category"
+                        mainLabel="Kategori: Not relevant yet"
+                        value={[10,20,30]}
+                        label={["Option 1", "Option 2", "Option 3"]}
+                    /><br/>
+
+                    <SelectTags 
+                        mainLabel="Tags"
+                        tags={tags}
+                        setTags={setTags}
+                        prevSelected={selectedTags}
+                        onChange={setSelectedTags}
+                        setCreateTag={setCreatedTag}
+                        createTag={createdTag}
+                        addTags={addTags}
+                        getTags={getTags}
+                        personName={personName}
+                        setPersonName={setPersonName}
+                    /><br/>
+                    
+                
+                    {distribution === 0 ? 
+                        <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Add distribution</Button>
+                    :   <Grid><br/>
+                            <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
+                            {Array.from(Array(distribution), (e, i) => {
+                                return <div key={"dist" + i.toString()}>
+                                            <Divider variant="middle" />
+                                            <Distribution 
+                                                title={distTitle}
+                                                setTitle={setDistTitle}
+                                                uri={distUri}
+                                                setUri={setDistUri}
+                                                fileFormat={distFileFormat}
+                                                setFileFormat={setDistFileFormat}
+                                                number={i}
+                                            />
+                                        </div>
+                            })}
+                        </Grid> }
+
+                    {distribution !== 0 ? 
+                        <div>
+                            <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern</Button>
+                            <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>Legg til</Button>
+                        </div>
+                    :   null }<br/>
+                    
+                    <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
+                    
+                        
+                    <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
+                        <Alert elevation={1} severity="success">Datasett publisert</Alert>
+                    </Snackbar>
+                </Grid>
+            }
         </Grid>
     )
 }
 
 
+AddNewDataset.getInitialProps = ({req}) => {
+    const cookies = parseCookies(req);
+
+    return{
+        prevLoggedIn: cookies.prevLoggedIn,
+        prevLoggedUsername: cookies.prevLoggedUsername,
+        prevPublisherId: cookies.prevPublisherId,
+        prevUserId: cookies.prevUserId
+    }
+}
  
 

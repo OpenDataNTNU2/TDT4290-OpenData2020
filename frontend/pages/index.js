@@ -4,9 +4,11 @@ import Paper from '@material-ui/core/Paper';
 import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
 
+import Cookie from "js-cookie";
+import { parseCookies } from '../utils/parseCookies'
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home({ data }) {
+export default function Home({ data, prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId }) {
 
   return (
     <div className='datakatalog'>
@@ -29,6 +31,7 @@ export default function Home({ data }) {
               <DatasetCard key={dataset.id} dataset={dataset}/>
             ))
           } 
+          
         </Grid>
       </Grid>
     </div>
@@ -47,13 +50,24 @@ function createRequestOptions(skipHttpsValidation) {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+export async function getServerSideProps({req}) {
   // Fetch data from external API
   // Should be changed to host link when this is done, not localhost.
   const uri = 'https://localhost:5001/api/datasets';
   const res = await fetch(uri, createRequestOptions(true))
   const data = await res.json()
 
+  const cookies = parseCookies(req);
+
   // Pass data to the page via props
-  return { props: { data } }
-}
+  return { 
+    props: { 
+      data, 
+      prevLoggedIn: cookies.prevLoggedIn,
+      prevLoggedUsername: cookies.prevLoggedUsername,
+      prevPublisherId: cookies.prevPublisherId,
+      prevUserId: cookies.prevUserId 
+      }
+    }
+  }
+
