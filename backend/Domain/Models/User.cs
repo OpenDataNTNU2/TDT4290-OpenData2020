@@ -6,7 +6,7 @@ namespace OpenData.API.Domain.Models
     {
         public int Id { get; set; }
         public string Username { get; set; }
-        public int PublisherId { get; set; }
+        public int? PublisherId { get; set; }
 
     }
 }

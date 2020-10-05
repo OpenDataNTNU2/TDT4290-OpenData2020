@@ -8,7 +8,6 @@ namespace OpenData.API.Resources
     {
         [Required]
         public string Username { get; set; }
-        [Required]
         public int? PublisherId { get; set; }
     }
 }
