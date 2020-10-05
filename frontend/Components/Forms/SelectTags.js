@@ -47,22 +47,24 @@ const SelectTags = (props) => {
     const handleChange = (event) => {
         props.setPersonName(event.target.value)
         let name = event.target.value
-        let newArr = []
+        let newString = ""
         for(let i = 0; i < props.tags.length; i++){
             for(let j = 0; j < name.length; j++){
                 if(name[j] === props.tags[i].name){
-                    newArr.push(props.tags[i])
+                    newString += (props.tags[i].id.toString() + ", ")
+                    console.log(newString)
                 }
             }
         }
-        props.onChange(newArr)
+        props.onChange(newString)
+        
     }
 
     const submitNewTag = (event) => {
         
         props.addTags(props.createTag)
         props.setCreateTag("")
-        props.getTags()
+        
         
         
     }
