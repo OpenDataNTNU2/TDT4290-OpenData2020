@@ -14,7 +14,7 @@ namespace OpenData.API.Resources
 
         public string PublicationStatus { get; set; }
         public string DetailedPublicationStatus { get; set; }
-        public ICollection<DatasetTagsResource> DatasetTags { get; set; }
+        public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();
 
         public CategoryResource Category { get; set; }
 

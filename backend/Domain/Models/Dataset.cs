@@ -16,7 +16,7 @@ namespace OpenData.API.Domain.Models
         public EDetailedPublicationStatus DetailedPublicationStatus { get; set; }
 
         public string TagsIds { get; set; }
-        public ICollection<DatasetTags> DatasetTags { get; set; }
+        public IList<DatasetTags> DatasetTags { get; set; } = new List<DatasetTags>();
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 

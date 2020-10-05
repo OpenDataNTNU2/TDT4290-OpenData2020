@@ -68,10 +68,11 @@ namespace OpenData.API.Services
                         foreach (Publisher publisher in existingPublishers){
                             if (publisher.Name.ToLower().Contains(mun.ToLower())){
                                 user.PublisherId = publisher.Id;
+                                break;
                             }
                         }
                         
-                        if (user.PublisherId == 0){
+                        if (user.PublisherId == null){
                             var newPublisher = new Publisher {Name = mun.Substring(0,1).ToUpper() + mun.Substring(1) + " Kommune"};
                             await _publisherRepository.AddAsync(newPublisher);
                             await _unitOfWork.CompleteAsync();
