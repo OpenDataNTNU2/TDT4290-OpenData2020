@@ -9,7 +9,14 @@ import { parseCookies } from '../utils/parseCookies'
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
 
+
+  const url = "https://localhost:5001/api/datasets?publishers="
+  const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
+
+
+
   const onClick = (id) => { router.push('/DetailedDataset/' + id) }
+
   return (
     <div className='datakatalog'>
       <Grid
@@ -19,7 +26,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <Filter />
+            <Filter url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
           </Paper>
         </Grid>
         <Grid

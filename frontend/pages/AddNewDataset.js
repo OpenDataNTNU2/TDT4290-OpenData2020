@@ -49,7 +49,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
     // and if successfull runs addDistributions
     const handleChange = async () => {
         const data = {
-            "identifier": "stringeling",
+            "identifier": "denne bør settes i backend",
             "title": title,
             "description": description,
             "publisherId": JSON.parse(prevPublisherId),
@@ -144,7 +144,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                 body: JSON.stringify({"name": tag})
             })
             .then(response => {response.json(); console.log(response)})
-            .then(getTags())
+            
         }
         catch(_){
             console.log("failed to post tags")
@@ -251,6 +251,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                             handleChange={handlePublishChange}
                             value={["1", "2"]}
                             label={["Publisert", "Ikke publisert"]}
+                            color={["normal", "normal"]}
                         />
                         {published !== "1" ? 
                             <div style={{marginLeft: "5vh"}}>
@@ -260,6 +261,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                                     handleChange={setPublishedStatus}
                                     value={["1", "2", "3"]}
                                     label={["Skal publiseres", "Under vurdering", "Kan ikke publiseres"]}
+                                    color={["green", "yellow", "red"]}
                                 />
                             </div>
                         : null }
