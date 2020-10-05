@@ -16,6 +16,8 @@ namespace OpenData.API.Mapping
                 .ForMember(src => src.DetailedPublicationStatus,
                             opt => opt.MapFrom(src => src.DetailedPublicationStatus.ToDescriptionString()));
 
+            CreateMap<QueryResult<Dataset>, QueryResultResource<DatasetResource>>();
+            
             CreateMap<Distribution, DistributionResource>()
                 .ForMember(src => src.FileFormat,
                            opt => opt.MapFrom(src => src.FileFormat.ToDescriptionString()));

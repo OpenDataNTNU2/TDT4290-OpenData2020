@@ -9,5 +9,8 @@ namespace OpenData.API.Domain.Models
 
         [Description("xml")]
         xml = 2,
+        
+        [Description("annet")]
+        annet = 3,
     }
 }

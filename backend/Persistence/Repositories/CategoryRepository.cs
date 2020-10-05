@@ -15,12 +15,21 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<IEnumerable<Category>> ListAsync()
         {
-            return await _context.Categories.AsNoTracking().ToListAsync();
+            return await _context.Categories
+                    .Include(p => p.Datasets)
+                    .AsNoTracking()
+                    .ToListAsync();
         }
 
         public async Task AddAsync(Category category)
         {
             await _context.Categories.AddAsync(category);
+        }
+
+        public async Task<Category> FindByIdAsync(int id)
+        {
+            return await _context.Categories
+                            .FirstOrDefaultAsync(p => p.Id == id);
         }
     }
 }

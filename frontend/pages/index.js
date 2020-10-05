@@ -32,7 +32,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           xs={8}
         >
           {
-            Object.values(data).map(dataset => (
+            Object.values(data.items).map(dataset => (
               <DatasetCard key={dataset.id} dataset={dataset} onClick={()=>onClick(dataset.id)}/>
             ))
           } 
