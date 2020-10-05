@@ -30,22 +30,21 @@ namespace OpenData.API.Persistence.Repositories
         public async Task AddAsync(Dataset dataset)
         {
             await _context.Datasets.AddAsync(dataset);
-            foreach (string idString in dataset.TagsIds.Split(',')){
-                int id = Int32.Parse(idString.Trim());
-                Tags existingTag = await _context.Tags.FindAsync(id);
-                if (existingTag != null){
-                    DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
+        }
 
-                    await _context.DatasetTags.AddAsync(datasetTag);
-                    dataset.DatasetTags.Add(datasetTag);
-                }
-            }
+        public async Task AddDatasetTags(DatasetTags datasetTags)
+        {
+            await _context.DatasetTags.AddAsync(datasetTags);
         }
 
         public async Task<Dataset> FindByIdAsync(int id)
         {
             return await _context.Datasets
                                 .Include(d => d.Distributions)
+                                .Include(d => d.Publisher)
+                                .Include(d => d.DatasetTags)
+                                    .ThenInclude(d => d.Tags)
+                                .Include(d => d.Category)
                                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 

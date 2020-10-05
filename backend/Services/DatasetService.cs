@@ -13,12 +13,14 @@ namespace OpenData.API.Services
     public class DatasetService : IDatasetService
     {
         private readonly IDatasetRepository _datasetRepository;
+        private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public DatasetService(IDatasetRepository datasetRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DatasetService(IDatasetRepository datasetRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
+            _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
         }
@@ -53,6 +55,25 @@ namespace OpenData.API.Services
             {
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
+
+                try 
+                {
+                    foreach (string idString in dataset.TagsIds.Split(','))
+                    {
+                        int id = Int32.Parse(idString.Trim());
+                        Tags existingTag = await _tagsRepository.FindByIdAsync(id);
+                        if (existingTag != null){
+                            DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
+
+                            await _datasetRepository.AddDatasetTags(datasetTag);
+                            dataset.DatasetTags.Add(datasetTag);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
 
                 return new DatasetResponse(dataset);
             }

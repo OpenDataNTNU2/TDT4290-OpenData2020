@@ -15,7 +15,7 @@ namespace OpenData.API.Resources
         [Range(1, 2)]
         public int FileFormat { get; set; }
         [Required]
-        public int DatasetId {get;set;}
+        public int? DatasetId {get;set;}
 
     }
 }
