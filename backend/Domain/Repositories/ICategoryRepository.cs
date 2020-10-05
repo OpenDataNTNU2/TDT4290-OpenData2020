@@ -8,5 +8,6 @@ namespace OpenData.API.Domain.Repositories
     {
         Task<IEnumerable<Category>> ListAsync();
         Task AddAsync(Category category);
+        Task<Category> FindByIdAsync(int id);
     }
 }

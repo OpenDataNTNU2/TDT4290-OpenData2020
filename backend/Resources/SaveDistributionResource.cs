@@ -12,7 +12,7 @@ namespace OpenData.API.Resources
         [Required]
         public string Uri { get; set; }
 
-        [Range(1, 2)]
+        [Range(1, 3)]
         public int FileFormat { get; set; }
         [Required]
         public int? DatasetId {get;set;}
