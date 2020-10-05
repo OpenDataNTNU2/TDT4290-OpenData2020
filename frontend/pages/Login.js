@@ -4,19 +4,21 @@ import Button from '@material-ui/core/Button'
 import Alert from '@material-ui/lab/Alert'
 import Snackbar from '@material-ui/core/Snackbar';
 
+import Router from 'next/Router'
+
 import Cookie from "js-cookie";
 import { parseCookies } from '../utils/parseCookies'
 
 import { useState, useEffect } from "react";
 
 
-export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = -1, prevUserId = -1 }){
+export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }){
 
     // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
     // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
     
     const [loggedIn, setLoggedIn] = useState(() => JSON.parse(prevLoggedIn))
-    const [loggedUsername, setLoggedUsername] = useState(() => JSON.parse(prevLoggedUsername));
+    const [loggedUsername, setLoggedUsername] = useState(() => (prevLoggedUsername));
     const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId))
     const [userId, setUserId] = useState(() => JSON.parse(prevUserId))
 
@@ -46,6 +48,7 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
                     setLoggedIn(true);
                     setOpen(true);
                     setNotEligUsername(false);
+                    Router.push("/Login")
                 }
             }
             else setNotEligUsername(true); 
@@ -82,6 +85,7 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
         setPublisherId(-1)
         setOpen(false);
         setLoggedIn(false);
+        Router.push("/Login")
     }
 
     // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.

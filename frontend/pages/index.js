@@ -4,11 +4,15 @@ import Paper from '@material-ui/core/Paper';
 import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
 
+import {useEffect, useState} from 'react'
+
 import Cookie from "js-cookie";
 import { parseCookies } from '../utils/parseCookies'
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home({ data, prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId }) {
+export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
+
+
 
   return (
     <div className='datakatalog'>
@@ -59,15 +63,24 @@ export async function getServerSideProps({req}) {
 
   const cookies = parseCookies(req);
 
-  // Pass data to the page via props
-  return { 
-    props: { 
-      data, 
+  let propsData = {props: {data}}
+
+  if(JSON.stringify(cookies) !== "{}"){
+    propsData = {props: {
+      data,
       prevLoggedIn: cookies.prevLoggedIn,
       prevLoggedUsername: cookies.prevLoggedUsername,
       prevPublisherId: cookies.prevPublisherId,
-      prevUserId: cookies.prevUserId 
-      }
-    }
+      prevUserId: cookies.prevUserId
+    }}
   }
+  console.log(cookies)
+ 
+  return propsData
+ 
+
+}
+
+  // Pass data to the page via props
+  
 

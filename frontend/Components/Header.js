@@ -10,7 +10,7 @@ import { useState } from "react";
 import Cookie from "js-cookie";
 import { parseCookies } from '../utils/parseCookies'
 
-export default function Header({prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId}) {
+export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
     const router = useRouter();
     const [value, setValue] = useState("/");
 
@@ -27,7 +27,7 @@ export default function Header({prevLoggedIn, prevLoggedUsername, prevPublisherI
                 alignItems="center"
                 style={{  backgroundColor:'#90C7EF' }}
             >
-                <Grid item xs={10} >
+                <Grid item xs={9} >
                     <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
                         <Tab label={<h3 style={{ fontWeight: "normal" }}>Home</h3>} value="/" />
                         <Tab label={<h3 style={{ fontWeight: "normal" }}>Datakatalog</h3>} value="/" />
@@ -36,14 +36,13 @@ export default function Header({prevLoggedIn, prevLoggedUsername, prevPublisherI
                         {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Legg til nytt datasett</h3>} value="/AddNewDataset" />}
                         
                     </Tabs>
-                    <p>id: {prevPublisherId}</p>
                 </Grid>
-                <Grid item xs>
+                {prevLoggedIn ? <Grid item xs={2}><p>Logget inn som {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
+                <Grid item xs={1}>
                     {prevLoggedIn ? 
                         <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg ut</Button>
                         : <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg inn</Button>
                     }
-                   
                 </Grid>
                 
             </Grid>

@@ -16,7 +16,7 @@ import SelectTags from '../Components/Forms/SelectTags'
 import Cookie from "js-cookie";
 import { parseCookies } from '../utils/parseCookies'
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId  }){
     
@@ -34,10 +34,13 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
 
     // variables/states for tags
     const [tags, setTags] = useState([])
-    const [selectedTags, setSelectedTags] = useState([])
+    const [selectedTags, setSelectedTags] = useState("")
     const [createdTag, setCreatedTag] = useState("")
     const [personName, setPersonName] = useState([])
     
+    // variables/states for categories
+    const [categories, setCategories] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState("")
 
 
     const [open, setOpen] = useState(false)
@@ -55,10 +58,11 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
             "identifier": "stringeling",
             "title": title,
             "description": description,
-            "publisherId": 100,
+            "publisherId": JSON.parse(prevPublisherId),
             "publicationStatus": parseInt(published),
             "detailedPublicationStatus": parseInt(publishedStatus),
-            "categoryId": 100
+            "categoryId": parseInt(selectedCategory),
+            "tagsIds": selectedTags
         }
         try{
             fetch('https://localhost:5001/api/datasets', {
@@ -145,14 +149,37 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                 },
                 body: JSON.stringify({"name": tag})
             })
-            .then(response => response.json())
+            .then(response => {response.json(); console.log(response)})
+            .then(getTags())
         }
         catch(_){
             console.log("failed to post tags")
         }   
     }
+
+    const getCategories = async () => {
+        try{
+            fetch('https://localhost:5001/api/categories', {
+                method: 'GET',    
+            })
+            .then(response => response.json())
+            .then(response => { setCategories(response); console.log(response)})
+        }
+        catch(_){
+            console.log("failed to fetch categories")
+        }
+    }
     
     
+
+    useEffect(() => {
+        getTags();
+        getCategories();
+    }, [prevLoggedIn])
+
+
+
+
 
     const addNewMoreDistributions = () => {
         setDistribution(distribution + 1)
@@ -182,8 +209,10 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
         setDistFileFormat([0])
         setDistribution(0)
 
-        setSelectedTags([])
+        setSelectedTags("")
         setPersonName([])
+
+        setSelectedCategory("")
 
     }
 
@@ -204,10 +233,13 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                     
                     <h1 style={{fontWeight: "normal"}}>Legg til nytt datasett</h1>
                     
-                    
+                    {/** 
                     <Button variant="contained" color="primary" onClick={getTags}>click to fetch tags, temporary untill we fix onload fetch</Button>
                     <br/>
-                    
+                    <Button variant="contained" color="primary" onClick={getCategories}>click to fetch categories, temporary untill we fix onload fetch</Button>
+                    <br/>
+                    */}
+
                     <Input 
                         id="title"
                         label="Tittel"
@@ -248,18 +280,20 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                         handleChange={setDescription}
                         multiline={true}
                     /><br/>
-                
-                    <SelectInput 
+                    
+                    {/**<SelectInput 
                         id="type"
                         mainLabel="Type: Not relevant yet"
                         value={[10,20,30]}
                         label={["Option 1", "Option 2", "Option 3"]}
-                    /><br/>
+                    /><br/> */}
 
                     <SelectInput 
                         id="category"
                         mainLabel="Kategori: Not relevant yet"
-                        value={[10,20,30]}
+                        value={categories}
+                        setSelectedCategory={setSelectedCategory}
+                        selected={selectedCategory}
                         label={["Option 1", "Option 2", "Option 3"]}
                     /><br/>
 
@@ -320,6 +354,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
 
 AddNewDataset.getInitialProps = ({req}) => {
     const cookies = parseCookies(req);
+
 
     return{
         prevLoggedIn: cookies.prevLoggedIn,
