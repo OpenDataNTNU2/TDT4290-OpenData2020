@@ -14,13 +14,17 @@ namespace OpenData.API.Services
     public class DatasetService : IDatasetService
     {
         private readonly IDatasetRepository _datasetRepository;
+        private readonly IPublisherRepository _publisherRepository;
+        private readonly ICategoryRepository _categoryRepository;
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public DatasetService(IDatasetRepository datasetRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
+            _publisherRepository = publisherRepository;
+            _categoryRepository = categoryRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
@@ -54,20 +58,32 @@ namespace OpenData.API.Services
         public async Task<DatasetResponse> SaveAsync(Dataset dataset)
         {
             try
-            {
+            {   
+                // Make sure the publisher exists
+                var existingPublisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
+                if (existingPublisher == null)
+                    return new DatasetResponse("Invalid publisher id.");
+                
+                // Make sure the category exists
+                var existingCategory = await _categoryRepository.FindByIdAsync(dataset.CategoryId);
+                if (existingCategory == null)
+                    return new DatasetResponse("Invalid category id.");
+
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
 
                 try 
-                {
+                {   
+
+                    // Tries to parse tag ids from string to int
                     foreach (string idString in dataset.TagsIds.Split(','))
                     {
                         if(idString == null || idString == "") continue;
                         int id = Int32.Parse(idString.Trim());
                         Tags existingTag = await _tagsRepository.FindByIdAsync(id);
                         if (existingTag != null){
+                            // If the tag exists, add it to the list of tags in the dataset
                             DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
-
                             dataset.DatasetTags.Add(datasetTag);
                         }
                     }

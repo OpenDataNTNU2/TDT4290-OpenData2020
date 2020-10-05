@@ -17,21 +17,38 @@ namespace OpenData.API.Persistence.Repositories
         public async Task<QueryResult<Dataset>> ListAsync(DatasetQuery query)
         {
             IQueryable<Dataset> queryable = _context.Datasets
-                            .Include(d => d.Distributions)
                             .Include(d => d.Publisher)
+                            .Include(d => d.Category)
+                            .Include(d => d.Distributions)
                             .Include(d => d.DatasetTags)
                                 .ThenInclude(d => d.Tags)
-                            .Include(d => d.Category)
                             .AsNoTracking();
-            if (query.Search != null && query.Search != "")
+            
+            // Filter on multiple publishers
+            if (!String.IsNullOrEmpty(query.PublisherIds))
+			{   
+                // Parses the list of publisher ids from string to list of ints
+                List<int> publisherIds = new List<int>();
+                foreach (string idString in query.PublisherIds.Split(','))
+                {
+                    if(idString == null || idString == "") continue;
+                    int id = Int32.Parse(idString.Trim());
+                    publisherIds.Add(id);
+                }
+
+                // Filters on the chosen publisher ids
+                queryable = queryable.Where(d => publisherIds.Contains(d.PublisherId));
+			}
+
+            // Checks if the search string is in the title, description, publisher name, and tags of the dataset
+            if (!String.IsNullOrEmpty(query.Search))
 			{
 				queryable = queryable.Where( d => 
                     d.Title.ToLower().Contains(query.Search.Trim().ToLower()) ||
                     d.Description.ToLower().Contains(query.Search.Trim().ToLower()) ||
-                    d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) 
-                    // ||
-                    // d.DatasetTags.Where(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower())  
-                    );
+                    d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) || 
+                    d.DatasetTags.Any(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower())  
+                    ));
 			}
 
             // Here I count all items present in the database for the given query, to return as part of the pagination data.
@@ -57,11 +74,11 @@ namespace OpenData.API.Persistence.Repositories
         public async Task<Dataset> FindByIdAsync(int id)
         {
             return await _context.Datasets
-                                .Include(d => d.Distributions)
                                 .Include(d => d.Publisher)
+                                .Include(d => d.Category)
+                                .Include(d => d.Distributions)
                                 .Include(d => d.DatasetTags)
                                     .ThenInclude(d => d.Tags)
-                                .Include(d => d.Category)
                                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 
