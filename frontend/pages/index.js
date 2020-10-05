@@ -1,20 +1,15 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid'
-import Paper from '@material-ui/core/Paper';
+import { Grid, Paper } from '@material-ui/core'
 import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
-import {useRouter} from 'next/router'
-
-import {useEffect, useState} from 'react'
-
-import Cookie from "js-cookie";
+import { useRouter } from 'next/router'
 import { parseCookies } from '../utils/parseCookies'
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
 
-  const onClick = (id) => {router.push('/DetailedDataset/'+id)}
+  const onClick = (id) => { router.push('/DetailedDataset/' + id) }
   return (
     <div className='datakatalog'>
       <Grid
@@ -32,11 +27,11 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           xs={8}
         >
           {
-            Object.values(data.items).map(dataset => (
-              <DatasetCard key={dataset.id} dataset={dataset} onClick={()=>onClick(dataset.id)}/>
+            Object.values(data).map(dataset => (
+              <DatasetCard key={dataset.id} dataset={dataset} onClick={() => onClick(dataset.id)} />
             ))
-          } 
-          
+          }
+
         </Grid>
       </Grid>
     </div>
@@ -55,7 +50,7 @@ function createRequestOptions(skipHttpsValidation) {
 }
 
 // This gets called on every request
-export async function getServerSideProps({req}) {
+export async function getServerSideProps({ req }) {
   // Fetch data from external API
   // Should be changed to host link when this is done, not localhost.
   const uri = 'https://localhost:5001/api/datasets';
@@ -64,24 +59,26 @@ export async function getServerSideProps({req}) {
 
   const cookies = parseCookies(req);
 
-  let propsData = {props: {data}}
+  let propsData = { props: { data } }
 
-  if(JSON.stringify(cookies) !== "{}"){
-    propsData = {props: {
-      data,
-      prevLoggedIn: cookies.prevLoggedIn,
-      prevLoggedUsername: cookies.prevLoggedUsername,
-      prevPublisherId: cookies.prevPublisherId,
-      prevUserId: cookies.prevUserId
-    }}
+  if (JSON.stringify(cookies) !== "{}") {
+    propsData = {
+      props: {
+        data,
+        prevLoggedIn: cookies.prevLoggedIn,
+        prevLoggedUsername: cookies.prevLoggedUsername,
+        prevPublisherId: cookies.prevPublisherId,
+        prevUserId: cookies.prevUserId
+      }
+    }
   }
   console.log(cookies)
- 
+
   return propsData
- 
+
 
 }
 
   // Pass data to the page via props
-  
+
 

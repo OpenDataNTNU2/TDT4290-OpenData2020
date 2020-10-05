@@ -27,45 +27,42 @@ export default function DatasetCard({ dataset, onClick }) {
     }
 
     return (
-        <div onClick={onClick}>
-            <Grid item key={dataset.id}>
-                <Paper variant='outlined'
-                    style={{padding: '1%', marginBottom: '2%'}}>
-                    <Grid container alignItems='flex-end' wrap='wrap'>
-                        <Grid item xs={9}>
-                            <h3>{dataset.title}</h3>
-                            <p>{cutString(dataset.description)}</p>
-                        </Grid>
-                        <Grid item xs={2} style={{ margin: '1em' }}>
-                            <Paper elevation={0}
-                                style={{
-                                        backgroundColor: setPublishedColor(dataset.publicationStatus),
-                                        textAlign: 'center',
-                                        padding: '3%',
-                                        marginBottom: '3%'
-                                    }}>
-                                {dataset.publicationStatus}
-                            </Paper>
-                            <Paper elevation={0}
-                                style={
-                                    {//setSamordnaColor skal ikke hardkodes, venter på backend-verdi
+        <div onClick={onClick} key={dataset.id}>
+            <Paper variant='outlined' style={{ padding: '1%', marginBottom: '2%', cursor: "pointer" }}>
+                <Grid container alignItems='flex-end' wrap='wrap'>
+                    <Grid item xs={9}>
+                        <h3>{dataset.title}</h3>
+                        <p>{cutString(dataset.description)}</p>
+                    </Grid>
+                    <Grid item xs={2} style={{ margin: '1em' }}>
+                        <Paper elevation={0}
+                            style={{
+                                backgroundColor: setPublishedColor(dataset.publicationStatus),
+                                textAlign: 'center',
+                                padding: '3%',
+                                marginBottom: '3%'
+                            }}>
+                            {dataset.publicationStatus}
+                        </Paper>
+                        <Paper elevation={0}
+                            style={
+                                {//setSamordnaColor skal ikke hardkodes, venter på backend-verdi
                                     backgroundColor: setSamordnaColor("Samordna"),
                                     textAlign: 'center',
                                     padding: '3%'
-                                    }}>
-                                Samordna
+                                }}>
+                            Samordna
                             </Paper>
-                        </Grid>
-                        <Grid container direction="row" >
-                            {Object.values(dataset.distributions).map(dist => (
-                                    <Box key={dist.id} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
-                                        {(dist.fileFormat).toUpperCase()}
-                                    </Box>
-                                ))}
-                        </Grid> 
                     </Grid>
-                </Paper>
-            </Grid>
+                    <Grid container direction="row" >
+                        {Object.values(dataset.distributions).map(dist => (
+                            <Box key={dist.id} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
+                                {(dist.fileFormat).toUpperCase()}
+                            </Box>
+                        ))}
+                    </Grid>
+                </Grid>
+            </Paper>
         </div>
     )
 }
