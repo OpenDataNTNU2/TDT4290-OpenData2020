@@ -5,15 +5,37 @@ import DatasetCard from '../Components/DatasetCard';
 import { useRouter } from 'next/router'
 import { parseCookies } from '../utils/parseCookies'
 
+import {useState,useEffect} from 'react'
+
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
 
 
-  const url = "https://localhost:5001/api/datasets?publishers="
+  const url = 'https://localhost:5001/api/datasets?PublisherIds='
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
 
+  const [datasets, setDatasets] = useState({})
 
+  const getDatasets = async () => {
+    try{
+        fetch(url  + filterPublishersUrl, {
+            method: 'GET',
+        })
+        .then(response => response.json())
+        .then(response => {
+            setDatasets(response.items);
+            console.log(response.items)
+        })
+    }
+    catch(_){
+        console.log("failed to fetch datasets")
+    }
+}
+
+  useEffect(() => {
+    getDatasets()
+  }, [filterPublishersUrl])
 
   const onClick = (id) => { router.push('/DetailedDataset/' + id) }
 
@@ -34,11 +56,12 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           xs={8}
         >
           {
-            Object.values(data).map(dataset => (
-              <DatasetCard key={dataset.id} dataset={dataset} onClick={() => onClick(dataset.id)} />
+            Object.values(datasets).map(d => (
+              <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
-
+          
+          
         </Grid>
       </Grid>
     </div>

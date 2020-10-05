@@ -56,32 +56,12 @@ export default function Filter(props){
             <FormControl>
             <FormLabel>Velg kommune</FormLabel>
             <FormGroup >
-                <p>Publishers from backend</p>
+                <br/>
                 {publishers.map((pub) => 
                     <FormControlLabel control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />} 
                     label={pub[0]} 
                 />)}
-                <p>Dummy Data</p>
-                <FormControlLabel
-                control={<Checkbox   name="oslo"/>}
-                label="Oslo"
-                />
-                <FormControlLabel
-                control={<Checkbox  name="trondheim"/>}
-                label="Trondheim"
-                />
-                <FormControlLabel
-                control={<Checkbox  name="bodo"/>}
-                label="Bodø"
-                />
-                <FormControlLabel
-                control={<Checkbox name="gjesdal"/>}
-                label="Gjesdal"
-                />
-                <FormControlLabel
-                control={<Checkbox name="kristiansand"/>}
-                label="Kristiansand"
-                />
+                
             </FormGroup>
             </FormControl>
         </div>
