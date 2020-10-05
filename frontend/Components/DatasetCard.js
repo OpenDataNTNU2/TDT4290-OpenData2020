@@ -54,6 +54,7 @@ export default function DatasetCard({ dataset, onClick }) {
                             Samordna
                             </Paper>
                     </Grid>
+                    
                     <Grid container direction="row" >
                         {Object.values(dataset.distributions).map(dist => (
                             <Box key={dist.id} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
@@ -61,6 +62,7 @@ export default function DatasetCard({ dataset, onClick }) {
                             </Box>
                         ))}
                     </Grid>
+                  
                 </Grid>
             </Paper>
         </div>
