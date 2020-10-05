@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
 using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
@@ -28,12 +29,13 @@ namespace OpenData.API.Controllers
         /// </summary>
         /// <returns>List os datasets.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<DatasetResource>), 200)]
-        public async Task<IEnumerable<DatasetResource>> ListAsync()
+        [ProducesResponseType(typeof(QueryResultResource<DatasetResource>), 200)]
+        public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
         {
-            var datasets = await _datasetService.ListAsync();
-            var resources = _mapper.Map<IEnumerable<Dataset>, IEnumerable<DatasetResource>>(datasets);
-
+            var datasetsQuery = _mapper.Map<DatasetQueryResource, DatasetQuery>(query);
+            var queryResult = await _datasetService.ListAsync(datasetsQuery);
+            
+            var resources = _mapper.Map<QueryResult<Dataset>, QueryResultResource<DatasetResource>>(queryResult);
             return resources;
         }
 
