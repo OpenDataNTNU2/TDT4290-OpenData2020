@@ -52,7 +52,6 @@ const SelectTags = (props) => {
             for(let j = 0; j < name.length; j++){
                 if(name[j] === props.tags[i].name){
                     newString += (props.tags[i].id.toString() + ", ")
-                    console.log(newString)
                 }
             }
         }
@@ -63,7 +62,9 @@ const SelectTags = (props) => {
     const submitNewTag = (event) => {
         
         props.addTags(props.createTag)
+        props.setTags([...props.tags, {id: props.tags[props.tags.length - 1].id + 1, name: props.createTag}])
         props.setCreateTag("")
+        
         
         
         
@@ -89,7 +90,7 @@ const SelectTags = (props) => {
                 MenuProps={MenuProps}
             >
                 <div style={{display: "inline-block"}}>
-                    <form noValidate autoComplete="off" style={{width: "32vh", display: "inline-block", margin: "0 1vh 0 1vh", padding: "0"}}>
+                    <form noValidate autoComplete="off" style={{width: "30vh", display: "inline-block", margin: "0 1vh 0 1vh", padding: "0"}}>
                         <TextField 
                             id='tags' 
                             label="Egendefinerte tags"

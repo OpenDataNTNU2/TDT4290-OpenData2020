@@ -12,6 +12,8 @@ import { parseCookies } from '../utils/parseCookies'
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
 
+  const url = "https://localhost:5001/api/datasets?publishers="
+  const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
 
 
   return (
@@ -23,7 +25,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <Filter />
+            <Filter url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
           </Paper>
         </Grid>
         <Grid
