@@ -8,6 +8,8 @@ const RadioInput = (props) => {
         <RadioGroup value={props.mainValue} onChange={(e) => props.handleChange(e.target.value)}>
             {Array.from(Array(props.value.length), (e,i) => {
                 return <FormControlLabel 
+                            id={props.id + i.toString()}
+                            key={props.id + i.toString()}
                             value={props.value[i]}
                             control={<Radio />}
                             label={props.label[i]}

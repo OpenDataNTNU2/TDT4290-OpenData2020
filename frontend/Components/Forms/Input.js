@@ -1,21 +1,22 @@
 import TextField from '@material-ui/core/TextField'
-
+import FormControl from '@material-ui/core/FormControl'
 
 const Input = (props) => {
     return (  
-        <form noValidate autoComplete="off" style={{width: "50vh"}}>
+        <FormControl variant="outlined" style={{width: "50vh"}}>
             <TextField 
                 id={props.id}
                 multiline={props.multiline}
                 rows={4} 
                 label={props.label}
-                size="large" 
+                size="medium" 
                 variant="outlined" 
                 fullWidth={true} 
                 value={props.value} 
                 onChange={(e) => props.handleChange(e.target.value)}
+                
             />
-        </form>
+        </FormControl>
 )
 }
 

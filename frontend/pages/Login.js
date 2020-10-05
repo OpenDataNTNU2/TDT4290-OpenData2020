@@ -4,20 +4,39 @@ import Button from '@material-ui/core/Button'
 import Alert from '@material-ui/lab/Alert'
 import Snackbar from '@material-ui/core/Snackbar';
 
-import { useState } from "react";
+import Router from 'next/Router'
+
+import Cookie from "js-cookie";
+import { parseCookies } from '../utils/parseCookies'
+
+import { useState, useEffect } from "react";
 
 
-export default function Login(){
+export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }){
 
     // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
     // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
-    const [open, setOpen] = useState(false);
-    const [username, setUsername] = useState("");
-    const [loggedUsername, setLoggedUsername] = useState("");
-    const [loggedIn, setLoggedIn] = useState(false)
-    const [notEligUsername, setNotEligUsername] = useState(false)
-    const [userId, setUserId] = useState(-1)
+    
+    const [loggedIn, setLoggedIn] = useState(() => JSON.parse(prevLoggedIn))
+    const [loggedUsername, setLoggedUsername] = useState(() => (prevLoggedUsername));
+    const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId))
+    const [userId, setUserId] = useState(() => JSON.parse(prevUserId))
 
+    const [username, setUsername] = useState("");
+
+    const [open, setOpen] = useState(false);
+    
+    
+    const [notEligUsername, setNotEligUsername] = useState(false)
+    
+
+    useEffect(() => {
+        Cookie.set("prevLoggedIn", JSON.stringify(loggedIn))
+        Cookie.set("prevLoggedUsername", JSON.stringify(loggedUsername))
+        Cookie.set("prevPublisherId", JSON.stringify(publisherId))
+        Cookie.set("prevUserId", JSON.stringify(userId))
+    }, [loggedIn, loggedUsername, publisherId, userId])
+    
 
     // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut. 
     const handleLoginClick = async () => {
@@ -29,6 +48,7 @@ export default function Login(){
                     setLoggedIn(true);
                     setOpen(true);
                     setNotEligUsername(false);
+                    Router.push("/Login")
                 }
             }
             else setNotEligUsername(true); 
@@ -38,7 +58,6 @@ export default function Login(){
     const sendLoginRequest = async () => {
         const data = {
             "username": username,
-            "publisherId": 100
         }
         try{
             await fetch('https://localhost:5001/api/users/'+username, {
@@ -49,7 +68,7 @@ export default function Login(){
                 body: JSON.stringify(data)
             })
             .then(response => response.json())
-            .then(data => {console.log(data);setUserId(data.id)})
+            .then(data => {console.log(data);setUserId(data.id); setPublisherId(data.publisherId)})
             return true
         }
         catch(_){
@@ -63,8 +82,10 @@ export default function Login(){
     const handleLogoutClick = () => {
         setLoggedUsername("");
         setUsername("");
+        setPublisherId(-1)
         setOpen(false);
         setLoggedIn(false);
+        Router.push("/Login")
     }
 
     // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.
@@ -84,7 +105,6 @@ export default function Login(){
             justify="center"
             style={{ minHeight: '70vh', minWidth: '90vh'}}
         >
-            
             {loggedIn ? 
                 <h2 style={{fontWeight: "normal"}}>Logget inn som {loggedUsername}</h2> 
             :   <h2 style={{fontWeight: "normal"}}>Logg inn</h2>
@@ -94,11 +114,11 @@ export default function Login(){
                 null 
             :   <form noValidate autoComplete="off" style={{width: "50vh"}}>
                     <TextField 
-                        id="outlined-basic" 
+                        id="username" 
                         label="Brukernavn" 
-                        size="large" 
+                        size="medium" 
                         variant="outlined" 
-                        fullWidth="true" 
+                        fullWidth={true} 
                         value={username} 
                         onChange={(e) => setUsername(e.target.value)}
                     />
@@ -113,7 +133,7 @@ export default function Login(){
                 
             {loggedIn ? 
                 null 
-            :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_kommune</Alert>
+            :   <Alert elevation={1} severity="info">For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_[Din kommune]_kommune</Alert>
             }
             <br/>
             <Alert elevation={1} severity="info">UserId: {userId}</Alert>
@@ -131,3 +151,13 @@ export default function Login(){
     )
 }
 
+Login.getInitialProps = ({req}) => {
+    const cookies = parseCookies(req);
+
+    return{
+        prevLoggedIn: cookies.prevLoggedIn,
+        prevLoggedUsername: cookies.prevLoggedUsername,
+        prevPublisherId: cookies.prevPublisherId,
+        prevUserId: cookies.prevUserId
+    }
+}

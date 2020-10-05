@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Repositories;
 using OpenData.API.Persistence.Contexts;
+using System;
 
 namespace OpenData.API.Persistence.Repositories
 {
@@ -16,6 +17,9 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Datasets
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Publisher)
+                                .Include(d => d.DatasetTags)
+                                    .ThenInclude(d => d.Tags)
+                                .Include(d => d.Category)
                                 .AsNoTracking()
                                 .ToListAsync();
 
@@ -33,6 +37,9 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Datasets
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Publisher)
+                                .Include(d => d.DatasetTags)
+                                    .ThenInclude(d => d.Tags)
+                                .Include(d => d.Category)
                                 .FirstOrDefaultAsync(i => i.Id == id);
         }
 

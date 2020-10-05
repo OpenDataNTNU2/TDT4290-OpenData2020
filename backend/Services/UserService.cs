@@ -13,12 +13,14 @@ namespace OpenData.API.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly IPublisherRepository _publisherRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public UserService(IUserRepository userRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public UserService(IUserRepository userRepository, IPublisherRepository publisherRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _userRepository = userRepository;
+            _publisherRepository = publisherRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
         }
@@ -50,15 +52,38 @@ namespace OpenData.API.Services
                 return new UserResponse($"An error occurred when saving the user: {ex.Message}");
             }
         }
-
+        
+        // test_oslo_kommune
         public async Task<UserResponse> UpdateAsync(string username, User user)
         {
             var existingUser = await _userRepository.FindByUsernameAsync(username);
-
-            if (existingUser == null)
-                return await SaveAsync(user);
             
-            existingUser.PublisherId = user.PublisherId;
+            if (existingUser == null){
+                if (user.Username.ToLower().Contains("kommune")){
+                    try {
+                        String mun = (String) user.Username.Split('_').GetValue(1);
+                        
+                        IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
+
+                        foreach (Publisher publisher in existingPublishers){
+                            if (publisher.Name.ToLower().Contains(mun.ToLower())){
+                                user.PublisherId = publisher.Id;
+                                break;
+                            }
+                        }
+                        
+                        if (user.PublisherId == null){
+                            var newPublisher = new Publisher {Name = mun.Substring(0,1).ToUpper() + mun.Substring(1) + " Kommune"};
+                            await _publisherRepository.AddAsync(newPublisher);
+                            await _unitOfWork.CompleteAsync();
+                            user.PublisherId = newPublisher.Id;
+                        }
+                    } catch(Exception e){ Console.WriteLine(e.ToString());}
+                }
+
+                return await SaveAsync(user);
+            }
+            
             
             try
             {

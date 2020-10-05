@@ -27,6 +27,10 @@ namespace OpenData.API.Mapping
             CreateMap<Publisher, PublisherResource>();
 
             CreateMap<Tags, TagsResource>();
+
+            CreateMap<DatasetTags, DatasetTagsResource>();
+            
+            CreateMap<Category, CategoryResource>();
         }
     }
 }

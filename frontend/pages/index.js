@@ -5,9 +5,13 @@ import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
 import {useRouter} from 'next/router'
 
+import {useEffect, useState} from 'react'
+
+import Cookie from "js-cookie";
+import { parseCookies } from '../utils/parseCookies'
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home({ data }) {
+export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
 
   const onClick = (id) => {router.push('/DetailedDataset/'+id)}
@@ -32,6 +36,7 @@ export default function Home({ data }) {
               <DatasetCard key={dataset.id} dataset={dataset} onClick={()=>onClick(dataset.id)}/>
             ))
           } 
+          
         </Grid>
       </Grid>
     </div>
@@ -50,13 +55,33 @@ function createRequestOptions(skipHttpsValidation) {
 }
 
 // This gets called on every request
-export async function getServerSideProps() {
+export async function getServerSideProps({req}) {
   // Fetch data from external API
   // Should be changed to host link when this is done, not localhost.
   const uri = 'https://localhost:5001/api/datasets';
   const res = await fetch(uri, createRequestOptions(true))
   const data = await res.json()
 
-  // Pass data to the page via props
-  return { props: { data } }
+  const cookies = parseCookies(req);
+
+  let propsData = {props: {data}}
+
+  if(JSON.stringify(cookies) !== "{}"){
+    propsData = {props: {
+      data,
+      prevLoggedIn: cookies.prevLoggedIn,
+      prevLoggedUsername: cookies.prevLoggedUsername,
+      prevPublisherId: cookies.prevPublisherId,
+      prevUserId: cookies.prevUserId
+    }}
+  }
+  console.log(cookies)
+ 
+  return propsData
+ 
+
 }
+
+  // Pass data to the page via props
+  
+

@@ -10,6 +10,9 @@
   "dependencies": {
     "@material-ui/core": "^4.11.0",
     "@material-ui/lab": "^4.0.0-alpha.56",
+    "cookie": "^0.4.1",
+    "gatsby-plugin-material-ui": "^2.1.10",
+    "js-cookie": "^2.2.1",
     "next": "9.5.3",
     "react": "16.13.1",
     "react-dom": "16.13.1"
