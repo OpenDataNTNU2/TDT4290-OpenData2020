@@ -1,10 +1,4 @@
-
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button'
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Divider from '@material-ui/core/Divider';
-import Snackbar from '@material-ui/core/Snackbar'
+import { Grid, Button, FormControl, FormLabel, Divider, Snackbar } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert'
 
 import Distribution from '../Components/Forms/Distribution'

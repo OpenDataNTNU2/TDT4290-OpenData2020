@@ -1,15 +1,14 @@
-import Grid from '@material-ui/core/Grid'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-
-import { useState } from "react";
-import { Paper } from '@material-ui/core'
-import { useRouter } from 'next/router'
-import { toNamespacedPath } from 'path'
+import { Paper, Grid } from '@material-ui/core';
 
 export default function DetailedDataset({data}){
+
+  const ifPublished = (pub) => {
+    if (pub === "Published"){
+      return pub
+    }
+    //should be the other value, i dont have a way to test it:(
+    return "Not yet published"
+  }
 
 
     return(
@@ -36,9 +35,9 @@ export default function DetailedDataset({data}){
             <p><b>Eier:</b> {data.publisher.name}</p>
 
             <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
-            <p><b>Publiseringsstatus: </b><i>{data.publicationStatus}</i></p>
+            <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}</i></p>
             <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-            <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (distributions.uri )})} </p>
+            <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a href={distributions.uri}> {distributions.uri} </a> )})} </p>
             </Paper>
 
         </Grid>
@@ -52,7 +51,6 @@ export async function getServerSideProps(context) {
     const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
-    console.log(data.publisher)
   
     // Pass data to the page via props
     return { props: { data } }
