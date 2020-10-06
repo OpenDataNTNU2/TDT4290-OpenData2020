@@ -307,9 +307,9 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                         setPersonName={setPersonName}
                     /><br/>
                     
-                
-                    {distribution === 0 ? 
-                        <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Add distribution</Button>
+                    {published === "1" && distribution === 0 ? <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Legg til distribusjon</Button> : null }
+                 
+                    {distribution === 0 ? null
                     :   <Grid><br/>
                             <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
                             {Array.from(Array(distribution), (e, i) => {
