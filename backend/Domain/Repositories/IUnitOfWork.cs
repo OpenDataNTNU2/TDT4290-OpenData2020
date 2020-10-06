@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Supermarket.API.Domain.Repositories
+namespace OpenData.API.Domain.Repositories
 {
     public interface IUnitOfWork
     {

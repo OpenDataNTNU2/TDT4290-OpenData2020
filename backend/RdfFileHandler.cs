@@ -1,9 +1,15 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using OpenData.API.Persistence.Contexts;
+
+using System;
+using System.Collections.Generic;
 using VDS.RDF;
 using VDS.RDF.Writing;
 using VDS.RDF.Parsing;
 
-namespace Supermarket.API
+namespace OpenData.API
 {
 
 #pragma warning disable CS1591

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Supermarket.API.Extensions
+namespace OpenData.API.Extensions
 {
     public static class MiddlewareExtensions
     {
@@ -15,18 +15,18 @@ namespace Supermarket.API.Extensions
             {
                 cfg.SwaggerDoc("v1", new OpenApiInfo
                 {
-                    Title = "Supermarket API",
-                    Version = "v3",
-                    Description = "Simple RESTful API built with ASP.NET Core 3.1 to show how to create RESTful services using a decoupled, maintainable architecture.",
-                    Contact = new OpenApiContact
-                    {
-                        Name = "Evandro Gayer Gomes",
-                        Url = new Uri("https://evandroggomes.com.br/")
-                    },
-                    License = new OpenApiLicense
-                    {
-                        Name = "MIT",
-                    },
+                    Title = "OpenData v2 API",
+                    Version = "v2",
+                    Description = "OpenData catalouge RESTful API built with ASP.NET Core 3.1.",
+                    // Contact = new OpenApiContact
+                    // {
+                    //     Name = "Evandro Gayer Gomes",
+                    //     Url = new Uri("https://evandroggomes.com.br/")
+                    // },
+                    // License = new OpenApiLicense
+                    // {
+                    //     Name = "MIT",
+                    // },
                 });
 
                 var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
@@ -40,8 +40,8 @@ namespace Supermarket.API.Extensions
         {
             app.UseSwagger().UseSwaggerUI(options =>
             {
-                options.SwaggerEndpoint("/swagger/v1/swagger.json", "Supermarket API");
-                options.DocumentTitle = "Supermarket API";
+                options.SwaggerEndpoint("/swagger/v1/swagger.json", "OpenData API");
+                options.DocumentTitle = "OpenData API";
             });
             return app;
         }

@@ -1,4 +1,7 @@
-namespace Supermarket.API.Resources
+using System.Collections.Generic;
+using OpenData.API.Domain.Models;
+
+namespace OpenData.API.Resources
 {
     public class DatasetResource
     {
@@ -6,5 +9,14 @@ namespace Supermarket.API.Resources
         public string Identifier { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public PublisherResource Publisher { get; set; }
+        public IList<DistributionResource> Distributions { get; set; } = new List<DistributionResource>();
+
+        public string PublicationStatus { get; set; }
+        public string DetailedPublicationStatus { get; set; }
+        public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();
+
+        public CategoryResource Category { get; set; }
+
     }
 }

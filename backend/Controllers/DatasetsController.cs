@@ -2,11 +2,13 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Resources;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
+using OpenData.API.Domain.Services;
+using OpenData.API.Resources;
+using Microsoft.AspNetCore.Cors;
 
-namespace Supermarket.API.Controllers
+namespace OpenData.API.Controllers
 {
     [Route("/api/datasets")]
     [Produces("application/json")]
@@ -27,14 +29,31 @@ namespace Supermarket.API.Controllers
         /// </summary>
         /// <returns>List os datasets.</returns>
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<DatasetResource>), 200)]
-        public async Task<IEnumerable<DatasetResource>> ListAsync()
+        [ProducesResponseType(typeof(QueryResultResource<DatasetResource>), 200)]
+        public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
         {
-            var datasets = await _datasetService.ListAsync();
-            var resources = _mapper.Map<IEnumerable<Dataset>, IEnumerable<DatasetResource>>(datasets);
-
+            var datasetsQuery = _mapper.Map<DatasetQueryResource, DatasetQuery>(query);
+            var queryResult = await _datasetService.ListAsync(datasetsQuery);
+            
+            var resources = _mapper.Map<QueryResult<Dataset>, QueryResultResource<DatasetResource>>(queryResult);
             return resources;
         }
+
+        /// <summary>
+        /// Find one dataset by id.
+        /// </summary>
+        /// <param name="id">Dataset identifier.</param>
+        /// <returns>Dataset found by id.</returns>
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(DatasetResource), 200)]
+        public async Task<DatasetResource> FindByIdAsync(int id)
+        {
+            var dataset = await _datasetService.FindByIdAsync(id);
+            var resource = _mapper.Map<Dataset, DatasetResource>(dataset.Resource);
+
+            return resource;
+        }
+        
 
         /// <summary>
         /// Saves a new dataset.

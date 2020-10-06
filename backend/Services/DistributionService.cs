@@ -1,14 +1,14 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
-using Supermarket.API.Domain.Models;
-using Supermarket.API.Domain.Models.Queries;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Domain.Services.Communication;
-using Supermarket.API.Infrastructure;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
+using OpenData.API.Domain.Repositories;
+using OpenData.API.Domain.Services;
+using OpenData.API.Domain.Services.Communication;
+using OpenData.API.Infrastructure;
 
-namespace Supermarket.API.Services
+namespace OpenData.API.Services
 {
     public class DistributionService : IDistributionService
     {
@@ -32,7 +32,7 @@ namespace Supermarket.API.Services
             string cacheKey = GetCacheKeyForDistributionQuery(query);
             
             var distributions = await _cache.GetOrCreateAsync(cacheKey, (entry) => {
-                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(1);
+                entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
                 return _distributionRepository.ListAsync(query);
             });
 
@@ -51,9 +51,12 @@ namespace Supermarket.API.Services
                 var existingDataset = await _datasetRepository.FindByIdAsync(distribution.DatasetId);
                 if (existingDataset == null)
                     return new DistributionResponse("Invalid dataset.");
+                
+                // existingDataset.Distributions.Add(distribution);
 
                 await _distributionRepository.AddAsync(distribution);
                 await _unitOfWork.CompleteAsync();
+                // _datasetRepository.Update(existingDataset);
 
                 return new DistributionResponse(distribution);
             }

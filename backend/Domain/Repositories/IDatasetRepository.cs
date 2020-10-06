@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Supermarket.API.Domain.Models;
+using OpenData.API.Domain.Models;
+using OpenData.API.Domain.Models.Queries;
 
-namespace Supermarket.API.Domain.Repositories
+namespace OpenData.API.Domain.Repositories
 {
     public interface IDatasetRepository
     {
-        Task<IEnumerable<Dataset>> ListAsync();
+        Task<QueryResult<Dataset>> ListAsync(DatasetQuery query);
         Task AddAsync(Dataset dataset);
         Task<Dataset> FindByIdAsync(int id);
         void Update(Dataset dataset);

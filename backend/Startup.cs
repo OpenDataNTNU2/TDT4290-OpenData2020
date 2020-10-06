@@ -5,18 +5,19 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Supermarket.API.Controllers.Config;
-using Supermarket.API.Domain.Repositories;
-using Supermarket.API.Domain.Services;
-using Supermarket.API.Extensions;
-using Supermarket.API.Persistence.Contexts;
-using Supermarket.API.Persistence.Repositories;
-using Supermarket.API.Services;
+using OpenData.API.Controllers.Config;
+using OpenData.API.Domain.Repositories;
+using OpenData.API.Domain.Services;
+using OpenData.API.Extensions;
+using OpenData.API.Persistence.Contexts;
+using OpenData.API.Persistence.Repositories;
+using OpenData.API.Services;
 
-namespace Supermarket.API
+namespace OpenData.API
 {
     public class Startup
     {
+
         public IConfiguration Configuration { get; }
 
         public Startup(IConfiguration configuration)
@@ -26,6 +27,17 @@ namespace Supermarket.API
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                                builder =>
+                                {
+                                    builder.WithOrigins("http://localhost:3000")
+                                            .AllowAnyHeader()
+                                            .AllowAnyMethod();
+                                });
+            });
+
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
@@ -43,12 +55,24 @@ namespace Supermarket.API
 
             services.AddScoped<IDatasetRepository, DatasetRepository>();
             services.AddScoped<IDistributionRepository, DistributionRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IPublisherRepository, PublisherRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ITagsRepository, TagsRepository>();
+            services.AddScoped<ICategoryRepository, CategoryRepository>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IPublisherService, PublisherService>();
+            services.AddScoped<ITagsService, TagsService>();
+            services.AddScoped<ICategoryService, CategoryService>();
 
             services.AddAutoMapper(typeof(Startup));
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+                options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
+            );
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -58,9 +82,11 @@ namespace Supermarket.API
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseCustomSwagger();
-
             app.UseRouting();
+
+            app.UseCors();
+
+            app.UseCustomSwagger();
 
             app.UseAuthorization();
 

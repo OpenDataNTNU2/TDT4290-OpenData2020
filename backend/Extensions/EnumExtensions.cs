@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using System.Reflection;
 
-namespace Supermarket.API.Extensions
+namespace OpenData.API.Extensions
 {
     public static class EnumExtensions
     {
