@@ -91,13 +91,8 @@ namespace OpenData.API.Services
 
         private void addDataset(Graph g) {
             // Find the dataset subject uri 
-            IUriNode rdfType = g.CreateUriNode("rdf:type");
             IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
-            String datasetUri = "";
-            IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, dcatDataset);
-            foreach (Triple t in ts) {
-                datasetUri = t.Subject.ToString();
-            }
+            String datasetUri = findSubjectUri(g, dcatDataset);
             // From the dataset uri make a dictionary with the attributes
             Dictionary<string,string> attributes = getAttributesFromTriples(g, datasetUri);
 
@@ -114,7 +109,7 @@ namespace OpenData.API.Services
             _datasetRepository.AddAsync(dataset);
             _unitOfWork.CompleteAsync();
             
-            // addDistribution(g, dataset.Id);
+            addDistribution(g, dataset.Id);
         }
 
         // Get attributes as dictionary from chosen subject node
@@ -132,17 +127,22 @@ namespace OpenData.API.Services
             }
             return attributes;
         }
-
-        private void addDistribution(Graph g, int datasetId){
-             // Find the distribution subject uri 
+        // Find the subject uri for a chosen object uriNode using the predicate rdf:type
+        private String findSubjectUri(Graph g, IUriNode uriNode){
             IUriNode rdfType = g.CreateUriNode("rdf:type");
-            IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
-            String distributionUri = "";
-            IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, dcatDistribution);
+            String uri = "";
+            IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, uriNode);
             foreach (Triple t in ts) {
-                distributionUri = t.Subject.ToString();
+                uri = t.Subject.ToString();
                 Console.WriteLine(t.Subject);
             }
+            return uri;
+        }
+
+        private void addDistribution(Graph g, int datasetId){
+            // Find the distribution subject uri 
+            IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
+            String distributionUri = findSubjectUri(g, dcatDistribution);
 
             Dictionary<string,string> attributes = getAttributesFromTriples(g, distributionUri);
             // Add relevant attributes to a new distribution
@@ -164,13 +164,12 @@ namespace OpenData.API.Services
         {   
             Console.WriteLine("KJØRER ==========================");
             
-            Graph h = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
             
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
+            Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
 
-            // addDataset(g);
-            addDataset(h);
-            
+            addDataset(g);
+            // saveToFileTurtle(g, "dcat_example1.ttl");
             Console.WriteLine("STOPPER ==========================");
         }
 

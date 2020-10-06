@@ -1,0 +1,28 @@
+@base <https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcat: <http://www.w3.org/ns/dcat#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+
+<https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e> dct:description "Badetemperaturer Stavanger. Datasettet viser aktuell vanntemperatur for 6 badeplasser i Stavanger";
+                                                                  dct:identifier "58f23dea-ab22-4c68-8c3b-1f602ded6d3e";
+                                                                  dct:issued "2019-07-30T12:56:24.818320"^^xsd:dateTime;
+                                                                  dct:modified "2020-10-06T09:58:31.660285"^^xsd:dateTime;
+                                                                  dct:publisher <https://opencom.no/organization/a5828aa1-820f-4937-b704-579a53258a09>;
+                                                                  dct:title "Badetemperaturer Stavanger";
+                                                                  a dcat:Dataset;
+                                                                  dcat:contactPoint [a vcard:Organization ; 
+                                                                                     vcard:fn "Reidar Agasøster" ; 
+                                                                                     vcard:hasEmail "opendata@stavanger.kommune.no"];
+                                                                  dcat:distribution <https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e/resource/d9f75b07-ad78-4d86-81a2-4b48db754a06>.
+<https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e/resource/d9f75b07-ad78-4d86-81a2-4b48db754a06> dct:format "CSV";
+                                                                                                                dct:title "Badetemperaturer";
+                                                                                                                a dcat:Distribution;
+                                                                                                                dcat:accessURL "https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e/resource/d9f75b07-ad78-4d86-81a2-4b48db754a06/download/badetemp.csv".
+<https://opencom.no/organization/a5828aa1-820f-4937-b704-579a53258a09> a foaf:Organization;
+                                                                       foaf:name "Stavanger kommune".
