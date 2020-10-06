@@ -43,6 +43,7 @@ namespace Tests
                 new TagsRepository(context),
                 new UnitOfWork(context),
                 new MemoryCache(new MemoryCacheOptions()));
+
             Dataset example = new Dataset
             {
                 Id = 104,
@@ -57,14 +58,14 @@ namespace Tests
 
             DatasetResponse res;
             res = await ds.SaveAsync(example);
-            Assert.IsTrue(res.Success);
+            Assert.IsTrue(res.Success, res.Message);
 
             res = await ds.FindByIdAsync(example.Id);
-            Assert.IsTrue(res.Success);
-            Assert.AreEqual(example, res.Resource);
+            Assert.IsTrue(res.Success, res.Message);
+            Assert.AreEqual(example, res.Resource, "Object returned for given ID is not equal to our text object.");
 
             res = await ds.FindByIdAsync(5); // Fails: DatasetRepository.FindByIdAsync uses FirstOrDefault, meaning it always returns a "Success", is this intentional?
-            Assert.IsFalse(res.Success);
+            Assert.IsFalse(res.Success, "Object is returned for an ID that should not exist.");
         }
     }
 }
