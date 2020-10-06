@@ -1,0 +1,511 @@
+@base <https://raw.githubusercontent.com/SEMICeu/DCAT-AP/master/releases/1.1/dcat-ap_1.1.rdf>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix : <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix cc: <http://creativecommons.org/ns#>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix adms: <http://www.w3.org/ns/adms#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix owl: <http://www.w3.org/2002/07/owl#>.
+@prefix dcat: <http://www.w3.org/ns/dcat#>.
+@prefix sioc: <http://rdfs.org/sioc/ns#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix schema: <http://schema.org/>.
+@prefix v: <http://www.w3.org/2006/vcard/ns#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+@prefix vann: <http://purl.org/vocab/vann/>.
+@prefix voaf: <http://labs.mondeca.com/vocab/voaf#>.
+@prefix wdrs: <http://www.w3.org/2007/05/powder-s#>.
+@prefix spdx: <http://spdx.org/rdf/terms#>.
+@prefix xhv: <http://www.w3.org/1999/xhtml/vocab#>.
+@prefix xh: <http://www.w3.org/1999/xhtml>.
+
+dct:Frequency dct:identifier "dct:Frequency"@en;
+              vann:usageNote "Optional class. A rate at which something recurs, e.g. the publication of a Dataset."@en;
+              :comment "A rate at which something recurs."@en;
+              :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-Frequency>;
+              :label "Frequency"@en.
+dct:LicenseDocument dct:identifier "dct:LicenseDocument"@en;
+                    vann:usageNote "Recommended class. A legal document giving official permission to do something with a resource. "@en;
+                    :comment "A legal document giving official permission to do something with a Resource."@en;
+                    :isDefinedBy <http://dublincore.org/documents/2012/06/14/dcmi-terms/?v=terms#LicenseDocument>;
+                    :label "Licence Document"@en.
+dct:LinguisticSystem dct:identifier "dct:LinguisticSystem"@en;
+                     vann:usageNote "Optional class. A system of signs, symbols, sounds, gestures, or rules used in communication, e.g. a language. "@en;
+                     :comment "A system of signs, symbols, sounds, gestures, or rules used in communication, e.g. a language."@en;
+                     :isDefinedBy <http://dublincore.org/documents/2012/06/14/dcmi-terms/?v=terms#LinguisticSystem>;
+                     :label "Linguistic system"@en.
+dct:Location dct:identifier "dct:Location"@en;
+             vann:usageNote "Optional class. A spatial region or named place. It can be represented using a controlled vocabulary or with geographic coordinates. In the latter case, the use of the Core Location Vocabulary  is recommended. "@en;
+             :comment "A spatial region or named place."@en;
+             :isDefinedBy <http://dublincore.org/documents/2012/06/14/dcmi-terms/?v=terms#Location>;
+             :label "Location"@en.
+dct:MediaTypeOrExtent dct:identifier "dct:MediaTypeOrExtent"@en;
+                      vann:usageNote "Optional class. A media type or extent, e.g. the format of a computer file. "@en;
+                      :comment "A media type or extent, e.g. the format of a computer file."@en;
+                      :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-MediaTypeOrExtent>;
+                      :label "Media type or extent"@en.
+dct:PeriodOfTime dct:identifier "dct:PeriodOfTime"@en;
+                 vann:usageNote "Optional class. An interval of time that is named or defined by its start and end dates. "@en;
+                 :comment "An interval of time that is named or defined by its start and end dates."@en;
+                 :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-PeriodOfTime>;
+                 :label "Period of time"@en.
+dct:ProvenanceStatement dct:identifier "dct:ProvenanceStatement"@en;
+                        vann:usageNote "Optional class. A statement of any changes in ownership and custody of a resource since its creation that are significant for its authenticity, integrity, and interpretation. "@en;
+                        :comment "A statement of any changes in ownership and custody of a resource since its creation that are significant for its authenticity, integrity, and interpretation."@en;
+                        :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-ProvenanceStatement>;
+                        :label "Provenance Statement"@en.
+dct:RightsStatement dct:identifier "dct:RightsStatement"@en;
+                    vann:usageNote "Optional class. A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights. "@en;
+                    :comment "A statement about the intellectual property rights (IPR) held in or over a resource, a legal document giving official permission to do something with a resource, or a statement about access rights."@en;
+                    :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-RightsStatement>;
+                    :label "Rights statement"@en.
+dct:Standard dct:identifier "dct:Standard"@en;
+             vann:usageNote "Optional class. A standard or other specification to which a Dataset conforms. "@en;
+             :comment "A basis for comparison; a reference point against which other things can be evaluated."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-Standard>;
+             :label "Standard"@en.
+dct:accessRights dct:identifier "dct:accessRights"@en;
+                 vann:usageNote "Optional property. This property refers to information that indicates whether the Dataset is open data, has access restrictions or is not public. A controlled vocabulary with three members (:public, :restricted, :non-public) will be created and maintained by the Publications Office of the EU."@en;
+                 :comment "This property refers to information that indicates whether the Dataset is open data, has access restrictions or is not public. A controlled vocabulary with three members (:public, :restricted, :non-public) will be created and maintained by the Publications Office of the EU."@en;
+                 :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-accessRights>;
+                 :label "Dataset - access Rights"@en.
+dct:acrualPeriodicity dct:identifier "dct:accrualPeriodicity"@en;
+                      vann:usageNote "Optional property. This property refers to the frequency at which Dataset is updated."@en;
+                      :comment "This property refers to the frequency at which Dataset is updated."@en;
+                      :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-acrualPeriodicity>;
+                      :label "Dataset - frequency"@en.
+dct:conformsTo dct:identifier "dct:conformsTo"@en;
+               vann:usageNote "Recommended property. This property refers to an Application Profile that the Dataset’s metadata conforms to."@en,
+                              "Optional property. This property refers to an implementing rule or other specification."@en,
+                              "Optional property. This property refers to an established schema to which the described Distribution conforms."@en;
+               :comment "This property refers to an Application Profile that the Dataset’s metadata conforms to."@en,
+                        "This property refers to an implementing rule or other specification."@en,
+                        "This property refers to an established schema to which the described Distribution conforms."@en;
+               :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-conformsTo>;
+               :label "Catalogue Record - conforms to"@en,
+                      "Dataset - conforms to"@en,
+                      "Distribution - linked schemas"@en.
+dct:description dct:identifier "dct:description"@en;
+                vann:usageNote "Mandatory property. This property contains a free-text account of the Catalogue. This property can be repeated for parallel language versions of the description."@en,
+                               "Optional property. This property contains a free-text account of the record. This property can be repeated for parallel language versions of the description."@en,
+                               "Mandatory property. This property contains a free-text account of the Dataset. This property can be repeated for parallel language versions of the description."@en,
+                               "Recommended property. This property contains a free-text account of the Distribution. This property can be repeated for parallel language versions of the description."@en;
+                :comment "Description may include but is not limited to: an abstract, a table of contents, a graphical representation, or a free-text account of the resource."@en,
+                         "This property contains a free-text account of the record. This property can be repeated for parallel language versions of the description."@en,
+                         "This property contains a free-text account of the Dataset. This property can be repeated for parallel language versions of the description."@en,
+                         "This property can be repeated for parallel language versions of the description."@en;
+                :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-description>;
+                :label "Data Catalogue - description"@en,
+                       "Catalogue Record - description"@en,
+                       "Dataset - description"@en,
+                       "Distribution - description"@en.
+dct:format dct:identifier "dct:format"@en;
+           vann:usageNote "Recommended property. This property refers to the file format of the Distribution."@en;
+           :comment "This property refers to the file format of the Distribution."@en;
+           :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-format>;
+           :label "Distribution - format"@en.
+dct:hasPart dct:identifier "dct:hasPart"@en;
+            vann:usageNote "Optional property. This property refers to a related Catalogue that is part of the described Catalogue."@en;
+            :comment "This property refers to a related Catalogue that is part of the described Catalogue"@en;
+            :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-hasPart>;
+            :label "Data Catalogue - has part"@en.
+dct:hasVersion dct:identifier "dct:hasVersion"@en;
+               vann:usageNote "Optional property.This property refers to a related Dataset that is a version, edition, or adaptation of the described Dataset."@en;
+               :comment "This property refers to a related Dataset that is a version, edition, or adaptation of the described Dataset."@en;
+               :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-hasVersion>;
+               :label "Dataset - has Version"@en.
+dct:identifier dct:identifier "dct:identifier"@en;
+               vann:usageNote "Optional property. This property contains the main identifier for the Dataset, e.g. the URI or other unique identifier in the context of the Catalogue."@en;
+               :comment "This property contains the main identifier for the Dataset, e.g. the URI or other unique identifier in the context of the Catalogue."@en;
+               :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-identifier>;
+               :label "Dataset - identifier"@en.
+dct:isPartOf dct:identifier "dct:isPartOf"@en;
+             vann:usageNote "Optional property. This property refers to a related Catalogue in which the described Catalogue is physically or logically included."@en;
+             :comment "This property refers to a related Catalogue in which the described Catalogue is physically or logically included."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-isPartOf>;
+             :label "Data Catalogue - is part of"@en.
+dct:isVersionOf dct:identifier "dct:isVersionOf"@en;
+                vann:usageNote "Optional property. This property refers to a related Dataset of which the described Dataset is a version, edition, or adaptation."@en;
+                :comment "This property refers to a related Dataset of which the described Dataset is a version, edition, or adaptation."@en;
+                :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-isVersionOf>;
+                :label "Dataset - is Version Of"@en.
+dct:issued dct:identifier "dct:issued"@en;
+           vann:usageNote "Recommended property. This property contains the date of formal issuance (e.g., publication) of the Catalogue."@en,
+                          "Recommended property. This property contains the date on which the description of the Dataset was included in the Catalogue."@en,
+                          "Optional property. This property contains the date of formal issuance (e.g., publication) of the Dataset."@en,
+                          "Optional property. This property contains the date of formal issuance (e.g., publication) of the Distribution."@en;
+           :comment "This property contains the date of formal issuance (e.g., publication) of the Catalogue."@en,
+                    "This property contains the date on which the description of the Dataset was included in the Catalogue."@en,
+                    "This property contains the date of formal issuance (e.g., publication) of the Dataset."@en,
+                    "This property contains the date of formal issuance (e.g., publication) of the Distribution."@en;
+           :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-issued>;
+           :label "Data Catalogue - release date"@en,
+                  "Catalogue Record - listing date"@en,
+                  "Dataset - release date"@en,
+                  "Distribution - release date"@en.
+dct:language dct:identifier "dct:language"@en;
+             vann:usageNote "Recommended property. This property refers to a language used in the textual metadata describing titles, descriptions, etc. of the Datasets in the Catalogue. This property can be repeated if the metadata is provided in multiple languages."@en,
+                            "Optional property. This property refers to a language used in the textual metadata describing titles, descriptions, etc. of the Dataset. This property can be repeated if the metadata is provided in multiple languages."@en,
+                            "Optional property. This property refers to a language of the Dataset. This property can be repeated if there are multiple languages in the Dataset."@en,
+                            "Optional property. This property refers to a language used in the Distribution. This property can be repeated if the metadata is provided in multiple languages."@en;
+             :comment "This property refers to a language used in the textual metadata describing titles, descriptions, etc. of the Datasets in the Catalogue. This property can be repeated if the metadata is provided in multiple languages."@en,
+                      "This property refers to a language used in the textual metadata describing titles, descriptions, etc. of the Dataset. This property can be repeated if the metadata is provided in multiple languages."@en,
+                      "This property refers to a language of the Dataset. This property can be repeated if there are multiple languages in the Dataset."@en,
+                      "This property refers to a language used in the Distribution."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-language>;
+             :label "Data Catalogue - language"@en,
+                    "Catalogue Record - language"@en,
+                    "Dataset - language"@en,
+                    "Distribution - language"@en.
+dct:license dct:identifier "dct:license"@en;
+            vann:usageNote "Recommended property. This property refers to the licence under which the Catalogue can be used or reused."@en,
+                           "Recommended property. This property refers to the licence under which the Distribution is made available."@en;
+            :comment "This property refers to the licence under which the Catalogue can be used or reused."@en,
+                     "This property refers to the licence under which the Distribution is made available."@en;
+            :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-license>;
+            :label "Data Catalogue - licence"@en,
+                   "Distribution - licence"@en.
+dct:mediaType dct:identifier "dcat:mediaType"@en;
+              vann:usageNote "Optional property. subproperty of dct:format. This property refers to the media type of the Distribution if this is defined in IANA."@en;
+              :comment "This property refers to the media type of the Distribution if this is defined in IANA."@en;
+              :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-mediaType>;
+              :label "Distribution - media type"@en.
+dct:modified dct:identifier "dct:modified"@en;
+             vann:usageNote "Recommended property. This property contains the most recent date on which the Catalogue was changed or modified."@en,
+                            "Mandatory property.  This property contains the most recent date on which the Catalogue entry was changed or modified."@en,
+                            "Optional property. This property contains the most recent date on which the Dataset was changed or modified."@en,
+                            "Optional property. This property contains the most recent date on which the Distribution was changed or modified."@en;
+             :comment "This property contains the most recent date on which the Catalogue was changed or modified."@en,
+                      "This property contains the most recent date on which the Catalogue entry was changed or modified."@en,
+                      "This property contains the most recent date on which the Dataset was changed or modified."@en,
+                      "This property contains the most recent date on which the Distribution was changed or modified."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-modified>;
+             :label "Data Catalogue - update/ modification date"@en,
+                    "Catalogue Record - update/ modification date"@en,
+                    "Dataset - update/ modification date"@en,
+                    "Distribution - update/modification date"@en.
+dct:provenance dct:identifier "dct:provenance"@en;
+               vann:usageNote "Optional property. This property contains a statement about the lineage of a Dataset."@en;
+               :comment "This property contains a statement about the lineage of a Dataset."@en;
+               :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-provenance>;
+               :label "Dataset - provenance"@en.
+dct:publisher dct:identifier "dct:publisher"@en;
+              vann:usageNote "Mandatory property. This property refers to an entity (organisation) responsible for making the Catalogue available."@en,
+                             "Recommended property. This property refers to an entity (organisation) responsible for making the Dataset available."@en;
+              :comment "This property refers to an entity (organisation) responsible for making the Catalogue available."@en,
+                       "This property refers to an entity (organisation) responsible for making the Dataset available."@en;
+              :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-publisher>;
+              :label "Data Catalogue - publisher"@en,
+                     "Dataset - publisher"@en.
+dct:relation dct:identifier "dct:relation"@en;
+             vann:usageNote "Optional property. This property refers to a related resource."@en;
+             :comment "This property refers to a related resource."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-relation>;
+             :label "Dataset - related resource"@en.
+dct:rights dct:identifier "dct:rights"@en;
+           vann:usageNote "Optional property. This property refers to a statement that specifies rights associated with the Catalogue."@en,
+                          "Optional property. This property refers to a statement that specifies rights associated with the Distribution."@en;
+           :comment "This property refers to a statement that specifies rights associated with the Catalogue."@en,
+                    "This property refers to a statement that specifies rights associated with the Distribution."@en;
+           :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-rights>;
+           :label "Data Catalogue - rights"@en,
+                  "Distribution - rights"@en.
+dct:source dct:identifier "dct:source"@en;
+           vann:usageNote "Optional property. This property refers to the original metadata that was used in creating metadata for the Dataset."@en,
+                          "Optional property. This property refers to a related Dataset from which the described Dataset is derived."@en;
+           :comment "This property refers to the original metadata that was used in creating metadata for the Dataset."@en,
+                    "This property refers to a related Dataset from which the described Dataset is derived."@en;
+           :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-source>;
+           :label "Catalogue Record - source metadata"@en,
+                  "Dataset - source "@en.
+dct:spatial dct:identifier "dct:spatial"@en;
+            vann:usageNote "Optional property. This property refers to a geographical area covered by the Catalogue."@en,
+                           "Optional property. This property refers to a geographic region that is covered by the Dataset. "@en;
+            :comment "This property refers to a geographical area covered by the Catalogue."@en,
+                     "This property refers to a geographic region that is covered by the Dataset."@en;
+            :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-spatial>;
+            :label "Data Catalogue - spatial / geographic"@en,
+                   "Dataset - spatial/ geographical coverage"@en.
+dct:temporal dct:identifier "dct:temporal"@en;
+             vann:usageNote "Optional property. This property refers to a temporal period that the Dataset covers."@en;
+             :comment "This property refers to a temporal period that the Dataset covers."@en;
+             :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-temporal>;
+             :label "Dataset - temporal coverage"@en.
+dct:title dct:identifier "dct:title"@en;
+          vann:usageNote "Mandatory property. This property contains a name given to the Catalogue. This property can be repeated for parallel language versions of the name."@en,
+                         "Optional property. This property contains a name given to the Catalogue. This property can be repeated for parallel language versions of the name."@en,
+                         "Mandatory property. This property contains a name given to the Dataset. This property can be repeated for parallel language versions of the name."@en,
+                         "Optional property. This property contains a name given to the Distribution. This property can be repeated for parallel language versions of the description."@en,
+                         "Mandatory property.  This property contains a name of the category scheme. May be repeated for different versions of the name"@en;
+          :comment "This property contains a name given to the Catalogue. This property can be repeated for parallel language versions of the name."@en,
+                   "This property contains a name given to the Dataset. This property can be repeated for parallel language versions of the name."@en,
+                   "This property contains a name given to the Distribution. This property can be repeated for parallel language versions of the description."@en,
+                   "This property contains a name of the category scheme. May be repeated for different versions of the name"@en;
+          :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-title>;
+          :label "Data Catalogue - title"@en,
+                 "Catalogue Record - title"@en,
+                 "Dataset - title"@en,
+                 "Distribution - title"@en,
+                 "Category Scheme - title"@en.
+dct:type dct:identifier "dct:type"@en;
+         vann:usageNote "Optional property. This property refers to the type of the Dataset. A controlled vocabulary for the values has not been established."@en,
+                        "Recommended property. This property refers to a type of the agent that makes the Catalogue or Dataset available"@en,
+                        "Recommended property. This property refers to a type of licence, e.g. indicating ‘public domain’ or ‘royalties required’."@en;
+         :comment "This property refers to the type of the Dataset. A controlled vocabulary for the values has not been established."@en,
+                  "This property refers to a type of the agent that makes the Catalogue or Dataset availabl"@en,
+                  "This property refers to a type of licence, e.g. indicating ‘public domain’ or ‘royalties required’."@en;
+         :isDefinedBy <http://dublincore.org/documents/dcmi-terms/#terms-type>;
+         :label "Dataset - type "@en,
+                "Agent - type"@en,
+                "Licence Document - licence type"@en.
+schema:endDate dct:identifier "schema:endDate"@en;
+               vann:usageNote "Optional property. This property contains the end of the period."@en;
+               :comment "This property contains the end of the period."@en;
+               :isDefinedBy schema:endDate;
+               :label "Period Of Time - end date/time"@en.
+schema:startDate dct:identifier "schema:startDate"@en;
+                 vann:usageNote "Optional property. This property contains the start of the period."@en;
+                 :comment "This property contains the start of the period."@en;
+                 :isDefinedBy schema:startDate;
+                 :label "Period Of Time - start date/time"@en.
+spdx:Checksum dct:identifier "spdx:Checksum"@en;
+              vann:usageNote "A value that allows the contents of a file to be authenticated. This class allows the results of a variety of checksum and cryptographic message digest algorithms to be represented."@en;
+              :comment "A value that allows the contents of a file to be authenticated. This class allows the results of a variety of checksum and cryptographic message digest algorithms to be represented."@en;
+              :isDefinedBy spdx:Checksum;
+              :label "Checksum"@en.
+spdx:algorithm dct:identifier "spdx:algorithm"@en;
+               vann:usageNote "Mandatory property. This property identifies the algorithm used to produce the subject Checksum. Currently, SHA-1 is the only supported algorithm. It is anticipated that other algorithms will be supported at a later time."@en;
+               :comment "Identifies the algorithm used to produce the subject Checksum. Currently, SHA-1 is the only supported algorithm. It is anticipated that other algorithms will be supported at a later time."@en;
+               :isDefinedBy <http://spdx.org/rdf/terms/#algorithm>;
+               :label "Checksum - algorithm"@en.
+spdx:checksum dct:identifier "spdx:checksum"@en;
+              vann:usageNote "Optional property.This property provides a mechanism that can be used to verify that the contents of a distribution have not changed."@en;
+              :comment "This property provides a mechanism that can be used to verify that the contents of a distribution have not changed."@en;
+              :isDefinedBy <http://spdx.org/rdf/terms/#checksum>;
+              :label "distribution - checksum"@en.
+spdx:checksumValue dct:identifier "spdx:checksumValue"@en;
+                   vann:usageNote "Mandatory property. This property provides a lower case hexadecimal encoded digest value produced using a specific algorithm."@en;
+                   :comment "This property provides a lower case hexadecimal encoded digest value produced using a specific algorithm."@en;
+                   :isDefinedBy <http://spdx.org/rdf/terms/#checksumValue>;
+                   :label "Checksum - checksum value"@en.
+:Literal dct:identifier "rdfs:Literal"@en;
+         vann:usageNote "Mandatory class. A literal value such as a string or integer; Literals may be typed, e.g. as a date according to xsd:date. Literals that contain human-readable text have an optional language tag as defined by BCP 47."@en;
+         :comment "The class rdfs:Literal is the class of literal values such as strings and integers. Property values such as textual strings are examples of RDF literals."@en;
+         :isDefinedBy <http://www.w3.org/TR/rdf-concepts/#section-Literals>;
+         :label "Literal"@en.
+:Resource dct:identifier "rdfs:Resource"@en;
+          vann:usageNote "Mandatory class. Anything described by RDF."@en;
+          :comment "All things described by RDF are called resources, and are instances of the class rdfs:Resource. This is the class of everything. All other classes are subclasses of this class. rdfs:Resource is an instance of rdfs:Class."@en;
+          :isDefinedBy <http://www.w3.org/TR/rdf-schema/#ch_resource>;
+          :label "Resource"@en.
+owl:versionInfo dct:identifier "owl:versionInfo"@en;
+                vann:usageNote "Optional property. This property contains a version number or other version designation of the Dataset."@en;
+                :comment "This property contains a version number or other version designation of the Dataset."@en;
+                :isDefinedBy owl:;
+                :label "Dataset - version"@en.
+skos:Concept dct:identifier "skos:Concept"@en;
+             vann:usageNote "Recommended class - Category: a subject of a Dataset. Optional Class - Publisher type: A type of organisation that acts as a publisher. Optional Class - Status: an indication of the maturity of a Distribution."@en;
+             :comment "An abstract idea or notion; a unit of thought."@en;
+             :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-category-and-category-scheme>;
+             :label "Category, Publisher type, Status "@en.
+skos:ConceptScheme dct:identifier "skos:ConceptScheme"@en;
+                   vann:usageNote "Recommended class. A concept collection (e.g. controlled vocabulary) in which the Category is defined."@en;
+                   :comment "An abstract idea or notion; a unit of thought."@en;
+                   :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-category-and-category-scheme>;
+                   :label "Category scheme"@en.
+skos:notation dct:identifier "skos:notation"@en;
+              vann:usageNote "Mandatory property.  This property contains a string that is an identifier in the context of the identifier scheme referenced by its datatype."@en;
+              :comment "This property contains a string that is an identifier in the context of the identifier scheme referenced by its datatype."@en;
+              :isDefinedBy <http://www.w3.org/2009/08/skos-reference/skos.html#notation>;
+              :label "Identifier - notation"@en.
+skos:prefLabel dct:identifier "skos:prefLabel"@en;
+               vann:usageNote "Mandatory property.  This property contains a preferred label of the category. This property can be repeated for parallel language versions of the label."@en;
+               :comment "This property can be repeated for parallel language versions of the label."@en;
+               :isDefinedBy <http://www.w3.org/2009/08/skos-reference/skos.html#prefLabel>;
+               :label "Category - preferred label"@en.
+vcard:Kind dct:identifier "vcard:Kind"@en;
+           vann:usageNote "Optional class. A description following the vCard specification, e.g. to provide telephone number and e-mail address for a contact point. Note that the class Kind is the parent class for the four explicit types of vCards (Individual, Organization, Location, Group)."@en;
+           :comment "A description following the vCard specification, e.g. to provide telephone number and e-mail address for a contact point. Note that the class Kind is the parent class for the four explicit types of vCards (Individual, Organization, Location, Group)."@en;
+           :isDefinedBy vcard:;
+           :label "Kind"@en.
+adms:identifier dct:identifier "adms:identifier"@en;
+                vann:usageNote "Optional property. This property refers to a secondary identifier of the Dataset, such as MAST/ADS[1], DataCite[2], DOI[3], EZID[4] or W3ID[5]."@en;
+                :comment "This property refers to a secondary identifier of the Dataset, such as MAST/ADS[1], DataCite[2], DOI[3], EZID[4] or W3ID[5]."@en;
+                :isDefinedBy <https://www.w3.org/TR/vocab-adms/#adms-identifier>;
+                :label "Dataset - other identifier"@en.
+adms:sample dct:identifier "adms:sample"@en;
+            vann:usageNote "Optional property. This property refers to a sample distribution of the dataset."@en;
+            :comment "This property refers to a sample distribution of the dataset."@en;
+            :isDefinedBy <https://www.w3.org/TR/vocab-adms/#adms-sample>;
+            :label "Dataset - sample"@en.
+adms:status dct:identifier "adms:status"@en;
+            vann:usageNote "Recommended property.  The type of the latest revision of a Dataset's entry in the Catalogue. It MUST take one of the values :created, :updated or :deleted depending on whether this latest revision is a result of a creation, update or deletion."@en,
+                           "Optional property. This property refers to the maturity of the Distribution."@en;
+            :comment "The type of the latest revision of a Dataset's entry in the Catalogue. It MUST take one of the values :created, :updated or :deleted depending on whether this latest revision is a result of a creation, update or deletion."@en,
+                     "This property refers to the maturity of the Distribution"@en;
+            :isDefinedBy <https://www.w3.org/TR/vocab-adms/#adms-status>,
+                         <http://www.w3.org/TR/vocab-adms/#status>;
+            :label "Catalogue Record - change type"@en,
+                   "Distribution - status"@en.
+adms:versionNotes dct:identifier "adms:versionNotes"@en;
+                  vann:usageNote "Optional property. This property contains a description of the differences between this version and a previous version of the Dataset."@en;
+                  :comment "This property contains a description of the differences between this version and a previous version of the Dataset."@en;
+                  :isDefinedBy <https://www.w3.org/TR/vocab-adms/#adms-versionnotes>;
+                  :label "Dataset - version notes"@en.
+dcat:Catalog dct:identifier "dcat:Catalog"@en;
+             vann:usageNote "Mandatory class. A catalogue or repository that hosts the Datasets being described."@en;
+             :comment "A  curated collection of metadata about datasets"@en;
+             :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-catalog>;
+             :label "Catalogue"@en.
+dcat:CatalogRecord dct:identifier "dcat:CatalogRecord"@en;
+                   vann:usageNote "Optional  class. A description of a Dataset’s entry in the Catalogue."@en;
+                   :comment "A record in a data catalog, describing a single dataset."@en;
+                   :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-catalog-record>;
+                   :label "Catalogue Record"@en.
+dcat:Dataset dct:identifier "dcat:Dataset"@en;
+             vann:usageNote "Mandatory class. A conceptual entity that represents the information published."@en;
+             :comment "A collection of data, published or curated by a single source, and available for access or download in one or more formats"@en;
+             :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-dataset>;
+             :label "Dataset"@en.
+dcat:Distribution dct:identifier "dcat:Distribution"@en;
+                  vann:usageNote "Recommended class. A physical embodiment of the Dataset in a particular format."@en;
+                  :comment "Represents a specific available form of a dataset. Each dataset might be available in different forms, these forms might represent different formats of the dataset, different endpoints,... Examples of Distribution include a downloadable CSV file, an XLS file representing the dataset, an RSS feed…"@en;
+                  :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-distribution>;
+                  :label "Distribution"@en.
+dcat:accessURL dct:identifier "dcat:accessURL"@en;
+               vann:usageNote "Mandatory property.  This property contains a URL that gives access to a Distribution of the Dataset. The resource at the access URL may contain information about how to get the Dataset. "@en;
+               :comment "This property contains a URL that gives access to a Distribution of the Dataset. The resource at the access URL may contain information about how to get the Dataset."@en;
+               :isDefinedBy <https://www.w3.org/TR/vocab-dcat/#Property:distribution_accessurl>;
+               :label "Distribution - access URL"@en.
+dcat:byteSize dct:identifier "dcat:byteSize"@en;
+              vann:usageNote "Optional property. This property contains the size of a Distribution in bytes."@en;
+              :comment "This property contains the size of a Distribution in bytes."@en;
+              :isDefinedBy <http://www.w3.org/TR/vocab-dcat/#Property:distribution_size>;
+              :label "Distribution - byte size"@en.
+dcat:dataset dct:identifier "dcat:dataset"@en;
+             vann:usageNote "Mandatory property. This property links the Catalogue with a Dataset that is part of the Catalogue."@en;
+             :comment "A dataset that is part of the catalog."@en;
+             :isDefinedBy <http://www.w3.org/TR/2013/WD-vocab-dcat-20130312/#class-catalog-record>;
+             :label "Data Catalogue - dataset"@en.
+dcat:distribution dct:identifier "dcat:distribution"@en;
+                  vann:usageNote "Recommended property. This property links the Dataset to an available Distribution."@en;
+                  :comment "This property links the Dataset to an available Distribution."@en;
+                  :isDefinedBy <http://www.w3.org/TR/vocab-dcat/>;
+                  :label "Dataset - dataset distribution"@en.
+dcat:downloadURL dct:identifier "dcat:downloadURL"@en;
+                 vann:usageNote "Optional property. This property contains a URL that is direct link to a downloadable file in a given format."@en;
+                 :comment "This property contains a URL that is direct link to a downloadable file in a given format."@en;
+                 :isDefinedBy <http://www.w3.org/TR/vocab-dcat/#Property:distribution_downloadurl>;
+                 :label "Distribution - download URL"@en.
+dcat:keyword dct:identifier "dcat:keyword"@en;
+             vann:usageNote "Recommended property. This property contains a keyword or tag describing the Dataset."@en;
+             :comment "This property contains a keyword or tag describing the Dataset."@en;
+             :isDefinedBy <https://www.w3.org/TR/vocab-dcat/#Property:dataset_keyword>;
+             :label "Dataset - keyword/ tag"@en.
+dcat:landingPage dct:identifier "dcat:landingPage"@en;
+                 vann:usageNote "Optional property. This property refers to a web page that provides access to the Dataset, its Distributions and/or additional information. "@en;
+                 :comment "This property refers to a web page that provides access to the Dataset, its Distributions and/or additional information."@en;
+                 :isDefinedBy <https://www.w3.org/TR/vocab-dcat/#Property:dataset_landingpage>;
+                 :label "Dataset - landing page"@en.
+dcat:record dct:identifier "dcat:record"@en;
+            vann:usageNote "Optional property. This property refers to a Catalogue Record that is part of the Catalogue"@en;
+            :comment "This property refers to a Catalogue Record that is part of the Catalogue"@en;
+            :isDefinedBy <https://www.w3.org/TR/vocab-dcat/#Property:catalog_catalog_record>;
+            :label "Data Catalogue - record"@en.
+dcat:theme dct:identifier "dcat:theme"@en;
+           vann:usageNote "Recommended property. This property refers to a category of the Dataset. A Dataset may be associated with multiple themes. Subproperty of dct:subject."@en;
+           :comment "This property refers to a category of the Dataset. A Dataset may be associated with multiple themes. Subproperty of dct:subject"@en;
+           :isDefinedBy <https://www.w3.org/TR/vocab-dcat/#Property:dataset_theme>;
+           :label "Dataset - theme/category"@en.
+dcat:themeTaxonomy dct:identifier "dcat:themeTaxonomy"@en;
+                   vann:usageNote "Recommended property. This property refers to a knowledge organization system (KOS) used to classify the Catalogue's Datasets."@en;
+                   :comment "The knowledge organization system (KOS) used to classify catalog's datasets"@en;
+                   :isDefinedBy <http://www.w3.org/TR/vocab-dcat/>;
+                   :label "Data Catalogue - themes"@en.
+foaf:Agent dct:identifier "foaf:Agent"@en;
+           vann:usageNote "Mandatory class. An entity that is associated with Catalogues and/or Datasets. If the Agent is an organisation, the use of the Organization Ontology  is recommended."@en;
+           :comment "An agent (eg. person, group, software or physical artifact)."@en;
+           :isDefinedBy <http://xmlns.com/foaf/spec/#term_Agent>;
+           :label "Agent"@en.
+foaf:Document dct:identifier "foaf:Document"@en;
+              vann:usageNote "Optional class. A textual resource intended for human consumption that contains information, e.g. a web page about a Dataset."@en;
+              :comment "A document."@en;
+              :isDefinedBy <http://xmlns.com/foaf/spec/#term_Document>;
+              :label "Document"@en.
+foaf:homepage dct:identifier "foaf:homepage"@en;
+              vann:usageNote "Recommended property. This property refers to a web page that acts as the main page for the Catalogue."@en;
+              :comment "This property refers to a web page that acts as the main page for the Catalogue."@en;
+              :isDefinedBy <http://xmlns.com/foaf/spec/#term_homepage>;
+              :label "Data Catalogue - homepage"@en.
+foaf:name dct:identifier "foaf:name"@en;
+          vann:usageNote "Mandatory property.  This property contains a name of the agent. This property can be repeated for different versions of the name (e.g. the name in different languages)"@en;
+          :comment "This property can be repeated for different versions of the name (e.g. the name in different languages)"@en;
+          :isDefinedBy <http://xmlns.com/foaf/spec/#term_name>;
+          :label "Agent - name"@en.
+foaf:page dct:identifier "foaf:page"@en;
+          vann:usageNote "Optional property. This property refers to a page or document about this Dataset."@en,
+                         "Optional property.This property refers to a page or document about this Distribution."@en;
+          :comment "This property refers to a page or document about this Dataset."@en,
+                   "This property refers to a page or document about this Distribution."@en;
+          :isDefinedBy <http://xmlns.com/foaf/spec/#term_page>;
+          :label "Dataset - documentation"@en,
+                 "Distribution - documentation"@en.
+foaf:primaryTopic dct:identifier "foaf:primaryTopic"@en;
+                  vann:usageNote "Mandatory property.  This property links the Catalogue Record to the Dataset described in the record."@en;
+                  :comment "This property links the Catalogue Record to the Dataset described in the record."@en;
+                  :isDefinedBy <http://xmlns.com/foaf/spec/#term_primaryTopic>;
+                  :label "Catalogue Record - primary topic"@en.
+<https://joinup.ec.europa.eu/category/licence/isa-open-metadata-licence-v11> cc:attributionName "European Commission";
+                                                                             cc:attributionURL <http://ec.europa.eu/>;
+                                                                             dct:title "ISA Open Metadata Licence v1.1".
+<https://joinup.ec.europa.eu/elibrary/document/isa-deliverable-process-and-methodology-developing-core-vocabularies> dct:title "Process and Methodology for Developing Core Vocabularies".
+<https://joinup.ec.europa.eu/node/69559> cc:attributionName "European Commission"@en;
+                                         cc:attributionURL <http://ec.europa.eu/>;
+                                         voaf:specializes dcat:;
+                                         dct:abstract "The DCAT Application profile for data portals in Europe (DCAT-AP) is a specification based on the Data Catalogue vocabulary (DCAT) for describing public sector datasets in Europe. Its basic use case is to enable a cross-data portal search for data sets and make public sector data better searchable across borders and sectors. This can be achieved by the exchange of descriptions of data sets among data portals."@en;
+                                         dct:conformsTo <https://joinup.ec.europa.eu/elibrary/document/isa-deliverable-process-and-methodology-developing-core-vocabularies>;
+                                         dct:creator [:seeAlso <http://makxdekkers.com/> ; 
+                                                      foaf:name "Makx Dekkers" ; 
+                                                      foaf:homepage <http://makxdekkers.com/> ; 
+                                                      schema:affiliation [foaf:name "AMI Consult" ; 
+                                                                          foaf:homepage <http://www.makxdekkers.com/>]],
+                                                     [:seeAlso <http://www.deri.ie/users/vassilios-peristeras/> ; 
+                                                      foaf:name "Vassilios Peristeras" ; 
+                                                      foaf:homepage <http://www.deri.ie/users/vassilios-peristeras/> ; 
+                                                      schema:affiliation [foaf:name "European Commission" ; 
+                                                                          foaf:homepage <http://ec.europa.eu/>]],
+                                                     [:seeAlso <http://nikosloutas.com/> ; 
+                                                      foaf:name "Nikolaos Loutas" ; 
+                                                      foaf:homepage <http://nikosloutas.com/> ; 
+                                                      schema:affiliation [foaf:name "PwC EU Services" ; 
+                                                                          foaf:homepage <http://www.pwc.com/gx/en/eu-institutions-services/>]];
+                                         dct:license <https://joinup.ec.europa.eu/category/licence/isa-open-metadata-licence-v11>;
+                                         dct:modified "2016-06-08"^^<xsd:date>;
+                                         dct:publisher <http://dbpedia.org/resource/European_Commission>;
+                                         dct:relation <https://joinup.ec.europa.eu/node/69559>;
+                                         vann:preferredNamespacePrefix "dcat"@en;
+                                         vann:preferredNamespaceUri "http://www.w3.org/ns/dcat#"@en;
+                                         a owl:Ontology;
+                                         xhv:prev <https://joinup.ec.europa.eu/node/65911>;
+                                         :comment "This document specifies the set of RDF classes and properties used in the DCAT Application profile for data portals in Europe (DCAT-AP)."@en;
+                                         :label "DCAT Application Profile for Data Portals in Europe"@en;
+                                         owl:versionInfo "1.1"@en;
+                                         wdrs:describedby <https://joinup.ec.europa.eu/node/69559>;
+                                         foaf:logo <https://joinup.ec.europa.eu/sites/default/files/imagecache/community_logo/DCAT_application_profile_for_European_data_portals_logo_0.png>;
+                                         foaf:maker [foaf:name "DCAT-AP Working Group" ; 
+                                                     foaf:page <https://joinup.ec.europa.eu/node/63580>].
+<https://joinup.ec.europa.eu/sites/default/files/imagecache/community_logo/DCAT_application_profile_for_European_data_portals_logo_0.png> :label "DCAT-AP logo".
+<https://www.w3.org/ns/adms#Identifier> dct:identifier "adms:Identifier"@en;
+                                        vann:usageNote "Optional class. An identifier in a particular context, consisting of the string that is the identifier; an optional identifier for the identifier scheme; an optional identifier for the version of the identifier scheme; an optional identifier for the agency that manages the identifier scheme"@en;
+                                        :comment "This class is based on the UN/CEFACT Identifier complex type defined in See Section 5.8 of Core Components Data Type Catalogue Version 3.1 (http://www.unece.org/fileadmin/DAM/cefact/codesfortrade/CCTS/CCTS-DTCatalogueVersion3p1.pdf) In RDF this is expressed using the following properties: - the content string should be provided using skos:notation, datatyped with the identifier scheme (inclduing the version number if appropriate); - use dcterms:creator to link to a class describing the agency that manages the identifier scheme or adms:schemaAgency to provide the name as a literal. Although not part of the ADMS conceptual model, it may be useful to provide further properties to the Identifier class such as dcterms:created to provide the date on which the identifier was issued."@en;
+                                        :isDefinedBy <https://www.w3.org/TR/vocab-adms/#identifier>;
+                                        :label "Identifier"@en.
+<https://www.w3.org/ns/dcat#contactPoint> dct:identifier "dcat:contactPoint"@en;
+                                          vann:usageNote "Recommended property.This property contains contact information that can be used for sending comments about the Dataset."@en;
+                                          :comment "This property contains contact information that can be used for sending comments about the Dataset."@en;
+                                          :isDefinedBy <https://www.w3.org/TR/vocab-adms/#dcat-contactpoint>;
+                                          :label "Dataset - contact point"@en.
