@@ -37,7 +37,7 @@ export default function Filter(props){
             .then(response => {
                 let pub = []
 
-                for(let i = 0; i < 2; i++){
+                for(let i = 0; i < response.length; i++){
                     pub.push([response[i].name.split(" ")[0], response[i].id, false, i]);
                 }
                 setPublishers(pub)
