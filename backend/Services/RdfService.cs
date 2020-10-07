@@ -92,6 +92,8 @@ namespace OpenData.API.Services
 
         // Get attributes as dictionary from chosen subject node
         private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject){
+            Console.WriteLine("---------------------------");
+            Console.WriteLine(subject);
             IUriNode node = g.CreateUriNode(new Uri(subject));
             Dictionary<string,string> attributes = new Dictionary<string, string>();
             IEnumerable<Triple> triples = g.GetTriplesWithSubject(node);
@@ -112,7 +114,6 @@ namespace OpenData.API.Services
             IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, uriNode);
             foreach (Triple t in ts) {
                 uri = t.Subject.ToString();
-                Console.WriteLine(t.Subject);
             }
             return uri;
         }
@@ -178,6 +179,10 @@ namespace OpenData.API.Services
             // Find the publisher subject uri 
             IUriNode foafOrganization = g.CreateUriNode("foaf:Organization");
             String publisherUri = findSubjectUri(g, foafOrganization);
+            if (String.IsNullOrWhiteSpace(publisherUri)){
+                IUriNode foafAgent = g.CreateUriNode("foaf:Agent");
+                publisherUri = findSubjectUri(g, foafAgent);
+            }
             
             Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri);
             String publisherName = attributes.GetValueOrDefault("name", "Ukjent");
@@ -206,12 +211,14 @@ namespace OpenData.API.Services
         {   
             Console.WriteLine("KJØRER ==========================");
             
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
+            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
             
-            Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
+            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
+
 
             Dataset dataset = await addDataset(g);
-            // saveToFileTurtle(g, "dcat_example1.ttl");
+
             Console.WriteLine("STOPPER ==========================");
             return dataset;
         }
