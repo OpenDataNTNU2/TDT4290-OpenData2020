@@ -37,9 +37,9 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
                         
                     </Tabs>
                 </Grid>
-                {prevLoggedIn ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
+                {JSON.parse(prevLoggedIn) ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
                 <Grid item xs={1}>
-                    {prevLoggedIn ? 
+                    {JSON.parse(prevLoggedIn) ? 
                         <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg ut</Button>
                         : <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg inn</Button>
                     }
