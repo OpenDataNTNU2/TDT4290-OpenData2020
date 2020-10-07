@@ -69,12 +69,24 @@ namespace OpenData.API.Services
             CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
             return VDS.RDF.Writing.StringWriter.Write(g, turtleWriter);
         }
+        // Parse graph to string on xml format
+        private String graphToStringXml(Graph g) {
+            RdfXmlWriter xmlWriter = new RdfXmlWriter();
+            return VDS.RDF.Writing.StringWriter.Write(g, xmlWriter);
+        }
         // Parse string on turtle format to graph
         private Graph stringToGraphTurtle(String s) {
             Graph g = new Graph();
             StringParser.Parse(g, s, new TurtleParser());
             return g;
         }
+        // Parse string on xml format to graph
+        private Graph stringToGraphXml(String s) {
+            Graph g = new Graph();
+            StringParser.Parse(g, s, new RdfXmlParser());
+            return g;
+        }
+
         // Load RDF content from URI with headers corresponding to turtle
         private Graph loadFromUriWithHeadersTurtle(String uri) {
             System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
@@ -94,7 +106,13 @@ namespace OpenData.API.Services
         private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject){
             Console.WriteLine("---------------------------");
             Console.WriteLine(subject);
-            IUriNode node = g.CreateUriNode(new Uri(subject));
+            INode node;
+            if (subject.StartsWith("_")){
+                Console.WriteLine("!!!KRISE!!!");
+                node = g.CreateUriNode(subject);
+            } else {
+                node = g.CreateUriNode(new Uri(subject));
+            }
             Dictionary<string,string> attributes = new Dictionary<string, string>();
             IEnumerable<Triple> triples = g.GetTriplesWithSubject(node);
             foreach (Triple t in triples){
@@ -104,6 +122,7 @@ namespace OpenData.API.Services
                 int index = Math.Max(slash,hash) + 1;
                 p = p.Substring(index);
                 attributes[p] = t.Object.ToString();
+                Console.WriteLine(p);
             }
             return attributes;
         }
@@ -120,8 +139,9 @@ namespace OpenData.API.Services
 
         // Add a dataset in a graph to the database
         private async Task<Dataset> addDataset(Graph g) {
+            g.NamespaceMap.AddNamespace("_", new Uri("http://example.org"));
             // Find publisher id
-            Publisher publisher = await addPublisher(g);
+            // Publisher publisher = await addPublisher(g);
 
             // Find the dataset subject uri 
             IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
@@ -134,7 +154,7 @@ namespace OpenData.API.Services
                 Identifier = datasetUri, 
                 Description = attributes.GetValueOrDefault("description", ""), 
                 PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
-                PublisherId = publisher.Id, 
+                PublisherId = 100, 
                 CategoryId = 100 
             };
 
@@ -211,16 +231,27 @@ namespace OpenData.API.Services
         {   
             Console.WriteLine("KJØRER ==========================");
             
-            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
+            //Funker ikke
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
+            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
+            
+            //Funker
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
             
             // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
 
+            INode root = g.CreateBlankNode("_:autos1");
+            IEnumerable<INode> ns = g.GetListItems(root);
+            
 
-            Dataset dataset = await addDataset(g);
+            // Dataset dataset = await addDataset(g);
 
             Console.WriteLine("STOPPER ==========================");
-            return dataset;
+            // return dataset;
+            return new Dataset();
         }
 
         public void export() {
