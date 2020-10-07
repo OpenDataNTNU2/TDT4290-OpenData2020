@@ -129,9 +129,10 @@ namespace OpenData.API.Services
             Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri);
             // Add relevant attributes to a new dataset
             Dataset dataset = new Dataset {
-                Title = attributes["title"], 
+                Title = attributes.GetValueOrDefault("title", "Ingen tittel"), 
                 Identifier = datasetUri, 
-                Description = attributes["description"], 
+                Description = attributes.GetValueOrDefault("description", ""), 
+                PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
                 PublisherId = publisher.Id, 
                 CategoryId = 100 
             };
@@ -151,11 +152,18 @@ namespace OpenData.API.Services
             String distributionUri = findSubjectUri(g, dcatDistribution);
 
             Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
+
+            //Parse file format
+            EFileFormat fileFormat = EFileFormat.annet;
+            try {
+                fileFormat = (EFileFormat)Enum.Parse(typeof(EFileFormat), attributes.GetValueOrDefault("format", "annet"), true);
+            }catch(Exception ex){Console.WriteLine(ex.Message);}
+
             // Add relevant attributes to a new distribution
             Distribution distribution = new Distribution {
-                Title = attributes["title"], 
-                Uri = attributes["accessURL"], 
-                FileFormat = (EFileFormat)Enum.Parse(typeof(EFileFormat), attributes["format"], true), 
+                Title = attributes.GetValueOrDefault("title", ""), 
+                Uri = attributes.GetValueOrDefault("accessURL", ""), 
+                FileFormat = fileFormat, 
                 DatasetId = datasetId
             };
 
@@ -170,20 +178,21 @@ namespace OpenData.API.Services
             // Find the publisher subject uri 
             IUriNode foafOrganization = g.CreateUriNode("foaf:Organization");
             String publisherUri = findSubjectUri(g, foafOrganization);
-
-            // IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
-
-            // foreach (Publisher publisher in existingPublishers){
-            //     if (publisher.Name.ToLower().Contains(mun.ToLower())){
-            //         user.PublisherId = publisher.Id;
-            //         break;
-            //     }
-            // }
-
+            
             Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri);
-            // Add relevant attributes to a new publisher
+            String publisherName = attributes.GetValueOrDefault("name", "Ukjent");
+            
+            // Check if the publisher  already exists
+            IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
+            foreach (Publisher pub in existingPublishers){
+                if (pub.Name.ToLower().Equals(publisherName.ToLower())){
+                    return pub;
+                }
+            }
+
+            // If it doesn't exist, add relevant attributes to a new publisher
             Publisher publisher = new Publisher {
-                Name = attributes["name"], 
+                Name = attributes.GetValueOrDefault("name", "Ukjent"), 
             };
 
             // Add the dataset to the publisher
