@@ -65,22 +65,24 @@ namespace OpenData.API.Persistence.Contexts
 
             builder.Entity<Dataset>().HasData
             (
-                new Dataset { 
-                    Id = 100, 
-                    Title = "Strand", 
-                    Identifier = "/api/datasets/100", 
-                    Description = "Strender i Trondheim", 
-                    PublicationStatus = EPublicationStatus.published, 
+                new Dataset
+                {
+                    Id = 100,
+                    Title = "Strand",
+                    Identifier = "/api/datasets/100",
+                    Description = "Strender i Trondheim",
+                    PublicationStatus = EPublicationStatus.published,
                     PublisherId = 100,
                     CategoryId = 100
                 }, // Id set manually due to in-memory provider
-                new Dataset { 
-                    Id = 101, 
-                    Title = "Strand", 
-                    Identifier = "/api/datasets/101", 
-                    Description = "Strender i Bodø", 
+                new Dataset
+                {
+                    Id = 101,
+                    Title = "Strand",
+                    Identifier = "/api/datasets/101",
+                    Description = "Strender i Bodø",
                     PublicationStatus = EPublicationStatus.notPublished,
-                    DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation, 
+                    DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
                     PublisherId = 101,
                     CategoryId = 100
                 }
