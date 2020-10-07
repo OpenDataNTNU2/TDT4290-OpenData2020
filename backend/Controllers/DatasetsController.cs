@@ -37,7 +37,7 @@ namespace OpenData.API.Controllers
         public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
         {
             try {
-                _rdfService.import();
+                Dataset datatset = await _rdfService.import();
             }catch(Exception ex){
                 Console.WriteLine(ex.ToString());
             }

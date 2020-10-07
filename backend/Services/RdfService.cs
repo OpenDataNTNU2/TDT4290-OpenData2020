@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenData.API.Persistence.Contexts;
+using System.Threading.Tasks;
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Repositories;
@@ -89,31 +90,8 @@ namespace OpenData.API.Services
             return g;
         }
 
-        private void addDataset(Graph g) {
-            // Find the dataset subject uri 
-            IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
-            String datasetUri = findSubjectUri(g, dcatDataset);
-            // From the dataset uri make a dictionary with the attributes
-            Dictionary<string,string> attributes = getAttributesFromTriples(g, datasetUri);
-
-            // Add relevant attributes to a new dataset
-            Dataset dataset = new Dataset {
-                Title = attributes["title"], 
-                Identifier = datasetUri, 
-                Description = attributes["description"], 
-                PublisherId = 100, 
-                CategoryId = 100 
-            };
-
-            // Add the dataset to the database
-            _datasetRepository.AddAsync(dataset);
-            _unitOfWork.CompleteAsync();
-            
-            addDistribution(g, dataset.Id);
-        }
-
         // Get attributes as dictionary from chosen subject node
-        private Dictionary<string,string> getAttributesFromTriples(Graph g, String subject){
+        private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject){
             IUriNode node = g.CreateUriNode(new Uri(subject));
             Dictionary<string,string> attributes = new Dictionary<string, string>();
             IEnumerable<Triple> triples = g.GetTriplesWithSubject(node);
@@ -139,12 +117,40 @@ namespace OpenData.API.Services
             return uri;
         }
 
-        private void addDistribution(Graph g, int datasetId){
+        // Add a dataset in a graph to the database
+        private async Task<Dataset> addDataset(Graph g) {
+            // Find publisher id
+            Publisher publisher = await addPublisher(g);
+
+            // Find the dataset subject uri 
+            IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
+            String datasetUri = findSubjectUri(g, dcatDataset);
+            // From the dataset uri make a dictionary with the attributes
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri);
+            // Add relevant attributes to a new dataset
+            Dataset dataset = new Dataset {
+                Title = attributes["title"], 
+                Identifier = datasetUri, 
+                Description = attributes["description"], 
+                PublisherId = publisher.Id, 
+                CategoryId = 100 
+            };
+
+            // Add the dataset to the database
+            await _datasetRepository.AddAsync(dataset);
+            await _unitOfWork.CompleteAsync();
+            
+            await addDistribution(g, dataset.Id);
+            return dataset;
+        }
+
+        // Add a distribution in a graph to the database
+        private async Task<Distribution> addDistribution(Graph g, int datasetId){
             // Find the distribution subject uri 
             IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
             String distributionUri = findSubjectUri(g, dcatDistribution);
 
-            Dictionary<string,string> attributes = getAttributesFromTriples(g, distributionUri);
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
             // Add relevant attributes to a new distribution
             Distribution distribution = new Distribution {
                 Title = attributes["title"], 
@@ -154,13 +160,40 @@ namespace OpenData.API.Services
             };
 
             // Add the dataset to the distribution
-            _distributionRepository.AddAsync(distribution);
-            _unitOfWork.CompleteAsync();
-            
+            await _distributionRepository.AddAsync(distribution);
+            await _unitOfWork.CompleteAsync();
+            return distribution;
+        }
+
+        // Add a publisher in a graph to the database
+        private async Task<Publisher> addPublisher(Graph g){
+            // Find the publisher subject uri 
+            IUriNode foafOrganization = g.CreateUriNode("foaf:Organization");
+            String publisherUri = findSubjectUri(g, foafOrganization);
+
+            // IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
+
+            // foreach (Publisher publisher in existingPublishers){
+            //     if (publisher.Name.ToLower().Contains(mun.ToLower())){
+            //         user.PublisherId = publisher.Id;
+            //         break;
+            //     }
+            // }
+
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri);
+            // Add relevant attributes to a new publisher
+            Publisher publisher = new Publisher {
+                Name = attributes["name"], 
+            };
+
+            // Add the dataset to the publisher
+            await _publisherRepository.AddAsync(publisher);
+            await _unitOfWork.CompleteAsync();
+            return publisher;
         }
 
         
-        public void import()
+        public async Task<Dataset> import()
         {   
             Console.WriteLine("KJØRER ==========================");
             
@@ -168,9 +201,10 @@ namespace OpenData.API.Services
             
             Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
 
-            addDataset(g);
+            Dataset dataset = await addDataset(g);
             // saveToFileTurtle(g, "dcat_example1.ttl");
             Console.WriteLine("STOPPER ==========================");
+            return dataset;
         }
 
         public void export() {

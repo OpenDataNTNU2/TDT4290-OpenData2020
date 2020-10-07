@@ -12,7 +12,7 @@ namespace OpenData.API.Domain.Services
 {
     public interface IRdfService
     {
-        void import();
+        Task<Dataset> import();
         void export();
     }
 }
