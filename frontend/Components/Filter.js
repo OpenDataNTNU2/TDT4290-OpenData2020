@@ -14,12 +14,10 @@ export default function Filter(props){
             if(newArr[i] === event.target.value) {newArr.pop(); newArr.splice(i,1)}
         }
         setAddedFilters(newArr)
-        console.log(newArr)
         let newUrlString = ""
         for(let i = 0; i < newArr.length; i++){
             newUrlString += newArr[i] + ','
         }
-        console.log(newUrlString)
         props.setUrl(newUrlString)
       
     };
@@ -36,12 +34,10 @@ export default function Filter(props){
             .then(response => response.json())
             .then(response => {
                 let pub = []
-
                 for(let i = 0; i < response.length; i++){
                     pub.push([response[i].name.split(" ")[0], response[i].id, false, i]);
                 }
                 setPublishers(pub)
-                console.log(publishers)
             })
         }
         catch(_){
