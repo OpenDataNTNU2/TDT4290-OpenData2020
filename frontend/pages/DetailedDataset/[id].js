@@ -1,15 +1,24 @@
-import { Paper, Grid } from '@material-ui/core';
+import { Paper, Grid, Button } from '@material-ui/core';
+import RequestButtonComp from './RequestButtonComp';
 
 export default function DetailedDataset({data}){
-
+ 
+  var requestButton;
+  var publishedStatus;
   const ifPublished = (pub) => {
     if (pub === "Published"){
-      return pub
+      requestButton = null;
+      publishedStatus = "Published";
     }
-    //should be the other value, i dont have a way to test it:(
-    return "Not yet published"
+    else {
+      requestButton = <RequestButtonComp/>;
+      publishedStatus = "Not published";
+    }
   }
-
+  
+  function handleClick() {
+    console.log('this is..');
+  }
 
     return(
         <Grid
@@ -30,17 +39,25 @@ export default function DetailedDataset({data}){
             </Grid>
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
-            <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
-
-            <p><b>Eier:</b> {data.publisher.name}</p>
-
-            <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
-            <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}</i></p>
-            <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-            <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a href={distributions.uri}> {distributions.uri} </a> )})} </p>
+              <Grid
+              container
+              spacing={0}
+              direction="row"
+              justify="space-between"
+              alignItems="center">
+                <p><b>Beskrivelse: </b>{data.description}</p>
+                {ifPublished(data.publicationStatus)}{requestButton}
+              </Grid>
+            
+              <p><b>Eier:</b> {data.publisher.name}</p>
+              <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
+              <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}{publishedStatus}</i></p>
+              <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
+              <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a href={distributions.uri}> {distributions.uri} </a> )})} </p>
+              
+            
             </Paper>
-
-        </Grid>
+            </Grid>
 
     )
 }
