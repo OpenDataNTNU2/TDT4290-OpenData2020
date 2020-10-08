@@ -12,6 +12,7 @@ using VDS.RDF;
 using VDS.RDF.Writing;
 using VDS.RDF.Parsing;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OpenData.API.Services
 {
@@ -295,20 +296,71 @@ namespace OpenData.API.Services
         // Import dataset from link containing rdf schema. 
         public async Task<Dataset> import(String url)
         {   
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
             Graph g = loadFromUriWithHeadersTurtle(url);
 
             // saveToFileTurtle(g, "dcat_example2.ttl");
-
             Dataset dataset = await addDataset(g);
 
             return dataset;
+        }
+
+        public async void populate() 
+        {
+            List<string> urls = findUrlsFromFellesKatalogen();
+            // {
+            //     "https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f",
+            //     "https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c",
+            //     "https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9",
+            //     "https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee",
+            //     "https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85",
+            //     // "https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf",
+            //     // "https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf"
+            // };
+
+            foreach (string url in urls)
+            {
+                try 
+                {
+                    await import(url);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+        }
+
+        private List<string> findUrlsFromFellesKatalogen()   
+        {
+            List<string> urls = new List<string>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                JArray hits = loadFromUrlAsJson("https://fellesdatakatalog.digdir.no/api/datasets?q=kom&page=" + i.ToString());
+
+                foreach (JObject dataset in hits)
+                {
+                    urls.Add("https://fellesdatakatalog.digdir.no/api/datasets/" + (string) dataset["_id"]);
+                    Console.WriteLine("https://fellesdatakatalog.digdir.no/api/datasets/" + (string) dataset["_id"]);
+                }
+            }
+            
+            return urls;
+        }      
+
+        private JArray loadFromUrlAsJson(String uri) 
+        {
+            System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
+            req.Headers["Accept"] = "application/json";
+            // Sends request and recieves response
+            System.Net.WebResponse resp = req.GetResponse();
+            // Converts response to string
+            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+            string result = sr.ReadToEnd().Trim();
+
+            JObject joResponse = JObject.Parse(result);  
+            JObject joObject = (JObject)joResponse["hits"];
+            return (JArray)joObject["hits"];
         }
 
         public void export() 
