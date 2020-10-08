@@ -14,6 +14,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Tags> Tags { get; set; }
         public DbSet<DatasetTags> DatasetTags { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Coordination> Coordinations { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -72,6 +73,14 @@ namespace OpenData.API.Persistence.Contexts
                 .WithMany(t => t.DatasetTags)
                 .HasForeignKey(dt => dt.TagsId);
 
+            builder.Entity<Coordination>().ToTable("Coordinations");
+            builder.Entity<Coordination>().HasKey(p => p.Id);
+            builder.Entity<Coordination>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Coordination>().Property(p => p.Title).IsRequired();
+            builder.Entity<Coordination>()
+            .HasMany(p => p.Datasets)
+            .WithOne(p => p.Coordination)
+            .HasForeignKey(p => p.CoordinationId);
         }
 
         public void AddTestData()
