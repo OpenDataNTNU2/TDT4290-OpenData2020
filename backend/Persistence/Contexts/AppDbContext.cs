@@ -121,6 +121,7 @@ namespace OpenData.API.Persistence.Contexts
                 Identifier = "/api/datasets/100",
                 Description = "Strender i Trondheim",
                 PublicationStatus = EPublicationStatus.published,
+                AccessLevel = EAccessLevel.green,
                 PublisherId = 100,
                 CategoryId = 100
             }; // Id set manually due to in-memory provider
@@ -132,6 +133,7 @@ namespace OpenData.API.Persistence.Contexts
                 Description = "Strender i Bodø",
                 PublicationStatus = EPublicationStatus.notPublished,
                 DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
+                AccessLevel = EAccessLevel.yellow,
                 PublisherId = 101,
                 CategoryId = 100
             };

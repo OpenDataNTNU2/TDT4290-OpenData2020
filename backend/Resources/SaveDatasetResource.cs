@@ -16,9 +16,10 @@ namespace OpenData.API.Resources
         public string Description { get; set; }
         [Required]
         public int? PublisherId { get; set; }
-        [Range(1,2)]
+        [Range(1, 2)]
         public int PublicationStatus { get; set; }
         public int DetailedPublicationStatus { get; set; }
+        public int AccessLevel { get; set; }
         public string TagsIds { get; set; }
         [Required]
         public int? CategoryId { get; set; }

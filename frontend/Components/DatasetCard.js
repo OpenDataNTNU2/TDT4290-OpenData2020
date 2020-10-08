@@ -32,6 +32,7 @@ export default function DatasetCard({ dataset, onClick }) {
                 <Grid container alignItems='flex-end' wrap='wrap'>
                     <Grid item xs={9}>
                         <h3>{dataset.title}</h3>
+                        <h5>{dataset.publisher.name}</h5>
                         <p>{cutString(dataset.description)}</p>
                     </Grid>
                     <Grid item xs={2} style={{ margin: '1em' }}>
