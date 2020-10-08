@@ -1,0 +1,35 @@
+@base <https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf>.
+
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcat: <http://www.w3.org/ns/dcat#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+
+_:Nbe8f63118f724386991bce446757e396 a vcard:Organization;
+                                    vcard:fn "Trond Magne Lamprecht Haaland";
+                                    vcard:hasEmail "opendata@stavanger.kommune.no".
+<https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d> dct:description "Alle datasett som danner grunnlaget for levekårsundersøkelsen, har en tittel som begynner med Levekår Stavanger:";
+                                                                  dct:identifier "f1175bf3-0fe9-457d-a741-c479fb57d12d";
+                                                                  dct:issued "2019-11-05T14:55:41.994902"^^xsd:dateTime;
+                                                                  dct:modified "2019-11-06T16:05:45.956834"^^xsd:dateTime;
+                                                                  dct:publisher <https://opencom.no/organization/a5828aa1-820f-4937-b704-579a53258a09>;
+                                                                  dct:title "Levekår Stavanger: Lav utdanning";
+                                                                  a dcat:Dataset;
+                                                                  dcat:contactPoint _:Nbe8f63118f724386991bce446757e396;
+                                                                  dcat:distribution <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/bb6f3714-819e-4ec1-a566-2dcdab2a3c62>,
+                                                                                    <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c>;
+                                                                  dcat:landingPage "SSB".
+<https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c> dct:format "CSV";
+                                                                                                                dct:title "Lav utdanning";
+                                                                                                                a dcat:Distribution;
+                                                                                                                dcat:accessURL "https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c/download/lav_utdanning.csv".
+<https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/bb6f3714-819e-4ec1-a566-2dcdab2a3c62> dct:format "JSON";
+                                                                                                                dct:title "Lav utdanning  json";
+                                                                                                                a dcat:Distribution;
+                                                                                                                dcat:accessURL "https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/bb6f3714-819e-4ec1-a566-2dcdab2a3c62/download/lav_utdanning.json".
+<https://opencom.no/organization/a5828aa1-820f-4937-b704-579a53258a09> a foaf:Organization;
+                                                                       foaf:name "Stavanger kommune".

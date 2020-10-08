@@ -61,6 +61,7 @@ namespace OpenData.API.Services
         // Save RDF content to file as turtle
         private void saveToFileTurtle(Graph g, String fileName) {
             CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
+            turtleWriter.CompressionLevel = 1;
             turtleWriter.Save(g, fileName);
         }
 
@@ -104,25 +105,18 @@ namespace OpenData.API.Services
 
         // Get attributes as dictionary from chosen subject node
         private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject){
-            Console.WriteLine("---------------------------");
-            Console.WriteLine(subject);
-            INode node;
-            if (subject.StartsWith("_")){
-                Console.WriteLine("!!!KRISE!!!");
-                node = g.CreateUriNode(subject);
-            } else {
-                node = g.CreateUriNode(new Uri(subject));
-            }
             Dictionary<string,string> attributes = new Dictionary<string, string>();
-            IEnumerable<Triple> triples = g.GetTriplesWithSubject(node);
+            IEnumerable<Triple> triples = g.Triples;
             foreach (Triple t in triples){
-                string p = t.Predicate.ToString();
-                int slash = p.LastIndexOf("/");
-                int hash = p.LastIndexOf("#");
-                int index = Math.Max(slash,hash) + 1;
-                p = p.Substring(index);
-                attributes[p] = t.Object.ToString();
-                Console.WriteLine(p);
+                if (t.Subject.ToString() == subject)
+                {
+                    string p = t.Predicate.ToString();
+                    int slash = p.LastIndexOf("/");
+                    int hash = p.LastIndexOf("#");
+                    int index = Math.Max(slash,hash) + 1;
+                    p = p.Substring(index);
+                    attributes[p] = t.Object.ToString();
+                }
             }
             return attributes;
         }
@@ -139,9 +133,8 @@ namespace OpenData.API.Services
 
         // Add a dataset in a graph to the database
         private async Task<Dataset> addDataset(Graph g) {
-            g.NamespaceMap.AddNamespace("_", new Uri("http://example.org"));
             // Find publisher id
-            // Publisher publisher = await addPublisher(g);
+            Publisher publisher = await addPublisher(g);
 
             // Find the dataset subject uri 
             IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
@@ -154,7 +147,7 @@ namespace OpenData.API.Services
                 Identifier = datasetUri, 
                 Description = attributes.GetValueOrDefault("description", ""), 
                 PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
-                PublisherId = 100, 
+                PublisherId = publisher.Id, 
                 CategoryId = 100 
             };
 
@@ -171,7 +164,6 @@ namespace OpenData.API.Services
             // Find the distribution subject uri 
             IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
             String distributionUri = findSubjectUri(g, dcatDistribution);
-
             Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
 
             //Parse file format
@@ -182,7 +174,7 @@ namespace OpenData.API.Services
 
             // Add relevant attributes to a new distribution
             Distribution distribution = new Distribution {
-                Title = attributes.GetValueOrDefault("title", ""), 
+                Title = attributes.GetValueOrDefault("title", attributes.GetValueOrDefault("description", "")), 
                 Uri = attributes.GetValueOrDefault("accessURL", ""), 
                 FileFormat = fileFormat, 
                 DatasetId = datasetId
@@ -226,32 +218,38 @@ namespace OpenData.API.Services
             return publisher;
         }
 
-        
+        // TODO: Støtte rdf lister antageligvis. 
+        // TODO: Flere format på en distribution??
+        // TODO : Flere distributions.
+        // Todo : Keywords/tags
+        // Finner ikke kategori kobling
+        // Import dataset from link containing rdf schema. 
         public async Task<Dataset> import()
         {   
             Console.WriteLine("KJØRER ==========================");
             
-            //Funker ikke
+            // Funker ikke
+            
+            // 2 distributions
+            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
+            Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
+            
+            // Funker men har flere format på en distribution
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
-            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
-            
-            //Funker
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
             
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
 
-            INode root = g.CreateBlankNode("_:autos1");
-            IEnumerable<INode> ns = g.GetListItems(root);
-            
+            saveToFileTurtle(g, "dcat_example2.ttl");
 
-            // Dataset dataset = await addDataset(g);
+
+            Dataset dataset = await addDataset(g);
 
             Console.WriteLine("STOPPER ==========================");
-            // return dataset;
-            return new Dataset();
+            return dataset;
+            // return new Dataset();
         }
 
         public void export() {
