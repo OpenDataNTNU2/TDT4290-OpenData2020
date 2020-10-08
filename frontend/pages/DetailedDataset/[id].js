@@ -5,11 +5,9 @@ export default function DetailedDataset({data}){
   const ifPublished = (pub) => {
     if (pub === "Published"){
       return pub
-    }
-    //should be the other value, i dont have a way to test it:(
-    return "Not yet published"
   }
-
+  return data.detailedPublicationStatus
+  }
 
     return(
         <Grid
@@ -46,12 +44,12 @@ export default function DetailedDataset({data}){
 }
 
 export async function getServerSideProps(context) {
-    // Fetch data from external API
+  // Fetch data from external API
     // Should be changed to host link when this is done, not localhost.
     const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
-  
+
     // Pass data to the page via props
     return { props: { data } }
   }
