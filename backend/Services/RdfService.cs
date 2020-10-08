@@ -115,7 +115,14 @@ namespace OpenData.API.Services
                     int hash = p.LastIndexOf("#");
                     int index = Math.Max(slash,hash) + 1;
                     p = p.Substring(index);
-                    attributes[p] = t.Object.ToString();
+                    if(attributes.ContainsKey(p))
+                    {
+                        attributes[p] = attributes[p] + "," + t.Object.ToString();
+                    }
+                    else
+                    {
+                        attributes[p] = t.Object.ToString();
+                    }
                 }
             }
             return attributes;
@@ -126,7 +133,14 @@ namespace OpenData.API.Services
             String uri = "";
             IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, uriNode);
             foreach (Triple t in ts) {
-                uri = t.Subject.ToString();
+                if (String.IsNullOrEmpty(uri))
+                {
+                    uri = t.Subject.ToString();
+                }
+                else 
+                {
+                    uri += "," + t.Subject.ToString();
+                }
             }
             return uri;
         }
@@ -160,30 +174,34 @@ namespace OpenData.API.Services
         }
 
         // Add a distribution in a graph to the database
-        private async Task<Distribution> addDistribution(Graph g, int datasetId){
+        private async Task<List<Distribution>> addDistribution(Graph g, int datasetId){
             // Find the distribution subject uri 
             IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
-            String distributionUri = findSubjectUri(g, dcatDistribution);
-            Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
+            String[] distributionUris = findSubjectUri(g, dcatDistribution).Split(",");
+            List<Distribution> distributions = new List<Distribution>();
+            foreach (String distributionUri in distributionUris){
+                Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
+                //Parse file format
+                EFileFormat fileFormat = EFileFormat.annet;
+                String[] fileFormatString = attributes.GetValueOrDefault("format", "annet").Split(",");
+                try {
+                    fileFormat = (EFileFormat)Enum.Parse(typeof(EFileFormat), fileFormatString[0], true);
+                }catch(Exception ex){Console.WriteLine(ex.Message);}
 
-            //Parse file format
-            EFileFormat fileFormat = EFileFormat.annet;
-            try {
-                fileFormat = (EFileFormat)Enum.Parse(typeof(EFileFormat), attributes.GetValueOrDefault("format", "annet"), true);
-            }catch(Exception ex){Console.WriteLine(ex.Message);}
+                // Add relevant attributes to a new distribution
+                Distribution distribution = new Distribution {
+                    Title = (string) attributes.GetValueOrDefault("title", attributes.GetValueOrDefault("description", "")), 
+                    Uri = (string) attributes.GetValueOrDefault("accessURL", ""), 
+                    FileFormat = fileFormat, 
+                    DatasetId = datasetId
+                };
 
-            // Add relevant attributes to a new distribution
-            Distribution distribution = new Distribution {
-                Title = attributes.GetValueOrDefault("title", attributes.GetValueOrDefault("description", "")), 
-                Uri = attributes.GetValueOrDefault("accessURL", ""), 
-                FileFormat = fileFormat, 
-                DatasetId = datasetId
-            };
-
-            // Add the dataset to the distribution
-            await _distributionRepository.AddAsync(distribution);
-            await _unitOfWork.CompleteAsync();
-            return distribution;
+                // Add the dataset to the distribution
+                await _distributionRepository.AddAsync(distribution);
+                await _unitOfWork.CompleteAsync();
+                distributions.Add(distribution);
+            }
+            return distributions;
         }
 
         // Add a publisher in a graph to the database
@@ -209,7 +227,7 @@ namespace OpenData.API.Services
 
             // If it doesn't exist, add relevant attributes to a new publisher
             Publisher publisher = new Publisher {
-                Name = attributes.GetValueOrDefault("name", "Ukjent"), 
+                Name = publisherName, 
             };
 
             // Add the dataset to the publisher
@@ -220,7 +238,6 @@ namespace OpenData.API.Services
 
         // TODO: Støtte rdf lister antageligvis. 
         // TODO: Flere format på en distribution??
-        // TODO : Flere distributions.
         // Todo : Keywords/tags
         // Finner ikke kategori kobling
         // Import dataset from link containing rdf schema. 
@@ -230,7 +247,7 @@ namespace OpenData.API.Services
             
             // Funker ikke
             
-            // 2 distributions
+            // Funker
             // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
             Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
             

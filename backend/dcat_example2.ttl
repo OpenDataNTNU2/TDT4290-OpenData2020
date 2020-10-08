@@ -9,7 +9,7 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#>.
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
 
-_:Nbe8f63118f724386991bce446757e396 a vcard:Organization;
+_:Ndf0929a88d1f415087f6eaa842d586a8 a vcard:Organization;
                                     vcard:fn "Trond Magne Lamprecht Haaland";
                                     vcard:hasEmail "opendata@stavanger.kommune.no".
 <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d> dct:description "Alle datasett som danner grunnlaget for levekårsundersøkelsen, har en tittel som begynner med Levekår Stavanger:";
@@ -19,9 +19,9 @@ _:Nbe8f63118f724386991bce446757e396 a vcard:Organization;
                                                                   dct:publisher <https://opencom.no/organization/a5828aa1-820f-4937-b704-579a53258a09>;
                                                                   dct:title "Levekår Stavanger: Lav utdanning";
                                                                   a dcat:Dataset;
-                                                                  dcat:contactPoint _:Nbe8f63118f724386991bce446757e396;
-                                                                  dcat:distribution <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/bb6f3714-819e-4ec1-a566-2dcdab2a3c62>,
-                                                                                    <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c>;
+                                                                  dcat:contactPoint _:Ndf0929a88d1f415087f6eaa842d586a8;
+                                                                  dcat:distribution <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c>,
+                                                                                    <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/bb6f3714-819e-4ec1-a566-2dcdab2a3c62>;
                                                                   dcat:landingPage "SSB".
 <https://opencom.no/dataset/f1175bf3-0fe9-457d-a741-c479fb57d12d/resource/23029bf2-0a4f-47d1-9be8-7c255bde591c> dct:format "CSV";
                                                                                                                 dct:title "Lav utdanning";
