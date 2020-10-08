@@ -8,5 +8,6 @@ namespace OpenData.API.Domain.Repositories
     public interface ICoordinationRepository
     {
         Task<IEnumerable<Coordination>> ListAsync();
+        Task AddAsync(Coordination coordination);
     }
 }

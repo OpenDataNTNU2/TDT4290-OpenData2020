@@ -28,6 +28,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
             builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Coordinations).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
@@ -189,6 +190,13 @@ namespace OpenData.API.Persistence.Contexts
                 TagsId = 101
             };
             AddRange(cultureDataTag, bicycleDataTag);
+
+            Coordination bicycleCoordination = new Coordination
+            {
+                Id = 100,
+                Title = "Bicycle coordination"
+            };
+            AddRange(bicycleCoordination);
 
             SaveChanges();
         }

@@ -34,6 +34,8 @@ namespace OpenData.API.Mapping
             CreateMap<DatasetTags, DatasetTagsResource>();
 
             CreateMap<Category, CategoryResource>();
+
+            CreateMap<Coordination, CoordinationResource>();
         }
     }
 }

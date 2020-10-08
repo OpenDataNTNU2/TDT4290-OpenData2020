@@ -7,6 +7,7 @@ using OpenData.API.Domain.Models.Queries;
 using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
+using OpenData.API.Extensions;
 
 namespace OpenData.API.Controllers
 {
@@ -17,17 +18,37 @@ namespace OpenData.API.Controllers
     public class CoordinationsController : Controller
     {
         private readonly ICoordinationService _coordinationService;
+        private readonly IMapper _mapper;
         
-        public CoordinationController(ICoordinationService coordinationService)
+        public CoordinationsController(ICoordinationService coordinationService, IMapper mapper)
         {
             _coordinationService = coordinationService;   
+            _mapper = mapper;
         }
 
         [HttpGet]
-        public async Task<IEnumerable<Coordination>> GetAllAsync()
+        public async Task<IEnumerable<CoordinationResource>> GetAllAsync()
         {
             var coordinations = await _coordinationService.ListAsync();
-            return coordinations;
+            var resources = _mapper.Map<IEnumerable<Coordination>, IEnumerable<CoordinationResource>>(coordinations);
+
+            return resources;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> PostAsync([FromBody] SaveCoordinationResource resource)
+        {
+            if(!ModelState.IsValid)
+                    return BadRequest(ModelState.GetErrorMessages());
+            
+            var coordination = _mapper.Map<SaveCoordinationResource, Coordination>(resource);
+            var result = await _coordinationService.SaveAsync(coordination);
+
+            if(!result.Success)
+                    return BadRequest(result.Message);
+
+            var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
+            return Ok(coordinationResource);
         }
     }
 }

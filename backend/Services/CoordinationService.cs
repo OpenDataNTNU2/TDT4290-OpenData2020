@@ -14,14 +14,30 @@ namespace OpenData.API.Services
     public class CoordinationService : ICoordinationService
     {
         private readonly ICoordinationRepository _coordinationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CoordinationService(ICoordinationRepository coordinationRepository)
+        public CoordinationService(ICoordinationRepository coordinationRepository, IUnitOfWork unitOfWork)
         {
             _coordinationRepository = coordinationRepository;
+            _unitOfWork = unitOfWork;
         }
         public async Task<IEnumerable<Coordination>> ListAsync()
         {
             return await _coordinationRepository.ListAsync();
+        }
+        public async Task<CoordinationResponse> SaveAsync(Coordination coordination)
+        {
+            try
+            {
+                await _coordinationRepository.AddAsync(coordination);
+                await _unitOfWork.CompleteAsync();
+
+                return new CoordinationResponse(coordination);
+            }
+            catch(Exception ex)
+            {
+                return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
+            }
         }
     }
 }
