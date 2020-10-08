@@ -14,6 +14,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Tags> Tags { get; set; }
         public DbSet<DatasetTags> DatasetTags { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Coordination> Coordinations { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -27,6 +28,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
             builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Coordinations).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
@@ -72,6 +74,14 @@ namespace OpenData.API.Persistence.Contexts
                 .WithMany(t => t.DatasetTags)
                 .HasForeignKey(dt => dt.TagsId);
 
+            builder.Entity<Coordination>().ToTable("Coordinations");
+            builder.Entity<Coordination>().HasKey(p => p.Id);
+            builder.Entity<Coordination>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Coordination>().Property(p => p.Title).IsRequired();
+            builder.Entity<Coordination>()
+            .HasMany(p => p.Datasets)
+            .WithOne(p => p.Coordination)
+            .HasForeignKey(p => p.CoordinationId);
         }
 
         public void AddTestData()
@@ -180,6 +190,13 @@ namespace OpenData.API.Persistence.Contexts
                 TagsId = 101
             };
             AddRange(cultureDataTag, bicycleDataTag);
+
+            Coordination bicycleCoordination = new Coordination
+            {
+                Id = 100,
+                Title = "Bicycle coordination"
+            };
+            AddRange(bicycleCoordination);
 
             SaveChanges();
         }

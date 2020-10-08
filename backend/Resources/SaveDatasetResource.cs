@@ -23,6 +23,7 @@ namespace OpenData.API.Resources
         public string TagsIds { get; set; }
         [Required]
         public int? CategoryId { get; set; }
+        public int? CoordinationId { get; set; }
 
     }
 }
