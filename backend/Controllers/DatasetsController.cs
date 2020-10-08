@@ -86,8 +86,6 @@ namespace OpenData.API.Controllers
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostImportAsync(string url)
         {   
-            Console.WriteLine("---------------------------");
-            Console.WriteLine(url);
             Dataset datatset = await _rdfService.import(url);
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);

@@ -14,14 +14,14 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-_:autos1 a vcard:Organization;
+_:autos4 a vcard:Organization;
          vcard:hasEmail <mailto:opendata@stavanger.kommune.no>.
-_:autos2 dct:format "JSON",
+_:autos5 dct:format "JSON",
                     "CSV";
-         dct:license _:autos3;
+         dct:license _:autos6;
          a dcat:Distribution;
          dcat:accessURL <https://opencom.no/dataset/kommunevalg-stavanger>.
-_:autos3 dct:source "http://data.norge.no/nlod/";
+_:autos6 dct:source "http://data.norge.no/nlod/";
          a dct:LicenseDocument,
            skos:Concept;
          skos:prefLabel "Norwegian Licence for Open Government Data"@en,
@@ -46,8 +46,8 @@ _:autos3 dct:source "http://data.norge.no/nlod/";
                                   dct:spatial <http://data.geonorge.no/administrativeEnheter/kommune/id/173091>;
                                   dct:title "Kommunevalg Stavanger"@nb;
                                   a dcat:Dataset;
-                                  dcat:contactPoint _:autos1;
-                                  dcat:distribution _:autos2;
+                                  dcat:contactPoint _:autos4;
+                                  dcat:distribution _:autos5;
                                   dcat:keyword "valg"@nb,
                                                "kommunevalg"@nb,
                                                "kommunestyre"@nb.
