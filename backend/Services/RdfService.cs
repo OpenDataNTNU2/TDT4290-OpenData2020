@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using VDS.RDF;
 using VDS.RDF.Writing;
 using VDS.RDF.Parsing;
+using System.Linq;
 
 namespace OpenData.API.Services
 {
@@ -37,21 +38,24 @@ namespace OpenData.API.Services
         }
 
         // Load RDF content from URI
-        private Graph loadFromUriXml(String uri) {
+        private Graph loadFromUriXml(String uri) 
+        {
             Graph g = new Graph();
             UriLoader.Load(g, new Uri(uri), new RdfXmlParser());
             return g;
         }
 
         // Load RDF content from ttl file
-        private Graph loadFromFileTurtle(String fileName) {
+        private Graph loadFromFileTurtle(String fileName) 
+        {
             Graph g = new Graph();
             TurtleParser ttlParser = new TurtleParser();
             ttlParser.Load(g, fileName);
             return g;
         }
         // Load RDF content from xml file 
-        private Graph loadFromFileXml(String fileName) {
+        private Graph loadFromFileXml(String fileName) 
+        {
             Graph g = new Graph();
             RdfXmlParser xmlParser = new RdfXmlParser();
             xmlParser.Load(g, fileName);
@@ -59,37 +63,43 @@ namespace OpenData.API.Services
         }
 
         // Save RDF content to file as turtle
-        private void saveToFileTurtle(Graph g, String fileName) {
+        private void saveToFileTurtle(Graph g, String fileName) 
+        {
             CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
             turtleWriter.CompressionLevel = 1;
             turtleWriter.Save(g, fileName);
         }
 
         // Parse graph to string on turtle format
-        private String graphToStringTurtle(Graph g) {
+        private String graphToStringTurtle(Graph g) 
+        {
             CompressingTurtleWriter turtleWriter = new CompressingTurtleWriter();
             return VDS.RDF.Writing.StringWriter.Write(g, turtleWriter);
         }
         // Parse graph to string on xml format
-        private String graphToStringXml(Graph g) {
+        private String graphToStringXml(Graph g) 
+        {
             RdfXmlWriter xmlWriter = new RdfXmlWriter();
             return VDS.RDF.Writing.StringWriter.Write(g, xmlWriter);
         }
         // Parse string on turtle format to graph
-        private Graph stringToGraphTurtle(String s) {
+        private Graph stringToGraphTurtle(String s) 
+        {
             Graph g = new Graph();
             StringParser.Parse(g, s, new TurtleParser());
             return g;
         }
         // Parse string on xml format to graph
-        private Graph stringToGraphXml(String s) {
+        private Graph stringToGraphXml(String s) 
+        {
             Graph g = new Graph();
             StringParser.Parse(g, s, new RdfXmlParser());
             return g;
         }
 
         // Load RDF content from URI with headers corresponding to turtle
-        private Graph loadFromUriWithHeadersTurtle(String uri) {
+        private Graph loadFromUriWithHeadersTurtle(String uri) 
+        {
             System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
             // Sets headers to turtle format
             req.Headers["Accept"] = "text/turtle";
@@ -104,7 +114,8 @@ namespace OpenData.API.Services
         }
 
         // Get attributes as dictionary from chosen subject node
-        private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject){
+        private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject)
+        {
             Dictionary<string,string> attributes = new Dictionary<string, string>();
             IEnumerable<Triple> triples = g.Triples;
             foreach (Triple t in triples){
@@ -128,7 +139,8 @@ namespace OpenData.API.Services
             return attributes;
         }
         // Find the subject uri for a chosen object uriNode using the predicate rdf:type
-        private String findSubjectUri(Graph g, IUriNode uriNode){
+        private String findSubjectUri(Graph g, IUriNode uriNode)
+        {
             IUriNode rdfType = g.CreateUriNode("rdf:type");
             String uri = "";
             IEnumerable<Triple> ts = g.GetTriplesWithPredicateObject(rdfType, uriNode);
@@ -146,7 +158,8 @@ namespace OpenData.API.Services
         }
 
         // Add a dataset in a graph to the database
-        private async Task<Dataset> addDataset(Graph g) {
+        private async Task<Dataset> addDataset(Graph g) 
+        {
             // Find publisher id
             Publisher publisher = await addPublisher(g);
 
@@ -169,24 +182,61 @@ namespace OpenData.API.Services
             await _datasetRepository.AddAsync(dataset);
             await _unitOfWork.CompleteAsync();
             
+            addTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
             await addDistribution(g, dataset.Id);
             return dataset;
         }
 
+        private async void addTags(Graph g, String keywords, Dataset dataset)
+        {
+            String[] keywordsList = keywords.Split(",");
+            IEnumerable<Tags> existingTags = await _tagsRepository.ListAsync();
+            foreach (String keyword in keywordsList)
+            {
+                Tags existingTag = null;
+                foreach (Tags tag in existingTags) 
+                {
+                    if (tag.Name.ToLower().Equals(keyword.ToLower()))
+                    {
+                        existingTag = tag;
+                        break;
+                    }
+                }
+                if (existingTag != null) 
+                {
+                    DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
+                    dataset.DatasetTags.Add(datasetTag);
+                }
+                else 
+                {
+                    Tags tag = new Tags { Name = keyword };
+                    await _tagsRepository.AddAsync(tag);
+                    await _unitOfWork.CompleteAsync();
+                    DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = tag };
+                    dataset.DatasetTags.Add(datasetTag);
+                    await _unitOfWork.CompleteAsync();
+                }
+            }
+        }
+
         // Add a distribution in a graph to the database
-        private async Task<List<Distribution>> addDistribution(Graph g, int datasetId){
+        private async Task<List<Distribution>> addDistribution(Graph g, int datasetId)
+        {
             // Find the distribution subject uri 
             IUriNode dcatDistribution = g.CreateUriNode("dcat:Distribution");
             String[] distributionUris = findSubjectUri(g, dcatDistribution).Split(",");
             List<Distribution> distributions = new List<Distribution>();
-            foreach (String distributionUri in distributionUris){
+            foreach (String distributionUri in distributionUris)
+            {
                 Dictionary<string,string> attributes = getAttributesFromSubject(g, distributionUri);
                 //Parse file format
                 EFileFormat fileFormat = EFileFormat.annet;
                 String[] fileFormatString = attributes.GetValueOrDefault("format", "annet").Split(",");
-                try {
+                try 
+                {
                     fileFormat = (EFileFormat)Enum.Parse(typeof(EFileFormat), fileFormatString[0], true);
-                }catch(Exception ex){Console.WriteLine(ex.Message);}
+                }
+                catch(Exception ex){Console.WriteLine(ex.Message);}
 
                 // Add relevant attributes to a new distribution
                 Distribution distribution = new Distribution {
@@ -205,11 +255,13 @@ namespace OpenData.API.Services
         }
 
         // Add a publisher in a graph to the database
-        private async Task<Publisher> addPublisher(Graph g){
+        private async Task<Publisher> addPublisher(Graph g)
+        {
             // Find the publisher subject uri 
             IUriNode foafOrganization = g.CreateUriNode("foaf:Organization");
             String publisherUri = findSubjectUri(g, foafOrganization);
-            if (String.IsNullOrWhiteSpace(publisherUri)){
+            if (String.IsNullOrWhiteSpace(publisherUri))
+            {
                 IUriNode foafAgent = g.CreateUriNode("foaf:Agent");
                 publisherUri = findSubjectUri(g, foafAgent);
             }
@@ -219,8 +271,10 @@ namespace OpenData.API.Services
             
             // Check if the publisher  already exists
             IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
-            foreach (Publisher pub in existingPublishers){
-                if (pub.Name.ToLower().Equals(publisherName.ToLower())){
+            foreach (Publisher pub in existingPublishers)
+            {
+                if (pub.Name.ToLower().Equals(publisherName.ToLower()))
+                {
                     return pub;
                 }
             }
@@ -236,10 +290,9 @@ namespace OpenData.API.Services
             return publisher;
         }
 
-        // TODO: Støtte rdf lister antageligvis. 
-        // TODO: Flere format på en distribution??
-        // Todo : Keywords/tags
-        // Finner ikke kategori kobling
+        // TODO: Flere format på en distribution?? Skal vi støtte det? :o
+        // TODO : Add Keywords/tags
+        // RART: Finner ikke kategori kobling i rdfene
         // Import dataset from link containing rdf schema. 
         public async Task<Dataset> import()
         {   
@@ -247,13 +300,13 @@ namespace OpenData.API.Services
             
             // Funker ikke
             
+
             // Funker
             // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
-            Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
-            
+            // Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
             // Funker men har flere format på en distribution
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
+            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
@@ -269,7 +322,8 @@ namespace OpenData.API.Services
             // return new Dataset();
         }
 
-        public void export() {
+        public void export() 
+        {
             // (in Turtle "a" is a shortcut for the rdf:type predicate)
             // IUriNode rdfType = g.CreateUriNode("rdf:type");
             // IUriNode catalog = g.CreateUriNode(UriFactory.Create("https://www.opendata.no/catalog"));
