@@ -47,7 +47,12 @@ namespace OpenData.API.Services
         {
             try
             {
-                return new DatasetResponse(await _datasetRepository.FindByIdAsync(id));
+                var res = await _datasetRepository.FindByIdAsync(id);
+                if (res == null)
+                {
+                    return new DatasetResponse("Invalid dataset id.");
+                }
+                return new DatasetResponse(res);
             }
             catch (Exception ex)
             {
@@ -112,7 +117,7 @@ namespace OpenData.API.Services
             if (existingDataset == null)
                 return new DatasetResponse("Dataset not found.");
 
-            existingDataset.Title = dataset.Title;
+            existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
 
             try
             {
