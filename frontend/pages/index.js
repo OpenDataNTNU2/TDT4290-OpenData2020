@@ -14,6 +14,8 @@ import { parseCookies } from '../utils/parseCookies'
 
 import {useState,useEffect} from 'react'
 
+import InfiniteScroll from "react-infinite-scroll-component";
+
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
@@ -22,33 +24,62 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
+  const pUrl = '&Page='
+  const items = '&ItemsPerPage=10'
+
+  const [searchUrl, setSearchUrl] = useState("")
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
 
-  
-  const [searchUrl, setSearchUrl] = useState("")
+  const [page, setPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
 
-  const [datasets, setDatasets] = useState({})
+  const [changedFilter, setChangedFilter] = useState(false)
+
+  const [datasets, setDatasets] = useState([])
 
   const getDatasets = async () => {
+    if(changedFilter) setPage(1)
+    
     try{
-        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl, {
+        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + page + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
-            setDatasets(response.items);
-            console.log("fetched")
+            if(totalItems > 10 && datasets.length !== 0 && !changedFilter && searchUrl === ""){
+              let newArr = datasets
+              for(let i = 0; i < 10; i++){
+                newArr.push(response.items[i])
+              }
+              setDatasets(newArr)
+              
+            }
+            else{
+              setDatasets(response.items);
+              setChangedFilter(false)
+              setHasMore(true)
+              console.log("fetched")
+          }
+          setTotalItems(response.totalItems)
+            
         })
+        console.log(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + page + items)
     }
     catch(_){
         console.log("failed to fetch datasets")
+        setDatasets([])
     }
-    
+    if((page) * 10 > totalItems && totalItems !== 0){ console.log("setter til false");setHasMore(false)}
+   
 }
 
   useEffect(() => {
     getDatasets()
-  }, [filterPublishersUrl])
+  }, [page, prevLoggedIn, filterPublishersUrl])
+
+
+  
 
   const onClick = (id) => { router.push('/DetailedDataset/' + id) }
 
@@ -61,7 +92,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} update={prevLoggedIn} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterCategory  />
@@ -74,8 +105,16 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           item
           xs={8}
         >
+         
           
           <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
+          
+          <InfiniteScroll
+            dataLength={page * 10}
+            next={() => setPage(page + 1)}
+            hasMore={hasMore}
+            loader={<h4>Loading...</h4>}
+          >
 
           {
             Object.values(datasets).map(d => (
@@ -83,7 +122,8 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
             ))
           }
           
-          
+          </InfiniteScroll>
+
         </Grid>
       </Grid>
     </div>
