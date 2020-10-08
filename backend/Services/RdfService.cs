@@ -165,13 +165,13 @@ namespace OpenData.API.Services
 
             // Find the dataset subject uri 
             IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
-            String datasetUri = findSubjectUri(g, dcatDataset);
+            String[] datasetUri = findSubjectUri(g, dcatDataset).Split(",");
             // From the dataset uri make a dictionary with the attributes
-            Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri);
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri[0]);
             // Add relevant attributes to a new dataset
             Dataset dataset = new Dataset {
                 Title = attributes.GetValueOrDefault("title", "Ingen tittel"), 
-                Identifier = datasetUri, 
+                Identifier = datasetUri[0], 
                 Description = attributes.GetValueOrDefault("description", ""), 
                 PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
                 PublisherId = publisher.Id, 
@@ -259,14 +259,14 @@ namespace OpenData.API.Services
         {
             // Find the publisher subject uri 
             IUriNode foafOrganization = g.CreateUriNode("foaf:Organization");
-            String publisherUri = findSubjectUri(g, foafOrganization);
-            if (String.IsNullOrWhiteSpace(publisherUri))
+            String[] publisherUri = findSubjectUri(g, foafOrganization).Split(",");
+            if (String.IsNullOrWhiteSpace(publisherUri[0]))
             {
                 IUriNode foafAgent = g.CreateUriNode("foaf:Agent");
-                publisherUri = findSubjectUri(g, foafAgent);
+                publisherUri = findSubjectUri(g, foafAgent).Split(",");
             }
             
-            Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri);
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri[0]);
             String publisherName = attributes.GetValueOrDefault("name", "Ukjent");
             
             // Check if the publisher  already exists
@@ -290,36 +290,25 @@ namespace OpenData.API.Services
             return publisher;
         }
 
-        // TODO: Flere format på en distribution?? Skal vi støtte det? :o
-        // TODO : Add Keywords/tags
+        // TODO: De fra data.norge.no har flere format på en distribution?? Skal vi støtte det? :o
         // RART: Finner ikke kategori kobling i rdfene
         // Import dataset from link containing rdf schema. 
-        public async Task<Dataset> import()
+        public async Task<Dataset> import(String url)
         {   
-            Console.WriteLine("KJØRER ==========================");
-            
-            // Funker ikke
-            
-
-            // Funker
             // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
             // Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
-            // Funker men har flere format på en distribution
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
-            Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
+            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
             // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
-            
+            Graph g = loadFromUriWithHeadersTurtle(url);
 
-            saveToFileTurtle(g, "dcat_example2.ttl");
-
+            // saveToFileTurtle(g, "dcat_example2.ttl");
 
             Dataset dataset = await addDataset(g);
 
-            Console.WriteLine("STOPPER ==========================");
             return dataset;
-            // return new Dataset();
         }
 
         public void export() 

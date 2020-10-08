@@ -36,13 +36,6 @@ namespace OpenData.API.Controllers
         [ProducesResponseType(typeof(QueryResultResource<DatasetResource>), 200)]
         public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
         {
-            try {
-                Dataset datatset = await _rdfService.import();
-            }catch(Exception ex){
-                Console.WriteLine(ex.ToString());
-            }
-
-
             var datasetsQuery = _mapper.Map<DatasetQueryResource, DatasetQuery>(query);
             var queryResult = await _datasetService.ListAsync(datasetsQuery);
             
@@ -78,13 +71,26 @@ namespace OpenData.API.Controllers
         {
             var dataset = _mapper.Map<SaveDatasetResource, Dataset>(resource);
             var result = await _datasetService.SaveAsync(dataset);
-
+            
             if (!result.Success)
             {
                 return BadRequest(new ErrorResource(result.Message));
             }
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
+            return Ok(datasetResource);
+        }
+
+        [HttpPost("import")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostImportAsync(string url)
+        {   
+            Console.WriteLine("---------------------------");
+            Console.WriteLine(url);
+            Dataset datatset = await _rdfService.import(url);
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
             return Ok(datasetResource);
         }
 

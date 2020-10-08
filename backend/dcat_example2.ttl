@@ -14,16 +14,14 @@
 @prefix dcat: <http://www.w3.org/ns/dcat#>.
 @prefix foaf: <http://xmlns.com/foaf/0.1/>.
 
-_:autos1 schema:startDate "2017-01-01"^^xsd:date;
-         a dct:PeriodOfTime.
-_:autos2 a vcard:Organization;
+_:autos1 a vcard:Organization;
          vcard:hasEmail <mailto:opendata@stavanger.kommune.no>.
-_:autos3 dct:format "geoJSON",
-                    "GPX";
-         dct:license _:autos4;
+_:autos2 dct:format "JSON",
+                    "CSV";
+         dct:license _:autos3;
          a dcat:Distribution;
-         dcat:accessURL <https://opencom.no/dataset/52-hverdagsturer-tur-1-eiganesturen>.
-_:autos4 dct:source "http://data.norge.no/nlod/";
+         dcat:accessURL <https://opencom.no/dataset/kommunevalg-stavanger>.
+_:autos3 dct:source "http://data.norge.no/nlod/";
          a dct:LicenseDocument,
            skos:Concept;
          skos:prefLabel "Norwegian Licence for Open Government Data"@en,
@@ -38,19 +36,18 @@ _:autos4 dct:source "http://data.norge.no/nlod/";
                                                                                "Norsk"@nb,
                                                                                "Norsk"@no,
                                                                                "Norsk"@nn.
-<https://data.norge.no/node/2171> dct:accessRights <http://publications.europa.eu/resource/authority/access-right/PUBLIC>;
+<https://data.norge.no/node/2286> dct:accessRights <http://publications.europa.eu/resource/authority/access-right/PUBLIC>;
                                   dct:accrualPeriodicity <http://publications.europa.eu/resource/authority/frequency/IRREG>;
-                                  dct:description "52 hverdagsturer over hele Stavanger, én for hver av årets uker. Datasettet inneholder 4 ressurser. Det er kart over turen i gpx-, geojson- og pdf-format. I tillegg er det en tekstfil som beskriver turen."@nb;
-                                  dct:issued "2017-11-13T11:11:00"^^xsd:dateTime;
+                                  dct:description "Resultater fra kommunestyrevalg fra 1999 og til i dag. Godkjente stemmer, prosentvis,etter parti/valgliste og valgkrets. Kilde: SSB"@nb;
+                                  dct:issued "2017-11-15T16:11:00"^^xsd:dateTime;
                                   dct:language <http://publications.europa.eu/resource/authority/language/NOR>;
-                                  dct:modified "2017-12-21"^^xsd:date;
+                                  dct:modified "2018-02-19"^^xsd:date;
                                   dct:publisher <http://data.brreg.no/enhetsregisteret/enhet/964965226>;
                                   dct:spatial <http://data.geonorge.no/administrativeEnheter/kommune/id/173091>;
-                                  dct:temporal _:autos1;
-                                  dct:title "52 hverdagsturer. Tur 1: Eiganesturen"@nb;
+                                  dct:title "Kommunevalg Stavanger"@nb;
                                   a dcat:Dataset;
-                                  dcat:contactPoint _:autos2;
-                                  dcat:distribution _:autos3;
-                                  dcat:keyword "Tur"@nb,
-                                               "friluft"@nb,
-                                               "hverdagstur"@nb.
+                                  dcat:contactPoint _:autos1;
+                                  dcat:distribution _:autos2;
+                                  dcat:keyword "valg"@nb,
+                                               "kommunevalg"@nb,
+                                               "kommunestyre"@nb.
