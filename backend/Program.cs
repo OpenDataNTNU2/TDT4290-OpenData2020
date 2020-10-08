@@ -23,6 +23,7 @@ namespace OpenData.API
             using (var context = scope.ServiceProvider.GetService<AppDbContext>())
             {
                 context.Database.EnsureCreated();
+                context.AddTestData();
             }
             
             DCATExample dcatExample = new DCATExample();
