@@ -7,6 +7,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Button from '@material-ui/core/Button'
 import TextField from '@material-ui/core/TextField'
 
+import PostApi from '../ApiCalls/PostApi'
 
 import InputForm from '../Forms/Input'
 
@@ -45,7 +46,7 @@ const SelectTags = (props) => {
    
     // garra en bedre måte å legge til dette på...
     const handleChange = (event) => {
-        props.setPersonName(event.target.value)
+        props.setCheckedTags(event.target.value)
         let name = event.target.value
         let newString = ""
         for(let i = 0; i < props.tags.length; i++){
@@ -59,15 +60,14 @@ const SelectTags = (props) => {
         
     }
 
+    const addTags = () => {
+        console.log("added tags to 'https://localhost:5001/api/tags'")
+    }
+
     const submitNewTag = (event) => {
-        
-        props.addTags(props.createTag)
+        PostApi('https://localhost:5001/api/tags', {"name": props.createTag}, addTags )
         props.setTags([...props.tags, {id: props.tags[props.tags.length - 1].id + 1, name: props.createTag}])
         props.setCreateTag("")
-        
-        
-        
-        
     }
 
 
@@ -77,7 +77,7 @@ const SelectTags = (props) => {
             <Select
                 id="selectTags"
                 multiple
-                value={props.personName}
+                value={props.checkedTags}
                 onChange={handleChange}
                 label="Tags"
                 renderValue={(selected) => (
@@ -107,7 +107,7 @@ const SelectTags = (props) => {
                 
             {props.tags.map((tag) => (
                 <MenuItem key={tag.name} value={tag.name}>
-                    <Checkbox checked={props.personName.indexOf(tag.name) > -1} />
+                    <Checkbox checked={props.checkedTags.indexOf(tag.name) > -1} />
                     <ListItemText primary={tag.name} />
                 </MenuItem>
             ))}

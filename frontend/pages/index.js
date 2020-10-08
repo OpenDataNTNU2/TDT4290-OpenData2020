@@ -32,13 +32,13 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
         .then(response => response.json())
         .then(response => {
             setDatasets(response.items);
-            console.log(response.items)
+            console.log("fetched")
         })
     }
     catch(_){
         console.log("failed to fetch datasets")
     }
-    console.log(url + sUrl + searchUrl + fUrl + filterPublishersUrl)
+    
 }
 
   useEffect(() => {
