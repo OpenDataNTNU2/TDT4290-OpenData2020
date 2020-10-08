@@ -35,8 +35,8 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                                     indicatorColor="primary" 
                                     textColor="primary"
                                 >
-                                    <Tab value="1" label="Legg til dataset"  />
-                                    <Tab value="2" label="Importer dataset" />
+                                    <Tab value="1" label={<h3 style={{ fontWeight: "normal" }}>Legg til dataset</h3>} />
+                                    <Tab value="2" label={<h3 style={{ fontWeight: "normal" }}>Importer dataset</h3>} />
                                 </TabList>
                             </AppBar>
 
