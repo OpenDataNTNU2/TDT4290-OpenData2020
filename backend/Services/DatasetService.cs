@@ -39,7 +39,7 @@ namespace OpenData.API.Services
             //     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
             //     return _datasetRepository.ListAsync();
             // });
-            
+
             return await _datasetRepository.ListAsync(query);
         }
 
@@ -118,6 +118,8 @@ namespace OpenData.API.Services
                 return new DatasetResponse("Dataset not found.");
 
             existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
+            existingDataset.InterestCounter = dataset.InterestCounter; // TODO: consider using _datasetRepository.UpdateAsync?
+
 
             try
             {

@@ -24,6 +24,7 @@ namespace OpenData.API.Resources
         [Required]
         public int? CategoryId { get; set; }
         public int? CoordinationId { get; set; }
+        public int? InterestCounter { get; set; }
 
     }
 }
