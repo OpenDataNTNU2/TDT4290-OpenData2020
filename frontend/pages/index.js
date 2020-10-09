@@ -1,8 +1,13 @@
 import React from 'react';
 import { Grid, Paper } from '@material-ui/core'
-import Filter from '../Components/Filter'
+
 import DatasetCard from '../Components/DatasetCard';
 import Search from '../Components/Search'
+
+// import filters
+import FilterPublisher from '../Components/Filters/FilterPublisher'
+import FilterCategory from '../Components/Filters/FilterCategory'
+import FilterTag from '../Components/Filters/FilterTag'
 
 import { useRouter } from 'next/router'
 import { parseCookies } from '../utils/parseCookies'
@@ -56,7 +61,13 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <Filter url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
+          </Paper>
+          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
+            <FilterCategory  />
+          </Paper>
+          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
+            <FilterTag  />
           </Paper>
         </Grid>
         <Grid
