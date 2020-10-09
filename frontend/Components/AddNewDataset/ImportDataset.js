@@ -1,16 +1,28 @@
 import { Grid, Button, FormControl, FormLabel, Divider, Snackbar } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert'
+
+import PostApi from '../ApiCalls/PostApi'
 
 import Input from '../Forms/Input'
 
 import { useState } from 'react'
 
+
+
+// TODO: Fikse feedback hvis en ugyldig link blir benyttet, ellers funker det :)
 export default function CreateDataset(){
 
     const [importUrl, setImportUrl] = useState("");
+    const [open, setOpen] = useState(false)
 
     const handleChange = (event) => {
-        console.log("clicked")
-        // kjør post request til Components/ApiCalls/PostApi her
+        PostApi('https://localhost:5001/api/datasets/import?url=' + importUrl, {"url": importUrl}, importPostReq)
+    }
+
+    const importPostReq = (id) => {
+        console.log("imported dataset from: " + importUrl)
+        setOpen(true)
+        setImportUrl("")
     }
 
     return(
@@ -30,7 +42,14 @@ export default function CreateDataset(){
                 multiline={false}
             /><br/>
             <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
+            <br/>
+            <Alert elevation={1} severity="info">Kopier inn en link for å importere, eks: 
+            <br/> https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0
+            </Alert>
 
+            <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
+                <Alert elevation={1} severity="success">Datasett importert</Alert>
+            </Snackbar>
         </Grid>
     )
 
