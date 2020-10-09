@@ -1,0 +1,44 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>.
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#>.
+@prefix schema: <http://schema.org/>.
+@prefix iso: <http://www.w3.org/ns/dqvNS#>.
+@prefix adms: <http://www.w3.org/ns/adms#>.
+@prefix dcatapi: <http://dcat.no/dcatapi/>.
+@prefix dqv: <http://www.w3.org/ns/dqvNS#>.
+@prefix skos: <http://www.w3.org/2004/02/skos/core#>.
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#>.
+@prefix oa: <http://www.w3.org/ns/prov#>.
+@prefix dct: <http://purl.org/dc/terms/>.
+@prefix dcatno: <http://difi.no/dcatno#>.
+@prefix dcat: <http://www.w3.org/ns/dcat#>.
+@prefix foaf: <http://xmlns.com/foaf/0.1/>.
+
+<http://data.brreg.no/enhetsregisteret/enhet/964965226> dct:identifier "964965226";
+                                                        a foaf:Agent;
+                                                        skos:prefLabel "STAVANGER KOMMUNE"@no;
+                                                        foaf:name "STAVANGER KOMMUNE".
+<http://publications.europa.eu/resource/authority/language/NOR> <http://publications.europa.eu/ontology/authority/authority-code> "NOR";
+                                                                a dct:LinguisticSystem;
+                                                                skos:prefLabel "Norwegian"@en,
+                                                                               "Norsk"@nb,
+                                                                               "Norsk"@no,
+                                                                               "Norsk"@nn.
+<https://data.norge.no/node/3135> dct:accessRights <http://publications.europa.eu/resource/authority/access-right/PUBLIC>;
+                                  dct:description "Alle datasett som danner grunnlaget for levekårsundersøkelsen, har en tittel som begynner med Levekår Stavanger:"@nb;
+                                  dct:issued "2019-11-08T15:11:00"^^xsd:dateTime;
+                                  dct:language <http://publications.europa.eu/resource/authority/language/NOR>;
+                                  dct:modified "2019-11-08"^^xsd:date;
+                                  dct:publisher <http://data.brreg.no/enhetsregisteret/enhet/964965226>;
+                                  dct:title "Levekår Stavanger: Lav utdanning"@nb;
+                                  a dcat:Dataset;
+                                  dcat:distribution [a dcat:Distribution ; 
+                                                     dct:format "JSON" ; 
+                                                     dct:format "CSV" ; 
+                                                     dct:license [a dct:LicenseDocument ; 
+                                                                  a skos:Concept ; 
+                                                                  dct:source "http://data.norge.no/nlod/" ; 
+                                                                  skos:prefLabel "Norwegian Licence for Open Government Data"@en ; 
+                                                                  skos:prefLabel "Norsk lisens for offentlige data"@no] ; 
+                                                     dcat:accessURL <https://opencom.no/dataset/levekar-stavanger-lav-utdanning>];
+                                  dcat:keyword "utdanning"@nb.
