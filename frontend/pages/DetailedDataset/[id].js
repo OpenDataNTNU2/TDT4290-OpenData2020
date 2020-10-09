@@ -26,7 +26,8 @@ export default function DetailedDataset({data, uri}){
   }
     // data sent to PutApi when updating interestCounter
     const interestData = {
-            "interestCounter": parseInt(interestCounter)
+            "interestCounter": interestCounter
+            //evt parseInt(interestCounter)
     }
 
     // puts data into the api with datasets 
