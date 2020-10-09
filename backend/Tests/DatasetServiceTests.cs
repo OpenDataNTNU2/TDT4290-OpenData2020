@@ -146,11 +146,13 @@ namespace Tests
             Assert.IsFalse(Res.Success, "Deleting a nonexistant dataset returns a success.");
         }
 
+        #pragma warning disable CS1998
         [Test]
         public async Task TestList()
         {
             // TODO: Implement test for ListAsync
         }
+        #pragma warning restore CS1998
 
         private
             (
