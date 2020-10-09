@@ -70,6 +70,9 @@ namespace OpenData.API
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICoordinationService, CoordinationService>();
 
+            services.AddScoped<IRdfService, RdfService>();
+
+
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers().AddNewtonsoftJson(options =>
