@@ -110,7 +110,7 @@ namespace Tests
 
             Res = await DS.FindByIdAsync(100);
             Assert.IsTrue(Res.Success);
-            Dataset exampleA = Res.Resource; // TODO: Should use clone()
+            Dataset exampleA = Res.Resource; // Should use clone()
             var exampleAImg = DatasetSnapshot(exampleA); // DatasetSnapshot is not a good function, and should be replaced by clone and equals in Dataset
 
             Res = await DS.UpdateAsync(100, ExampleV);
@@ -119,15 +119,18 @@ namespace Tests
             Dataset exampleB = Res.Resource;
             var exampleBImg = DatasetSnapshot(exampleB);
 
-            /* TODO: Missing clone and equals methods
+            /* TODO: Use this when UpdateAsync is functional, and we have an equals method and a clone method
             Assert.AreNotEqual(exampleA, exampleB, "Object before update is equal to object after update.");
             Assert.AreEqual(exampleB, ExampleV, "Updated object is not equal to inputted object.");
             // If only some values are changeable, break this up into multiple AreEqual(exampleA.Title, exampleB.Title), etc
             */
-
+            /* Use this when UpdateAsync is functional, and we have an equals method, but no clone method
             Assert.AreNotEqual(exampleAImg, exampleBImg, "Object before update is equal to object after update."); 
             Assert.AreEqual(DatasetSnapshot(ExampleV), exampleBImg, "Updated object is not equal to inputted object."); 
-            // Fails, because UpdateAsync only updates title 
+            // Fails, because UpdateAsync only updates title
+            */
+            Assert.AreNotEqual(exampleAImg.Title, exampleB.Title, "Title before update is equal to title after update.");
+            Assert.AreEqual(ExampleV.Title, exampleB.Title, "Updated title is not equal to inputted title.");
         }
 
         [Test]
@@ -146,7 +149,7 @@ namespace Tests
         [Test]
         public async Task TestList()
         {
-            // TODO
+            // TODO: Implement test for ListAsync
         }
 
         private
