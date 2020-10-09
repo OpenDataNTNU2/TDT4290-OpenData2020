@@ -27,6 +27,7 @@ namespace OpenData.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<CoordinationResource>), 200)]
         public async Task<IEnumerable<CoordinationResource>> GetAllAsync()
         {
             var coordinations = await _coordinationService.ListAsync();
@@ -35,7 +36,19 @@ namespace OpenData.API.Controllers
             return resources;
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CoordinationResource), 200)]
+        public async Task<CoordinationResource> FindByIdAsync(int id)
+        {
+            var coordination = await _coordinationService.FindByIdAsync(id);
+            var resource = _mapper.Map<Coordination, CoordinationResource>(coordination.Resource);
+
+            return resource;
+        }
+
         [HttpPost]
+        [ProducesResponseType(typeof(CoordinationResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostAsync([FromBody] SaveCoordinationResource resource)
         {
             if(!ModelState.IsValid)

@@ -20,6 +20,13 @@ namespace OpenData.API.Persistence.Repositories
         {
             return await _context.Coordinations.ToListAsync();
         }
+
+        public async Task<Coordination> FindByIdAsync(int id)
+        {
+            return await _context.Coordinations.FindAsync(id);
+                                
+                                
+        }
         public async Task AddAsync(Coordination coordination)
         {
             await _context.Coordinations.AddAsync(coordination);

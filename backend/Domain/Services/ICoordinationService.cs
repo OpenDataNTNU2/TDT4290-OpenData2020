@@ -9,6 +9,7 @@ namespace OpenData.API.Domain.Services
     public interface ICoordinationService
     {
         Task<IEnumerable<Coordination>> ListAsync();
+        Task<CoordinationResponse> FindByIdAsync(int id);
         Task<CoordinationResponse> SaveAsync(Coordination coordination);
     }
 }

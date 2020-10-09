@@ -196,7 +196,15 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 100,
                 Title = "Bicycle coordination"
             };
-            AddRange(bicycleCoordination);
+
+            Coordination beachCoordination = new Coordination
+            {
+                Id = 101,
+                Title = "Strand samordning",
+                Description = "Dette er en samordning av datasett om strender",
+                PublisherId = 100
+            };
+            AddRange(bicycleCoordination, beachCoordination);
 
             SaveChanges();
         }

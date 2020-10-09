@@ -25,6 +25,23 @@ namespace OpenData.API.Services
         {
             return await _coordinationRepository.ListAsync();
         }
+
+        public async Task<CoordinationResponse> FindByIdAsync(int id)
+        {
+            try
+            {
+                var res = await _coordinationRepository.FindByIdAsync(id);
+                if (res == null)
+                {
+                    return new CoordinationResponse("Invalid coordination id.");
+                }
+                return new CoordinationResponse(res);
+            }
+            catch (Exception ex)
+            {
+                return new CoordinationResponse($"An error occurred when trying to get the dataset: {ex.Message}");
+            }
+        }
         public async Task<CoordinationResponse> SaveAsync(Coordination coordination)
         {
             try
