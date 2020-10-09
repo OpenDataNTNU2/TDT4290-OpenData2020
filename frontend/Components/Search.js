@@ -14,7 +14,7 @@ export default function Search(props){
     // props.getDatasets(1, true); 1 = that the page in the fetch should be 1, true = that search has been changed
     const onChange = ({ target: { value } }) => {
         props.setSearchUrl(value)
-        const search = _.debounce(() => props.getDatasets(1, true), 500);
+        const search = _.debounce(() => props.getDatasets(1, true, value), 500);
         search(value);
       };
 

@@ -38,43 +38,42 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
   
 
   const [datasets, setDatasets] = useState([])
+  
 
-  const getDatasets = async (p = page, c = false) => {
+  
+  const getDatasets = async (p = page, c = false, s = searchUrl) => {
     if(changedFilter) setPage(1)
-    
+    if(!hasMore && c) {p = 1; setPage(1); setHasMore(true)}
     try{
-        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + p + items, {
+        fetch(url + sUrl + s + fUrl + filterPublishersUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
-            
-            if(totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
-              let newArr = datasets
-              for(let i = 0; i < 10; i++){
-                newArr.push(response.items[i])
-              }
-              setDatasets(newArr)
+          if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
+            let newArr = datasets
+            for(let i = 0; i < 10; i++){
+              newArr.push(response.items[i])
             }
-
-            else{
-              setDatasets(response.items);
-              setChangedFilter(false)
-              
-              setHasMore(true)
-              console.log("fetched")
+            setDatasets(newArr)
+            setHasMore(true)
+          }
+          else{
+            setHasMore(true)
+            setDatasets(response.items);
+            setChangedFilter(false)
           }
           setTotalItems(response.totalItems)
-            
         })
     }
     catch(_){
         console.log("failed to fetch datasets")
-        
     }
-    if((page) * 10 > totalItems && totalItems !== 1){ console.log("setter til false");setHasMore(false)}
-   
+    if((page) * 10 > totalItems && totalItems !== 1 && hasMore){ 
+      setHasMore(false)
+    }
 }
+  
 
   useEffect(() => {
     getDatasets()
@@ -120,7 +119,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
 
           {
             Object.values(datasets).map(d => (
-              <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+              d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
           
