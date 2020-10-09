@@ -1,24 +1,44 @@
 import { Paper, Grid, Button } from '@material-ui/core';
 import RequestButtonComp from './RequestButtonComp';
+import { useState } from "react";
 
-export default function DetailedDataset({data}){
- 
+// import api functions
+import PutApi from '../../Components/ApiCalls/PutApi'
+
+export default function DetailedDataset({data, uri}){
+
+  const [interestCounter, setInterestCounter] = useState(0);
+
   var requestButton;
   var publishedStatus;
+  
+  //const onClick = () => {console.log('Requests er oppdatert!'),interestCounterNumber+=1}
+
   const ifPublished = (pub) => {
     if (pub === "Published"){
       requestButton = null;
       publishedStatus = "Published";
     }
     else {
-      requestButton = <RequestButtonComp/>;
+      requestButton = <RequestButtonComp handleClick={() => handleChange()}/>;
       publishedStatus = "Not published";
     }
   }
+    // data sent to PutApi when updating interestCounter
+    const interestData = {
+            "interestCounter": parseInt(interestCounter)
+    }
+
+    // puts data into the api with datasets 
+    const handleChange = async () => {
+        setInterestCounter(interestCounter => interestCounter + 1);
+        console.log('Requests er oppdatert!');
+        // Hvis noe må gjøres annerledes, så kan det være at vi under her sender data og jeg ikke vet om data
+        // har fått det nye tallet på interestCounter ennå!
+        //const url = 'https://localhost:5001/api/datasets' + context.params.id;
+        PutApi(uri, interestData);
+    }
   
-  function handleClick() {
-    console.log('this is..');
-  }
 
     return(
         <Grid
@@ -70,7 +90,7 @@ export async function getServerSideProps(context) {
     const data = await res.json()
   
     // Pass data to the page via props
-    return { props: { data } }
+    return { props: { data, uri } }
   }
 
 // ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
