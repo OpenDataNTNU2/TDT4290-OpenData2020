@@ -56,5 +56,30 @@ namespace OpenData.API.Services
                 return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
             }
         }
+
+
+        public async Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination)
+        {
+            var existingCoordination = await _coordinationRepository.FindByIdAsync(id);
+
+            if (existingCoordination == null)
+                return new CoordinationResponse("Category not found.");
+
+            existingCoordination.Title = coordination.Title;
+            existingCoordination.Description = coordination.Description;
+
+            try
+            {
+                _coordinationRepository.Update(existingCoordination);
+                await _unitOfWork.CompleteAsync();
+
+                return new CoordinationResponse(existingCoordination);
+            }
+            catch (Exception ex)
+            {
+                // Do some logging stuff
+                return new CoordinationResponse($"An error occurred when updating the coordination: {ex.Message}");
+            }
+        }
     }
 }

@@ -11,5 +11,6 @@ namespace OpenData.API.Domain.Services
         Task<IEnumerable<Coordination>> ListAsync();
         Task<CoordinationResponse> FindByIdAsync(int id);
         Task<CoordinationResponse> SaveAsync(Coordination coordination);
+        Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination);
     }
 }

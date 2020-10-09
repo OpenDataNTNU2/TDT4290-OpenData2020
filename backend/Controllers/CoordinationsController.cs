@@ -63,5 +63,22 @@ namespace OpenData.API.Controllers
             var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
             return Ok(coordinationResource);
         }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(CoordinationResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PutAsync(int id, [FromBody] SaveCoordinationResource resource)
+        {
+            var coordination = _mapper.Map<SaveCoordinationResource, Coordination>(resource);
+            var result = await _coordinationService.UpdateAsync(id, coordination);
+
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorResource(result.Message));
+            }
+
+            var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
+            return Ok(coordinationResource);
+        }
     }
 }

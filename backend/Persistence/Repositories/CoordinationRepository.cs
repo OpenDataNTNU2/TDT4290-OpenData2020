@@ -31,5 +31,9 @@ namespace OpenData.API.Persistence.Repositories
         {
             await _context.Coordinations.AddAsync(coordination);
         }
+        public void Update(Coordination coordination)
+        {
+            _context.Coordinations.Update(coordination);
+        }
     }
 }
