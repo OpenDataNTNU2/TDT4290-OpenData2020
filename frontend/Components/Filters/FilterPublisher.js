@@ -37,7 +37,7 @@ export default function FilterPublisher(props){
             pub.push([res[i].name.split(" ")[0], res[i].id, false, i, res[i].datasets.length]);
         }
         setPublishers(pub)
-    },[])
+    },[props])
 
     
     

@@ -10,9 +10,11 @@ export default function Search(props){
 
     // _debounce (_ kommer fra import 'lodash') gjør slik at den kjører et søk til databasen fra props.getDatasets som befinner seg i index.js hvert 500 millisekund
     // dette gjør at vi ikke trenger å trykke søk eller lignende, som er nice
+
+    // props.getDatasets(1, true); 1 = that the page in the fetch should be 1, true = that search has been changed
     const onChange = ({ target: { value } }) => {
         props.setSearchUrl(value)
-        const search = _.debounce(props.getDatasets, 500);
+        const search = _.debounce(() => props.getDatasets(1, true), 500);
         search(value);
       };
 

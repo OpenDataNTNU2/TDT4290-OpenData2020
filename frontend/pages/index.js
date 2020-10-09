@@ -35,42 +35,44 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
   const [hasMore, setHasMore] = useState(true)
 
   const [changedFilter, setChangedFilter] = useState(false)
+  
 
   const [datasets, setDatasets] = useState([])
 
-  const getDatasets = async () => {
+  const getDatasets = async (p = page, c = false) => {
     if(changedFilter) setPage(1)
     
     try{
-        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + page + items, {
+        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
-            if(totalItems > 10 && datasets.length !== 0 && !changedFilter && searchUrl === ""){
+            
+            if(totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
               let newArr = datasets
               for(let i = 0; i < 10; i++){
                 newArr.push(response.items[i])
               }
               setDatasets(newArr)
-              
             }
+
             else{
               setDatasets(response.items);
               setChangedFilter(false)
+              
               setHasMore(true)
               console.log("fetched")
           }
           setTotalItems(response.totalItems)
             
         })
-        console.log(url + sUrl + searchUrl + fUrl + filterPublishersUrl + pUrl + page + items)
     }
     catch(_){
         console.log("failed to fetch datasets")
-        setDatasets([])
+        
     }
-    if((page) * 10 > totalItems && totalItems !== 0){ console.log("setter til false");setHasMore(false)}
+    if((page) * 10 > totalItems && totalItems !== 1){ console.log("setter til false");setHasMore(false)}
    
 }
 
@@ -92,7 +94,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} update={prevLoggedIn} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterCategory  />
