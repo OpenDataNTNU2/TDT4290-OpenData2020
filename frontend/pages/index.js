@@ -2,6 +2,8 @@ import React from 'react';
 import { Grid, Paper } from '@material-ui/core'
 import Filter from '../Components/Filter'
 import DatasetCard from '../Components/DatasetCard';
+import Search from '../Components/Search'
+
 import { useRouter } from 'next/router'
 import { parseCookies } from '../utils/parseCookies'
 
@@ -12,25 +14,31 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
   const router = useRouter();
 
 
-  const url = 'https://localhost:5001/api/datasets?PublisherIds='
+  const url = 'https://localhost:5001/api/datasets'
+  const sUrl = '?Search='
+  const fUrl = '&PublisherIds='
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
+
+  
+  const [searchUrl, setSearchUrl] = useState("")
 
   const [datasets, setDatasets] = useState({})
 
   const getDatasets = async () => {
     try{
-        fetch(url  + filterPublishersUrl, {
+        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
             setDatasets(response.items);
-            console.log(response.items)
+            console.log("fetched")
         })
     }
     catch(_){
         console.log("failed to fetch datasets")
     }
+    
 }
 
   useEffect(() => {
@@ -55,6 +63,9 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           item
           xs={8}
         >
+          
+          <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
+
           {
             Object.values(datasets).map(d => (
               <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />

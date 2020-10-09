@@ -34,7 +34,7 @@ namespace OpenData.API.Services
         {
             // Here I try to get the datasets list from the memory cache. If there is no data in cache, the anonymous method will be
             // called, setting the cache to expire one minute ahead and returning the Task that lists the datasets from the repository.
-            
+
             // var datasets = await _cache.GetOrCreateAsync(CacheKeys.DatasetList, (entry) => {
             //     entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(0.01);
             //     return _datasetRepository.ListAsync();
@@ -47,7 +47,12 @@ namespace OpenData.API.Services
         {
             try
             {
-                return new DatasetResponse(await _datasetRepository.FindByIdAsync(id));
+                var res = await _datasetRepository.FindByIdAsync(id);
+                if (res == null)
+                {
+                    return new DatasetResponse("Invalid dataset id.");
+                }
+                return new DatasetResponse(res);
             }
             catch (Exception ex)
             {
@@ -58,12 +63,12 @@ namespace OpenData.API.Services
         public async Task<DatasetResponse> SaveAsync(Dataset dataset)
         {
             try
-            {   
+            {
                 // Make sure the publisher exists
                 var existingPublisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
                 if (existingPublisher == null)
                     return new DatasetResponse("Invalid publisher id.");
-                
+
                 // Make sure the category exists
                 var existingCategory = await _categoryRepository.FindByIdAsync(dataset.CategoryId);
                 if (existingCategory == null)
@@ -72,16 +77,17 @@ namespace OpenData.API.Services
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
 
-                try 
-                {   
+                try
+                {
 
                     // Tries to parse tag ids from string to int
                     foreach (string idString in dataset.TagsIds.Split(','))
                     {
-                        if(idString == null || idString == "") continue;
+                        if (idString == null || idString == "") continue;
                         int id = Int32.Parse(idString.Trim());
                         Tags existingTag = await _tagsRepository.FindByIdAsync(id);
-                        if (existingTag != null){
+                        if (existingTag != null)
+                        {
                             // If the tag exists, add it to the list of tags in the dataset
                             DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
                             dataset.DatasetTags.Add(datasetTag);
@@ -111,7 +117,7 @@ namespace OpenData.API.Services
             if (existingDataset == null)
                 return new DatasetResponse("Dataset not found.");
 
-            existingDataset.Title = dataset.Title;
+            existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
 
             try
             {

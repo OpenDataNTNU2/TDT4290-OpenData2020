@@ -29,7 +29,6 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
             >
                 <Grid item xs={9} >
                     <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
-                        <Tab label={<h3 style={{ fontWeight: "normal" }}>Home</h3>} value="/" />
                         <Tab label={<h3 style={{ fontWeight: "normal" }}>Datakatalog</h3>} value="/" />
                         
                         {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Mine datasett</h3>} value="/MyDatasets" />}
@@ -37,9 +36,9 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
                         
                     </Tabs>
                 </Grid>
-                {prevLoggedIn ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
+                {JSON.parse(prevLoggedIn) ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
                 <Grid item xs={1}>
-                    {prevLoggedIn ? 
+                    {JSON.parse(prevLoggedIn) ? 
                         <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg ut</Button>
                         : <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg inn</Button>
                     }
