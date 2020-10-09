@@ -21,7 +21,7 @@ namespace OpenData.API.Domain.Models
         public int CategoryId { get; set; }
         public Category Category { get; set; }
 
-        public int CoordinationId { get; set; }
+        public int? CoordinationId { get; set; }
         public Coordination Coordination { get; set; }
 
     }
