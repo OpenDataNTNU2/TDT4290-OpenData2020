@@ -29,7 +29,6 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
             >
                 <Grid item xs={9} >
                     <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
-                        <Tab label={<h3 style={{ fontWeight: "normal" }}>Home</h3>} value="/" />
                         <Tab label={<h3 style={{ fontWeight: "normal" }}>Datakatalog</h3>} value="/" />
                         
                         {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Mine datasett</h3>} value="/MyDatasets" />}
