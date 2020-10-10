@@ -6,13 +6,13 @@ import { useState } from "react";
 import PutApi from '../../Components/ApiCalls/PutApi'
 
 export default function DetailedDataset({data, uri}){
-
-  const [interestCounter, setInterestCounter] = useState(0);
-
+  
+  const [interestCounter, setInterestCounter] = useState(data.interestCounter);
+  
   var requestButton;
   var publishedStatus;
   
-  //const onClick = () => {console.log('Requests er oppdatert!'),interestCounterNumber+=1}
+  //const onClick = () => {console.log('Requests er oppdatert!'), interestCounterNumber+=1}
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
@@ -24,20 +24,20 @@ export default function DetailedDataset({data, uri}){
       publishedStatus = "Not published";
     }
   }
-    // data sent to PutApi when updating interestCounter
-    const interestData = {
-            "interestCounter": interestCounter
-            //evt parseInt(interestCounter)
-    }
+  // data sent to PutApi when updating interestCounter
+  /*const interestData = {
+          "interestCounter": interestCounter
+          //evt parseInt(interestCounter)
+  }*/
 
     // puts data into the api with datasets 
     const handleChange = async () => {
-        setInterestCounter(interestCounter => interestCounter + 1);
+        setInterestCounter(interestCounter + 1);
         console.log('Requests er oppdatert!');
         // Hvis noe må gjøres annerledes, så kan det være at vi under her sender data og jeg ikke vet om data
         // har fått det nye tallet på interestCounter ennå!
         //const url = 'https://localhost:5001/api/datasets' + context.params.id;
-        PutApi(uri, interestData);
+        PutApi(uri, data);
     }
   
 
