@@ -9,7 +9,8 @@ const PutApi = async (url, data) => {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json());
+        .then(response => response.json())
+        .then(response => console.log(response))
     }
     catch(_){
         console.log("failed to put to: " + url)

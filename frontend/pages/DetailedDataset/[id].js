@@ -11,8 +11,6 @@ export default function DetailedDataset({data, uri}){
   
   var requestButton;
   var publishedStatus;
-  
-  //const onClick = () => {console.log('Requests er oppdatert!'), interestCounterNumber+=1}
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
@@ -24,20 +22,26 @@ export default function DetailedDataset({data, uri}){
       publishedStatus = "Not published";
     }
   }
-  // data sent to PutApi when updating interestCounter
-  /*const interestData = {
-          "interestCounter": interestCounter
-          //evt parseInt(interestCounter)
-  }*/
 
     // puts data into the api with datasets 
     const handleChange = async () => {
         setInterestCounter(interestCounter + 1);
+
+        //publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
+        //litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
+        const data2 = {
+          "interestCounter" : interestCounter,
+          "identifier" : data.identifier,
+          "title": data.title,
+          "description": data.description,
+          "publisherId": data.publisher.id,
+          "publicationStatus": 1,
+          "detailedPublicationStatus": 0,
+          "categoryId": data.category.id,
+        }
+        
+        PutApi(uri, data2);
         console.log('Requests er oppdatert!');
-        // Hvis noe må gjøres annerledes, så kan det være at vi under her sender data og jeg ikke vet om data
-        // har fått det nye tallet på interestCounter ennå!
-        //const url = 'https://localhost:5001/api/datasets' + context.params.id;
-        PutApi(uri, data);
     }
   
 
