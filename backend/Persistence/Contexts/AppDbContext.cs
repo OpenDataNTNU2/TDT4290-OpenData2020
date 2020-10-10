@@ -133,7 +133,8 @@ namespace OpenData.API.Persistence.Contexts
                 PublicationStatus = EPublicationStatus.published,
                 AccessLevel = EAccessLevel.green,
                 PublisherId = 100,
-                CategoryId = 100
+                CategoryId = 100,
+                InterestCounter = 0
             }; // Id set manually due to in-memory provider
             Dataset strandBodo = new Dataset
             {
@@ -145,7 +146,8 @@ namespace OpenData.API.Persistence.Contexts
                 DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
                 AccessLevel = EAccessLevel.yellow,
                 PublisherId = 101,
-                CategoryId = 100
+                CategoryId = 100,
+                InterestCounter = 0
             };
             AddRange(strandTrondheim, strandBodo);
 

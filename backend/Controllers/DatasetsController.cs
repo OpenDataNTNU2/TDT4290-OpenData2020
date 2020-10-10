@@ -7,6 +7,8 @@ using OpenData.API.Domain.Models.Queries;
 using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
+using OpenData.API;
+using System;
 
 namespace OpenData.API.Controllers
 {
@@ -17,9 +19,11 @@ namespace OpenData.API.Controllers
     {
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
+        private readonly IRdfService _rdfService;
 
-        public DatasetsController(IDatasetService datasetService, IMapper mapper)
+        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper)
         {
+            _rdfService = rdfService;
             _datasetService = datasetService;
             _mapper = mapper;
         }
@@ -67,13 +71,24 @@ namespace OpenData.API.Controllers
         {
             var dataset = _mapper.Map<SaveDatasetResource, Dataset>(resource);
             var result = await _datasetService.SaveAsync(dataset);
-
+            
             if (!result.Success)
             {
                 return BadRequest(new ErrorResource(result.Message));
             }
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
+            return Ok(datasetResource);
+        }
+
+        [HttpPost("import")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostImportAsync(string url)
+        {   
+            Dataset datatset = await _rdfService.import(url);
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
             return Ok(datasetResource);
         }
 
