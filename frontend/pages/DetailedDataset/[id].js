@@ -1,6 +1,7 @@
 import { Paper, Grid, Button } from '@material-ui/core';
 import RequestButtonComp from './RequestButtonComp';
 import { useState } from "react";
+import { parseCookies } from '../../utils/parseCookies';
 
 // import api functions
 import PutApi from '../../Components/ApiCalls/PutApi'
@@ -93,9 +94,27 @@ export async function getServerSideProps(context) {
     const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
     const res = await fetch(uri, createRequestOptions(true))
     const data = await res.json()
+    const cookies = parseCookies(context.req);
+
+    let propsData = { props: { data } }
+    
+    if (JSON.stringify(cookies) !== "{}") {
+      propsData = {
+        props: {
+          data,
+          prevLoggedIn: cookies.prevLoggedIn,
+          prevLoggedUsername: cookies.prevLoggedUsername,
+          prevPublisherId: cookies.prevPublisherId,
+          prevUserId: cookies.prevUserId
+        }
+      }
+    }
+    console.log(cookies)
+  
+    
   
     // Pass data to the page via props
-    return { props: { data, uri } }
+    return propsData
   }
 
 // ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.

@@ -109,7 +109,7 @@ export async function getServerSideProps({ req }) {
   const res = await fetch(uri, createRequestOptions(true))
   const data = await res.json()
 
-  const cookies = parseCookies(req);
+  const cookies = parseCookies(req)
 
   let propsData = { props: { data } }
 
