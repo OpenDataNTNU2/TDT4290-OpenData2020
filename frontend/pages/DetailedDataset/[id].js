@@ -1,24 +1,49 @@
 import { Paper, Grid, Button } from '@material-ui/core';
 import RequestButtonComp from './RequestButtonComp';
+import { useState } from "react";
 
-export default function DetailedDataset({data}){
- 
+// import api functions
+import PutApi from '../../Components/ApiCalls/PutApi'
+
+export default function DetailedDataset({data, uri}){
+  
+  const [interestCounter, setInterestCounter] = useState(data.interestCounter);
+  
   var requestButton;
   var publishedStatus;
+
   const ifPublished = (pub) => {
     if (pub === "Published"){
       requestButton = null;
       publishedStatus = "Published";
     }
     else {
-      requestButton = <RequestButtonComp/>;
+      requestButton = <RequestButtonComp handleClick={() => handleChange()}/>;
       publishedStatus = "Not published";
     }
   }
+
+    // puts data into the api with datasets 
+    const handleChange = async () => {
+        setInterestCounter(interestCounter + 1);
+
+        //publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
+        //litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
+        const data2 = {
+          "interestCounter" : interestCounter,
+          "identifier" : data.identifier,
+          "title": data.title,
+          "description": data.description,
+          "publisherId": data.publisher.id,
+          "publicationStatus": 1,
+          "detailedPublicationStatus": 0,
+          "categoryId": data.category.id,
+        }
+        
+        PutApi(uri, data2);
+        console.log('Requests er oppdatert!');
+    }
   
-  function handleClick() {
-    console.log('this is..');
-  }
 
     return(
         <Grid
@@ -70,7 +95,7 @@ export async function getServerSideProps(context) {
     const data = await res.json()
   
     // Pass data to the page via props
-    return { props: { data } }
+    return { props: { data, uri } }
   }
 
 // ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
