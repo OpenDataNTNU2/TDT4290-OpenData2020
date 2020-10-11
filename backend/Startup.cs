@@ -60,6 +60,7 @@ namespace OpenData.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
+            services.AddScoped<ICoordinationRepository, CoordinationRepository>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
@@ -67,6 +68,10 @@ namespace OpenData.API
             services.AddScoped<IPublisherService, PublisherService>();
             services.AddScoped<ITagsService, TagsService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<ICoordinationService, CoordinationService>();
+
+            services.AddScoped<IRdfService, RdfService>();
+
 
             services.AddAutoMapper(typeof(Startup));
 

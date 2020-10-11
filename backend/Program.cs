@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenData.API.Persistence.Contexts;
-
+using OpenData.API.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using VDS.RDF;
@@ -25,9 +25,6 @@ namespace OpenData.API
                 context.Database.EnsureCreated();
                 context.AddTestData();
             }
-            
-            DCATExample dcatExample = new DCATExample();
-            dcatExample.dcatExample();
 
             host.Run();
         }

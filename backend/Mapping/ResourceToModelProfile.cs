@@ -29,6 +29,8 @@ namespace OpenData.API.Mapping
             CreateMap<SaveTagsResource, Tags>();
 
             CreateMap<SaveCategoryResource, Category>();
+
+            CreateMap<SaveCoordinationResource, Coordination>();
         }
     }
 }
