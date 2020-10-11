@@ -64,7 +64,7 @@ export default function DetailedDataset({data, uri}){
             container
             spacing={0}
             direction="column"
-            alignItems="left"
+            alignItems="stretch"
             style={{ minHeight: '70vh', minWidth: '90vh', padding: '5%', border: '2%'}}
         >
             <Grid
