@@ -41,17 +41,24 @@ export default function Home() {
 
   const [datasets, setDatasets] = useState([])
   
+  const [loader, setLoader] = useState('Loading...')
 
   
   const getDatasets = async (p = page, c = false, s = searchUrl) => {
     if(changedFilter) setPage(1)
     if(!hasMore && c) {p = 1; setPage(1); setHasMore(true)}
     try{
-        fetch(url + sUrl + s + fUrl + filterPublishersUrl + pUrl + p + items, {
+        fetch(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
+          if(response.totalItems === 0){
+            setLoader('No items found')
+          }
+          else if(response.totalItems !== 0 && loader !== 'Loading...'){
+            setLoader('Loading...')
+          }
           if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
             let newArr = datasets
             for(let i = 0; i < 10; i++){
@@ -61,7 +68,7 @@ export default function Home() {
             setHasMore(true)
           }
           else{
-            setHasMore(true)
+            
             setDatasets(response.items);
             setChangedFilter(false)
           }
@@ -74,12 +81,13 @@ export default function Home() {
     if((page) * 10 > totalItems && totalItems !== 1 && hasMore){ 
       setHasMore(false)
     }
+    console.log(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items)
 }
   
 
   useEffect(() => {
     getDatasets()
-  }, [page, filterPublishersUrl])
+  }, [page, filterPublishersUrl, filterCategoriesUrl])
 
 
   
@@ -116,7 +124,7 @@ export default function Home() {
             dataLength={page * 10}
             next={() => setPage(page + 1)}
             hasMore={hasMore}
-            loader={<h4>Loading...</h4>}
+            loader={<h4>{loader}</h4>}
           >
 
           {

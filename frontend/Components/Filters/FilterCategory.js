@@ -8,10 +8,12 @@ export default function FilterCategory(props){
     const [addedFilters, setAddedFilters] = useState([])
     const [categories, setCategories] = useState([])
 
+    const [cat, setCat] = useState('')
+
     const [res, setRes] = useState({})
     
     const handleChange = (event) => {
-        
+        /*
         let newArr = addedFilters
         newArr.push(event.target.value)
         for(let i = 0; i < newArr.length - 1; i++){
@@ -22,7 +24,19 @@ export default function FilterCategory(props){
         for(let i = 0; i < newArr.length; i++){
             newUrlString += newArr[i] + ','
         }
+
         props.setUrl(newUrlString)
+        */
+
+        if(cat !== ''){
+            props.setUrl('')
+            setCat('')
+        }
+        else{
+            props.setUrl(event.target.value)
+            setCat(event.target.value)
+        }
+        
         
       
     };
