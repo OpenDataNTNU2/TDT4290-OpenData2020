@@ -55,9 +55,7 @@ namespace OpenData.API.Services
             }
 
             // Try to parse the dataset and save it in the database
-            // Dataset dataset = await _graphService.AddDataset(g);
-
-            
+            Dataset dataset = await _graphService.AddDataset(g);
 
             // return dataset;
             return new Dataset();
