@@ -4,6 +4,6 @@ namespace OpenData.API.Resources
     {
         public string Search { get; set; }
         public string PublisherIds { get; set; }
-        public string CategoryId { get; set; }
+        public string CategoryIds { get; set; }
     }
 }
