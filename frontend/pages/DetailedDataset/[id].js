@@ -1,6 +1,7 @@
 import { Paper, Grid, Button } from '@material-ui/core';
 import RequestButtonComp from './RequestButtonComp';
 import { useState } from "react";
+import {PageRender} from '../api/serverSideProps'
 
 // import api functions
 import PutApi from '../../Components/ApiCalls/PutApi'
@@ -48,9 +49,7 @@ export default function DetailedDataset({data, uri}){
     return(
         <Grid
             container
-            spacing={0}
             direction="column"
-            alignItems="left"
             style={{ minHeight: '70vh', minWidth: '90vh', padding: '5%', border: '2%'}}
         >
             <Grid
@@ -58,7 +57,8 @@ export default function DetailedDataset({data, uri}){
             spacing={0}
             direction="row"
             justify="space-between"
-            alignItems="center">
+            alignItems="center"
+            >
                 <h1 style={{fontWeight: "bold", }}><p>{data.title}</p></h1>
                 <p style={{paddingRight: '5%'}}><b>Oppdatert: <i>{'Placeholder'}</i></b></p>
             </Grid>
@@ -69,7 +69,7 @@ export default function DetailedDataset({data, uri}){
               spacing={0}
               direction="row"
               justify="space-between"
-              alignItems="center">
+              >
                 <p><b>Beskrivelse: </b>{data.description}</p>
                 {ifPublished(data.publicationStatus)}{requestButton}
               </Grid>
@@ -88,23 +88,6 @@ export default function DetailedDataset({data, uri}){
 }
 
 export async function getServerSideProps(context) {
-    // Fetch data from external API
-    // Should be changed to host link when this is done, not localhost.
-    const uri = 'https://localhost:5001/api/datasets/' + context.params.id;
-    const res = await fetch(uri, createRequestOptions(true))
-    const data = await res.json()
-  
-    // Pass data to the page via props
-    return { props: { data, uri } }
-  }
-
-// ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
-function createRequestOptions(skipHttpsValidation) {
-    const isNode = typeof window === 'undefined';
-    if (isNode) {
-      var Agent = (require('https')).Agent;
-      return {
-        agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
-      };
-    }
+    const propsData = PageRender("ID", context)
+    return propsData
   }

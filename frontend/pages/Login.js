@@ -2,7 +2,7 @@ import { Grid, TextField, Button, Snackbar } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
 import Router from 'next/Router';
 import Cookie from "js-cookie";
-import { parseCookies } from '../utils/parseCookies';
+import { parseCookies } from './api/serverSideProps';
 import { useState, useEffect } from "react";
 
 
