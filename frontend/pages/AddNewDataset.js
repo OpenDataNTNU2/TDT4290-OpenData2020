@@ -1,8 +1,10 @@
 import { Grid, AppBar, Tab } from '@material-ui/core';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab'
 
-import { parseCookies } from '../utils/parseCookies'
+import { parseCookies } from './api/serverSideProps';
 import { useState } from "react";
+
+
 
 // imports for what is displayed in the TabPanels
 import CreateDataset from '../Components/AddNewDataset/CreateDataset'

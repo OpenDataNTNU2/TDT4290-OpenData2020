@@ -1,14 +1,17 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
+import GetApi from '../ApiCalls/GetApi'
+
 export default function FilterCategory(props){
 
     const [addedFilters, setAddedFilters] = useState([])
     const [categories, setCategories] = useState([])
 
+    const [res, setRes] = useState({})
     
     const handleChange = (event) => {
-        /*
+        
         let newArr = addedFilters
         newArr.push(event.target.value)
         for(let i = 0; i < newArr.length - 1; i++){
@@ -20,11 +23,19 @@ export default function FilterCategory(props){
             newUrlString += newArr[i] + ','
         }
         props.setUrl(newUrlString)
-        */
+        
       
     };
     
-    
+    useEffect(() => {
+        GetApi('https://localhost:5001/api/categories', setRes)
+
+        let pub = []
+        for(let i = 0; i < res.length; i++){
+            pub.push([res[i].name.split(" ")[0], res[i].id, false, i]);
+        }
+        setCategories(pub)
+    },[props])
 
     
 

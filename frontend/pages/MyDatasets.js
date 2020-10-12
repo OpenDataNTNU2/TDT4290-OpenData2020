@@ -1,6 +1,5 @@
 
-import Cookie from "js-cookie";
-import { parseCookies } from '../utils/parseCookies'
+import { parseCookies } from './api/serverSideProps';
 
 
 export default function MyDatasets({prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId}){
@@ -25,10 +24,8 @@ MyDatasets.getInitialProps = ({req}) => {
         prevLoggedIn: cookies.prevLoggedIn,
         prevLoggedUsername: cookies.prevLoggedUsername,
         prevPublisherId: cookies.prevPublisherId,
-        prevUserId: cookies.prevUserId 
+        prevUserId: cookies.prevUserId
     }
 }
-
-
 
 

@@ -77,7 +77,7 @@ export default function Home() {
 
   useEffect(() => {
     getDatasets()
-  }, [page, prevLoggedIn, filterPublishersUrl])
+  }, [page, filterPublishersUrl])
 
 
   
@@ -96,7 +96,7 @@ export default function Home() {
             <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
-            <FilterCategory  />
+            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl}  />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterTag  />
