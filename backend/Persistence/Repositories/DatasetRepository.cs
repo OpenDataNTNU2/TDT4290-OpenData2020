@@ -44,7 +44,7 @@ namespace OpenData.API.Persistence.Repositories
             // Filter on Category
             if (!String.IsNullOrEmpty(query.CategoryIds))
             {
-                // Parses the list of publisher ids from string to list of ints
+                // Parses the list of category ids from string to list of ints
                 List<int> categoryIds = new List<int>();
                 foreach (string idString in query.CategoryIds.Split(','))
                 {
