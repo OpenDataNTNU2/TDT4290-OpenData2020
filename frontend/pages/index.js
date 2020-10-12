@@ -56,8 +56,10 @@ export default function Home() {
           if(response.totalItems === 0){
             setLoader('No items found')
           }
-          else if(response.totalItems !== 0 && loader !== 'Loading...'){
-            setLoader('Loading...')
+          else if(response.totalItems !== 0){
+            if(loader !== 'Loading...') { setLoader('Loading...') }
+            if(response.totalItems > 10) { setHasMore(true) }
+            else{setHasMore(false)}
           }
           if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
             let newArr = datasets
@@ -65,7 +67,7 @@ export default function Home() {
               newArr.push(response.items[i])
             }
             setDatasets(newArr)
-            setHasMore(true)
+            
           }
           else{
             

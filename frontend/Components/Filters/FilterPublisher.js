@@ -1,12 +1,16 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+
 import GetApi from '../ApiCalls/GetApi'
 
 export default function FilterPublisher(props){
 
     const [addedFilters, setAddedFilters] = useState([])
     const [publishers, setPublishers] = useState([])
+    const [showItems, setShowItems] = useState(5)
 
     const [res, setRes] = useState({})
     
@@ -37,9 +41,13 @@ export default function FilterPublisher(props){
             pub.push([res[i].name.split(" ")[0], res[i].id, false, i, res[i].datasets.length]);
         }
         setPublishers(pub)
+        if(res.length < 5){setShowItems(res.length)}
     },[props])
 
-    
+    const items = publishers.slice(0, showItems).map(pub => 
+        <FormControlLabel control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />} 
+        label={pub[0] + " (" + pub[4] + ")"} 
+    />)
     
 
     return(
@@ -48,10 +56,13 @@ export default function FilterPublisher(props){
                 <FormLabel>Velg kommune</FormLabel>
                 <FormGroup >
                     <br/>
-                    {publishers.map((pub) => 
-                        <FormControlLabel control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />} 
-                        label={pub[0] + " (" + pub[4] + ")"} 
-                    />)}
+                    {items}
+                    {showItems === 5
+                    ? <ExpandMoreIcon style={{cursor:'pointer'}} onClick={() => setShowItems(publishers.length)} fontSize="large"/> 
+                    : publishers.length > 5 
+                    ? <ExpandLessIcon style={{cursor:'pointer'}} onClick={() => setShowItems(5)} fontSize="large" />
+                    : null
+                    }
                     
                 </FormGroup>
             </FormControl>
