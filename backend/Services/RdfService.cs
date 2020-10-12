@@ -367,14 +367,14 @@ namespace OpenData.API.Services
             JArray hits = new JArray();
             for (int i = startIndex; i < stopIndex; i++)
             {
-                JArray newHits = loadFromUrlAsJson("https://fellesdatakatalog.digdir.no/api/datasets?q=stavanger&page=" + i.ToString());
+                JArray newHits = loadFromUrlAsJson("https://fellesdatakatalog.digdir.no/api/datasets?q=kommune&page=" + i.ToString());
                 foreach (JObject dataset in newHits)
                 {
                     hits.Add(dataset);
                 }
             }
             // foreach (JObject dataset in hits)
-            for (int i = offset; i < numberOfDatasets + offset; i++)
+            for (int i = offset; i < Math.Min(numberOfDatasets + offset, hits.Count); i++)
             {
                 urls.Add("https://fellesdatakatalog.digdir.no/api/datasets/" + (string) hits[i]["_id"]);
                 numberOfAddedDatasets++;
