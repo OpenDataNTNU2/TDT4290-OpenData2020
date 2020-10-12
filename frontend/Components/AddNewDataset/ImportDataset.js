@@ -13,10 +13,14 @@ import { useState } from 'react'
 export default function CreateDataset(){
 
     const [importUrl, setImportUrl] = useState("");
+    const [numberOfDatasets, setNumberOfDatasets] = useState(10);
     const [open, setOpen] = useState(false)
 
     const handleChange = (event) => {
         PostApi('https://localhost:5001/api/datasets/import?url=' + importUrl, {"url": importUrl}, importPostReq)
+    }
+    const populateSite = (event) => {
+        PostApi('https://localhost:5001/api/datasets/populate?numberOfDatasets=' + numberOfDatasets, {"numberOfDatasets": numberOfDatasets}, importPostReq)
     }
 
     const importPostReq = (id) => {
@@ -42,10 +46,19 @@ export default function CreateDataset(){
                 multiline={false}
             /><br/>
             <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
-            <br/>
+            
             <Alert elevation={1} severity="info">Kopier inn en link for å importere, eks: 
             <br/> https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0
-            </Alert>
+            </Alert><br/><br/>
+
+            <Input 
+                id="populateNumberOfDatasets"
+                label="Antall datasett"
+                value={numberOfDatasets}
+                handleChange={setNumberOfDatasets}
+                multiline={false}
+            /><br/>
+            <Button variant="contained" color="primary" onClick={populateSite}>Populer</Button><br/>
 
             <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                 <Alert elevation={1} severity="success">Datasett importert</Alert>

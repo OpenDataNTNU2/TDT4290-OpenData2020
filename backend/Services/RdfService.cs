@@ -12,6 +12,7 @@ using VDS.RDF;
 using VDS.RDF.Writing;
 using VDS.RDF.Parsing;
 using System.Linq;
+using Newtonsoft.Json.Linq;
 
 namespace OpenData.API.Services
 {
@@ -295,20 +296,107 @@ namespace OpenData.API.Services
         // Import dataset from link containing rdf schema. 
         public async Task<Dataset> import(String url)
         {   
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf");
-            // Graph g = loadFromUriXml("https://opencom.no/dataset/levekar-stavanger-lav-utdanning.rdf");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/e0a9c6fb-6cc9-4cce-88e3-69357250704c");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/cfc2ab42-4db6-411b-bbba-0bc36de557e9");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/44ed063c-5caf-468e-9d0d-8752f77c46ee");
-            // Graph g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/4a058e46-99f0-4e70-903a-e17736ae3e85");
-            Graph g = loadFromUriWithHeadersTurtle(url);
+            Graph g;
+            // Guess the url is actually an url.
+            if (url.Contains("/"))
+            {   
+                // If it is in fellesdatakatalog API we need to request with headers to get on rdf format
+                if (url.Contains("fellesdatakatalog.digdir.no"))
+                {
+                    g = loadFromUriWithHeadersTurtle(url);
+                }
+                // If the url is directly to the page on data.norge.no fetch with the id
+                else if (url.Contains("data.norge.no")){
+                    g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url.Substring(url.LastIndexOf("/")+1));
+                }
+                // Otherwise hope the url is directly to a rdf file location on XML format
+                else 
+                {
+                    g = loadFromUriXml(url);
+                }
+            }
+            // Guess it is not an url, and instead ID to some dataset in data.norge.no
+            else 
+            {
+                g = loadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url);
+            }
+
+            // Try to parse the dataset and save it in the database
+            Dataset dataset = await addDataset(g);
 
             // saveToFileTurtle(g, "dcat_example2.ttl");
 
-            Dataset dataset = await addDataset(g);
-
             return dataset;
+        }
+
+        // "https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f",
+        // "https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf",
+        // Populate the database with datasets from fellesdatakatalog
+        public async Task<Dataset> populate(int numberOfDatasets) 
+        {
+            List<string> urls = findUrlsFromFellesKatalogen(numberOfDatasets);
+            Dataset dataset = new Dataset();
+            foreach (string url in urls)
+            {
+                // A small part of the datasets in the fellesdatakatalog does not have a rdf version
+                try 
+                {
+                    dataset = await import(url);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            return dataset;
+        }
+
+        public static int numberOfAddedDatasets = 0;
+        // Find urls from felleskatalogen with search on "kommune"
+        private List<string> findUrlsFromFellesKatalogen(int numberOfDatasets)   
+        {
+            List<string> urls = new List<string>();
+
+            int startIndex = (int)(Math.Floor((double)numberOfAddedDatasets/10));
+            Console.WriteLine(startIndex);
+            int stopIndex = startIndex + (int)(Math.Ceiling((double)numberOfDatasets/10)) + 1;
+            Console.WriteLine(stopIndex);
+            int offset = numberOfAddedDatasets % 10;
+            Console.WriteLine(offset);
+
+            JArray hits = new JArray();
+            for (int i = startIndex; i < stopIndex; i++)
+            {
+                JArray newHits = loadFromUrlAsJson("https://fellesdatakatalog.digdir.no/api/datasets?q=kommune&page=" + i.ToString());
+                foreach (JObject dataset in newHits)
+                {
+                    hits.Add(dataset);
+                }
+            }
+            // foreach (JObject dataset in hits)
+            for (int i = offset; i < Math.Min(numberOfDatasets + offset, hits.Count); i++)
+            {
+                urls.Add("https://fellesdatakatalog.digdir.no/api/datasets/" + (string) hits[i]["_id"]);
+                numberOfAddedDatasets++;
+            }
+            
+            return urls;
+        }      
+
+        // Fetch from a URL as JSON and return hits
+        private JArray loadFromUrlAsJson(String uri) 
+        {
+            System.Net.WebRequest req = System.Net.WebRequest.Create(uri);
+            req.Headers["Accept"] = "application/json";
+            // Sends request and recieves response
+            System.Net.WebResponse resp = req.GetResponse();
+            // Converts response to string
+            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+            string result = sr.ReadToEnd().Trim();
+
+            JObject joResponse = JObject.Parse(result);  
+            JObject joObject = (JObject)joResponse["hits"];
+            return (JArray)joObject["hits"];
         }
 
         public void export() 
