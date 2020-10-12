@@ -12,6 +12,7 @@ namespace OpenData.API.Domain.Services
     {
         Task<Dataset> import(string url);
         Task<Dataset> populate(int numberOfDatasets);
+        Task<Boolean> importCategories(String url);
         void export();
     }
 }

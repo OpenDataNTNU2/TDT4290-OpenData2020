@@ -6,6 +6,7 @@ using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using OpenData.API.Extensions;
+using System;
 
 namespace OpenData.API.Controllers
 {
@@ -16,11 +17,13 @@ namespace OpenData.API.Controllers
     {
         private readonly ICategoryService _categoryService;
         private readonly IMapper _mapper;
+        private readonly IRdfService _rdfService;
 
-        public CategoriesController(ICategoryService categoryService, IMapper mapper)
+        public CategoriesController(ICategoryService categoryService, IMapper mapper, IRdfService rdfService)
         {
             _categoryService = categoryService;
             _mapper = mapper;
+            _rdfService = rdfService;
         }
 
         /// <summary> Lists all Categories </summary>
@@ -56,6 +59,17 @@ namespace OpenData.API.Controllers
             return Ok(categoryResource);
 
 
+        }
+
+        [HttpPost("import")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostImportAsync(string url)
+        {   
+            if (await _rdfService.importCategories(url)) {
+                return Ok();
+            }
+            return BadRequest("Could not import categories from url.");
         }
     }
 }

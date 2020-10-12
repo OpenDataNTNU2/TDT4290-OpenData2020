@@ -166,7 +166,7 @@ namespace OpenData.API.Services
             }
         }
 
-        public async void AddConceptScheme(Graph g)
+        public async Task<Boolean> AddConceptScheme(Graph g)
         {
             
             IUriNode dcatDataset = g.CreateUriNode("skos:ConceptScheme");
@@ -177,12 +177,14 @@ namespace OpenData.API.Services
             String[] topConceptUrls = attributes.GetValueOrDefault("hasTopConcept", "").Split(",");
 
             foreach (String topConceptUrl in topConceptUrls){
-                AddCategory(NetworkHandling.LoadFromUriXml(topConceptUrl));
+                await AddCategory(NetworkHandling.LoadFromUriXml(topConceptUrl), null);
             }
+            return true;
         }
 
-        public async void AddCategory(Graph g)
+        public async Task<Boolean> AddCategory(Graph g, Category broader)
         {
+            
             IUriNode dcatDataset = g.CreateUriNode("skos:Concept");
             String[] datasetUri = findSubjectUri(g, dcatDataset).Split(",");
             // From the dataset uri make a dictionary with the attributes
@@ -191,7 +193,8 @@ namespace OpenData.API.Services
              String[] prefLabels = attributes.GetValueOrDefault("prefLabel", "").Split(",");
 
             Category category = new Category {
-                Name = prefLabels[0]
+                Name = prefLabels[0],
+                Broader = broader
             };
 
             await _categoryRepository.AddAsync(category);
@@ -201,9 +204,10 @@ namespace OpenData.API.Services
             foreach(String url in narrowerUrls)
             {
                 if (!String.IsNullOrEmpty(url)){
-                    AddCategory(NetworkHandling.LoadFromUriXml(url));
+                    await AddCategory(NetworkHandling.LoadFromUriXml(url), category);
                 }
             }
+            return true;
         }
 
 

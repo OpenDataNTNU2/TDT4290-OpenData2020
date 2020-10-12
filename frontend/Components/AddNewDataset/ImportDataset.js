@@ -16,11 +16,14 @@ export default function CreateDataset(){
     const [numberOfDatasets, setNumberOfDatasets] = useState(10);
     const [open, setOpen] = useState(false)
 
-    const handleChange = (event) => {
+    const importDataset = (event) => {
         PostApi('https://localhost:5001/api/datasets/import?url=' + importUrl, {"url": importUrl}, importPostReq)
     }
     const populateSite = (event) => {
         PostApi('https://localhost:5001/api/datasets/populate?numberOfDatasets=' + numberOfDatasets, {"numberOfDatasets": numberOfDatasets}, importPostReq)
+    }
+    const importCategories = (event) => {
+        PostApi('https://localhost:5001/api/categories/import?url=' + importUrl, {"url": importUrl}, importPostReq)
     }
 
     const importPostReq = (id) => {
@@ -45,7 +48,15 @@ export default function CreateDataset(){
                 handleChange={setImportUrl}
                 multiline={false}
             /><br/>
-            <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
+            <Grid 
+                container 
+                direction="row"
+                justify="center"
+                alignItems="center"
+                spacing={1}>
+                <Button variant="contained" color="primary" onClick={importDataset}>Importer datasett</Button><br/>
+                <Button variant="contained" color="primary" onClick={importCategories}>Importer kategorier</Button><br/>
+            </Grid>
             
             <Alert elevation={1} severity="info">Kopier inn en link for å importere, eks: 
             <br/> https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0

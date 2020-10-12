@@ -14,7 +14,7 @@ namespace OpenData.API.Domain.Services
         Task<List<Distribution>> AddDistribution(Graph g, int datasetId);
         Task<Publisher> AddPublisher(Graph g);
         void AddTags(Graph g, String keywords, Dataset dataset);
-        void AddConceptScheme(Graph g);
-        void AddCategory(Graph g);
+        Task<Boolean> AddConceptScheme(Graph g);
+        Task<Boolean> AddCategory(Graph g, Category Broader);
     }
 }

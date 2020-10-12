@@ -122,7 +122,13 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 101,
                 Name = "Kultur"
             };
-            AddRange(landskap, kultur);
+            Category theater = new Category
+            {
+                Id = 102,
+                BroaderId = 101,
+                Name = "Theater"
+            };
+            AddRange(landskap, kultur, theater);
 
             Dataset strandTrondheim = new Dataset
             {
