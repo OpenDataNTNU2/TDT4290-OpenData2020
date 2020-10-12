@@ -99,7 +99,7 @@ export default function DetailedDataset({data, uri}){
               <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
               <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}{publishedStatus}</i></p>
               <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-              <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a key=distributions.id href={distributions.uri}> {distributions.uri} </a> )})} </p>
+              <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a key={distributions.id} href={distributions.uri}> {distributions.uri} </a> )})} </p>
             
             </Paper>
           </Grid>
