@@ -10,7 +10,8 @@ const RequestButtonComp = (props) => {
             <Button 
             variant="contained" 
             color="primary" 
-            onClick={props.handleClick}>
+            disabled = {props.disabled}
+            onClick={props.handleChange}>
                 Etterspør datasett
             </Button>
         </Grid>
