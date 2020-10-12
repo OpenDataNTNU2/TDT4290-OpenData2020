@@ -8,7 +8,7 @@ const PostApi = async (url, data, func) => {
             body: JSON.stringify(data)
         })
         .then(response => response.json())
-        .then(response => {func(response.id)})
+        .then(response => {try{func(response.id)}catch(_){console.log(_)}})
     }
     catch(_){
         console.log("failed to post to: " + url)
