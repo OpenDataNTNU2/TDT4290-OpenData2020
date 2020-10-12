@@ -24,7 +24,7 @@ export default function Home() {
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
-  const fcUrl = '&CategoryId='
+  const fcUrl = '&CategoryIds='
   const pUrl = '&Page='
   const items = '&ItemsPerPage=10'
 
@@ -134,7 +134,7 @@ export default function Home() {
               d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
-          
+          {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
 
         </Grid>
