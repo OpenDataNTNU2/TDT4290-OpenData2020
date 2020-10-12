@@ -134,6 +134,7 @@ namespace OpenData.API.Services
             return publisher;
         }
 
+        // Add tags in a graph to the database
         public async void AddTags(Graph g, String keywords, Dataset dataset)
         {
             String[] keywordsList = keywords.Split(",");
@@ -166,6 +167,7 @@ namespace OpenData.API.Services
             }
         }
 
+        // Add concept scheme in a graph to the database
         public async Task<Boolean> AddConceptScheme(Graph g)
         {
             
@@ -182,9 +184,11 @@ namespace OpenData.API.Services
             return true;
         }
 
+
+        // Add category and childrens in a graph to the database
         public async Task<Boolean> AddCategory(Graph g, Category broader)
         {
-            
+
             IUriNode dcatDataset = g.CreateUriNode("skos:Concept");
             String[] datasetUri = findSubjectUri(g, dcatDataset).Split(",");
             // From the dataset uri make a dictionary with the attributes

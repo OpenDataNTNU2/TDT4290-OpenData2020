@@ -61,6 +61,7 @@ namespace OpenData.API.Services
             return new Dataset();
         }
 
+        // Import categories
         public async Task<Boolean> importCategories(String url)
         {
             Graph g = NetworkHandling.LoadFromUriXml(url);
