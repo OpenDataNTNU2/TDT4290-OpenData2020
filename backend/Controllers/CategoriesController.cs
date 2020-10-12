@@ -67,7 +67,7 @@ namespace OpenData.API.Controllers
         public async Task<IActionResult> PostImportAsync(string url)
         {   
             if (await _rdfService.importCategories(url)) {
-                return Ok();
+                return Ok("Categories added to database.");
             }
             return BadRequest("Could not import categories from url.");
         }

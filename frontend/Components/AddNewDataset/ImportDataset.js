@@ -59,7 +59,8 @@ export default function CreateDataset(){
             </Grid>
             
             <Alert elevation={1} severity="info">Kopier inn en link for å importere, eks: 
-            <br/> https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0
+            <br/> Datset: https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0
+            <br/> Kategorier: https://psi.norge.no/los/tema/arbeid
             </Alert><br/><br/>
 
             <Input 
