@@ -14,6 +14,8 @@ import { parseCookies } from '../utils/parseCookies'
 
 import {useState,useEffect} from 'react'
 
+import InfiniteScroll from "react-infinite-scroll-component";
+
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
   const router = useRouter();
@@ -22,33 +24,63 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
+  const pUrl = '&Page='
+  const items = '&ItemsPerPage=10'
+
+  const [searchUrl, setSearchUrl] = useState("")
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
 
+  const [page, setPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+
+  const [changedFilter, setChangedFilter] = useState(false)
   
-  const [searchUrl, setSearchUrl] = useState("")
 
-  const [datasets, setDatasets] = useState({})
+  const [datasets, setDatasets] = useState([])
+  
 
-  const getDatasets = async () => {
+  
+  const getDatasets = async (p = page, c = false, s = searchUrl) => {
+    if(changedFilter) setPage(1)
+    if(!hasMore && c) {p = 1; setPage(1); setHasMore(true)}
     try{
-        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl, {
+        fetch(url + sUrl + s + fUrl + filterPublishersUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
+          if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
+            let newArr = datasets
+            for(let i = 0; i < 10; i++){
+              newArr.push(response.items[i])
+            }
+            setDatasets(newArr)
+            setHasMore(true)
+          }
+          else{
+            setHasMore(true)
             setDatasets(response.items);
-            console.log("fetched")
+            setChangedFilter(false)
+          }
+          setTotalItems(response.totalItems)
         })
     }
     catch(_){
         console.log("failed to fetch datasets")
     }
-    
+    if((page) * 10 > totalItems && totalItems !== 1 && hasMore){ 
+      setHasMore(false)
+    }
 }
+  
 
   useEffect(() => {
     getDatasets()
-  }, [filterPublishersUrl])
+  }, [page, prevLoggedIn, filterPublishersUrl])
+
+
+  
 
   const onClick = (id) => { router.push('/DetailedDataset/' + id) }
 
@@ -61,7 +93,7 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterCategory  />
@@ -74,16 +106,25 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           item
           xs={8}
         >
+         
           
           <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
+          
+          <InfiniteScroll
+            dataLength={page * 10}
+            next={() => setPage(page + 1)}
+            hasMore={hasMore}
+            loader={<h4>Loading...</h4>}
+          >
 
           {
             Object.values(datasets).map(d => (
-              <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+              d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
           
-          
+          </InfiniteScroll>
+
         </Grid>
       </Grid>
     </div>

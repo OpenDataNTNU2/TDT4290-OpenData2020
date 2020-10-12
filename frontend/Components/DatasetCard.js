@@ -27,7 +27,7 @@ export default function DatasetCard({ dataset, onClick }) {
     }
 
     return (
-        <div onClick={onClick} key={dataset.id}>
+        <div onClick={onClick} key={dataset.id*2}>
             <Paper variant='outlined' style={{ padding: '1%', marginBottom: '2%', cursor: "pointer" }}>
                 <Grid container alignItems='flex-end' wrap='wrap'>
                     <Grid item xs={9}>
@@ -58,7 +58,7 @@ export default function DatasetCard({ dataset, onClick }) {
                     
                     <Grid container direction="row" >
                         {Object.values(dataset.distributions).map(dist => (
-                            <Box key={dist.id} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
+                            <Box key={dist.id*7} border={1} borderRadius="borderRadius" borderColor="grey.500" padding='0.5%' marginRight={1}>
                                 {(dist.fileFormat).toUpperCase()}
                             </Box>
                         ))}
