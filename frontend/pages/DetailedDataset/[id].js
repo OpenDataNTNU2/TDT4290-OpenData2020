@@ -1,15 +1,49 @@
-import { Paper, Grid } from '@material-ui/core';
+import { Paper, Grid, Button } from '@material-ui/core';
+import RequestButtonComp from './RequestButtonComp';
+import { useState } from "react";
 
-export default function DetailedDataset({data}){
+// import api functions
+import PutApi from '../../Components/ApiCalls/PutApi'
+
+export default function DetailedDataset({data, uri}){
+  
+  const [interestCounter, setInterestCounter] = useState(data.interestCounter);
+  
+  var requestButton;
+  var publishedStatus;
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
-      return pub
+      requestButton = null;
+      publishedStatus = "Published";
     }
-    //should be the other value, i dont have a way to test it:(
-    return "Not yet published"
+    else {
+      requestButton = <RequestButtonComp handleClick={() => handleChange()}/>;
+      publishedStatus = "Not published";
+    }
   }
 
+    // puts data into the api with datasets 
+    const handleChange = async () => {
+        setInterestCounter(interestCounter + 1);
+
+        //publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
+        //litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
+        const data2 = {
+          "interestCounter" : interestCounter,
+          "identifier" : data.identifier,
+          "title": data.title,
+          "description": data.description,
+          "publisherId": data.publisher.id,
+          "publicationStatus": 1,
+          "detailedPublicationStatus": 0,
+          "categoryId": data.category.id,
+        }
+        
+        PutApi(uri, data2);
+        console.log('Requests er oppdatert!');
+    }
+  
 
     return(
         <Grid
@@ -30,17 +64,25 @@ export default function DetailedDataset({data}){
             </Grid>
             
             <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
-            <p style={{paddingBottom:'3%'}}><b>Beskrivelse: </b>{data.description}</p>
-
-            <p><b>Eier:</b> {data.publisher.name}</p>
-
-            <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
-            <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}</i></p>
-            <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-            <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a href={distributions.uri}> {distributions.uri} </a> )})} </p>
+              <Grid
+              container
+              spacing={0}
+              direction="row"
+              justify="space-between"
+              alignItems="center">
+                <p><b>Beskrivelse: </b>{data.description}</p>
+                {ifPublished(data.publicationStatus)}{requestButton}
+              </Grid>
+            
+              <p><b>Eier:</b> {data.publisher.name}</p>
+              <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
+              <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}{publishedStatus}</i></p>
+              <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
+              <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a href={distributions.uri}> {distributions.uri} </a> )})} </p>
+              
+            
             </Paper>
-
-        </Grid>
+            </Grid>
 
     )
 }
@@ -53,7 +95,7 @@ export async function getServerSideProps(context) {
     const data = await res.json()
   
     // Pass data to the page via props
-    return { props: { data } }
+    return { props: { data, uri } }
   }
 
 // ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
