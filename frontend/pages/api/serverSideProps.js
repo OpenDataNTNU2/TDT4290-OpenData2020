@@ -10,7 +10,7 @@ export async function PageRender(page, context) {
 
   const cookies = parseCookies(context.req)
 
-  let propsData = { props: { data } }
+  let propsData = { props: { data, uri } }
 
   if (JSON.stringify(cookies) !== "{}") {
     propsData = {
@@ -19,7 +19,8 @@ export async function PageRender(page, context) {
         prevLoggedIn: cookies.prevLoggedIn,
         prevLoggedUsername: cookies.prevLoggedUsername,
         prevPublisherId: cookies.prevPublisherId,
-        prevUserId: cookies.prevUserId
+        prevUserId: cookies.prevUserId,
+        uri
       }
     }
   }
