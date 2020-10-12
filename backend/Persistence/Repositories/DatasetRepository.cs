@@ -42,9 +42,18 @@ namespace OpenData.API.Persistence.Repositories
 
 
             // Filter on Category
-            if (!String.IsNullOrEmpty(query.CategoryId))
+            if (!String.IsNullOrEmpty(query.CategoryIds))
             {
-                queryable = queryable.Where(d => d.Category.Id == Int32.Parse(query.CategoryId));
+                // Parses the list of category ids from string to list of ints
+                List<int> categoryIds = new List<int>();
+                foreach (string idString in query.CategoryIds.Split(','))
+                {
+                    if (idString == null || idString == "") continue;
+                    int id = Int32.Parse(idString.Trim());
+                    categoryIds.Add(id);
+                }
+
+                queryable = queryable.Where(d => categoryIds.Contains(d.CategoryId));
             }
 
 
