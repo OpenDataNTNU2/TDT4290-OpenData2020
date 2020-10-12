@@ -24,7 +24,7 @@ export default function Home() {
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
-  const fcUrl = '&CategoryId='
+  const fcUrl = '&CategoryIds='
   const pUrl = '&Page='
   const items = '&ItemsPerPage=10'
 
@@ -41,27 +41,36 @@ export default function Home() {
 
   const [datasets, setDatasets] = useState([])
   
+  const [loader, setLoader] = useState('Loading...')
 
   
   const getDatasets = async (p = page, c = false, s = searchUrl) => {
     if(changedFilter) setPage(1)
     if(!hasMore && c) {p = 1; setPage(1); setHasMore(true)}
     try{
-        fetch(url + sUrl + s + fUrl + filterPublishersUrl + pUrl + p + items, {
+        fetch(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
+          if(response.totalItems === 0){
+            setLoader('No items found')
+          }
+          else if(response.totalItems !== 0){
+            if(loader !== 'Loading...') { setLoader('Loading...') }
+            if(response.totalItems > 10) { setHasMore(true) }
+            else{setHasMore(false)}
+          }
           if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
             let newArr = datasets
             for(let i = 0; i < 10; i++){
               newArr.push(response.items[i])
             }
             setDatasets(newArr)
-            setHasMore(true)
+            
           }
           else{
-            setHasMore(true)
+            
             setDatasets(response.items);
             setChangedFilter(false)
           }
@@ -74,12 +83,13 @@ export default function Home() {
     if((page) * 10 > totalItems && totalItems !== 1 && hasMore){ 
       setHasMore(false)
     }
+    console.log(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items)
 }
   
 
   useEffect(() => {
     getDatasets()
-  }, [page, filterPublishersUrl])
+  }, [page, filterPublishersUrl, filterCategoriesUrl])
 
 
   
@@ -116,7 +126,7 @@ export default function Home() {
             dataLength={page * 10}
             next={() => setPage(page + 1)}
             hasMore={hasMore}
-            loader={<h4>Loading...</h4>}
+            loader={<h4>{loader}</h4>}
           >
 
           {
@@ -124,7 +134,7 @@ export default function Home() {
               d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
-          
+          {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
 
         </Grid>

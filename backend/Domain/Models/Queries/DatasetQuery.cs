@@ -4,13 +4,13 @@ namespace OpenData.API.Domain.Models.Queries
     {
         public string Search { get; set; }
         public string PublisherIds { get; set; }
-        public string CategoryId { get; set; }
+        public string CategoryIds { get; set; }
 
-        public DatasetQuery(string search, string publisherIds, string categoryId, int page, int itemsPerPage) : base(page, itemsPerPage)
+        public DatasetQuery(string search, string publisherIds, string categoryIds, int page, int itemsPerPage) : base(page, itemsPerPage)
         {
             Search = search;
             PublisherIds = publisherIds;
-            CategoryId = categoryId;
+            CategoryIds = categoryIds;
         }
     }
 }
