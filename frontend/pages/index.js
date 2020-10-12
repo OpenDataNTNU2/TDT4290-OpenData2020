@@ -24,11 +24,13 @@ export default function Home() {
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
+  const fcUrl = '&CategoryId='
   const pUrl = '&Page='
   const items = '&ItemsPerPage=10'
 
   const [searchUrl, setSearchUrl] = useState("")
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
+  const [filterCategoriesUrl, setFilterCategoriesUrl] = useState("")
 
   const [page, setPage] = useState(1)
   const [totalItems, setTotalItems] = useState(0)
