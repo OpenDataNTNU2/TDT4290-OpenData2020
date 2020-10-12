@@ -166,6 +166,48 @@ namespace OpenData.API.Services
             }
         }
 
+        public async void AddConceptScheme(Graph g)
+        {
+            
+            IUriNode dcatDataset = g.CreateUriNode("skos:ConceptScheme");
+            String[] datasetUri = findSubjectUri(g, dcatDataset).Split(",");
+            // From the dataset uri make a dictionary with the attributes
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri[0]);
+
+            String[] topConceptUrls = attributes.GetValueOrDefault("hasTopConcept", "").Split(",");
+
+            foreach (String topConceptUrl in topConceptUrls){
+                AddCategory(NetworkHandling.LoadFromUriXml(topConceptUrl));
+            }
+        }
+
+        public async void AddCategory(Graph g)
+        {
+            IUriNode dcatDataset = g.CreateUriNode("skos:Concept");
+            String[] datasetUri = findSubjectUri(g, dcatDataset).Split(",");
+            // From the dataset uri make a dictionary with the attributes
+            Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri[0]);
+
+             String[] prefLabels = attributes.GetValueOrDefault("prefLabel", "").Split(",");
+
+            Category category = new Category {
+                Name = prefLabels[0]
+            };
+
+            await _categoryRepository.AddAsync(category);
+            await _unitOfWork.CompleteAsync();
+
+            String[] narrowerUrls = attributes.GetValueOrDefault("narrower", "").Split(",");
+            foreach(String url in narrowerUrls)
+            {
+                if (!String.IsNullOrEmpty(url)){
+                    AddCategory(NetworkHandling.LoadFromUriXml(url));
+                }
+            }
+        }
+
+
+
         // Get attributes as dictionary from chosen subject node
         private Dictionary<string,string> getAttributesFromSubject(Graph g, String subject)
         {
@@ -179,13 +221,15 @@ namespace OpenData.API.Services
                     int hash = p.LastIndexOf("#");
                     int index = Math.Max(slash,hash) + 1;
                     p = p.Substring(index);
+                    // TODO: This should probably be handled properly, see rAt function
+                    if (rAt(t.Object.ToString()) == "") continue;
                     if(attributes.ContainsKey(p))
                     {
-                        attributes[p] = attributes[p] + "," + t.Object.ToString();
+                        attributes[p] = attributes[p] + "," + rAt(t.Object.ToString());
                     }
                     else
                     {
-                        attributes[p] = t.Object.ToString();
+                        attributes[p] = rAt(t.Object.ToString());
                     }
                 }
             }
@@ -208,6 +252,24 @@ namespace OpenData.API.Services
                 }
             }
             return uri;
+        }
+
+
+        // TODO: This should probably be handled properly
+        // Just removing @nn and @en here.
+        private String rAt(String s)
+        {
+            if (s.Contains("@"))
+            {
+                if (s.Contains("@nb"))
+                {
+                    return s.Substring(0,s.LastIndexOf("@"));
+                }
+                else {
+                    return "";
+                }
+            }
+            return s;
         }
     }
 }

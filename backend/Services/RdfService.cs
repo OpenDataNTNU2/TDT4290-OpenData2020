@@ -42,6 +42,12 @@ namespace OpenData.API.Services
                 else if (url.Contains("data.norge.no")){
                     g = NetworkHandling.LoadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url.Substring(url.LastIndexOf("/")+1));
                 }
+                else if (url.Contains("https://psi.norge.no/"))
+                {
+                    g = NetworkHandling.LoadFromUriXml(url);
+                    _graphService.AddCategory(g);
+                    FileHandling.SaveToFileTurtle(g, "dcat_example2.ttl");
+                }
                 // Otherwise hope the url is directly to a rdf file location on XML format
                 else 
                 {
@@ -55,11 +61,12 @@ namespace OpenData.API.Services
             }
 
             // Try to parse the dataset and save it in the database
-            Dataset dataset = await _graphService.AddDataset(g);
+            // Dataset dataset = await _graphService.AddDataset(g);
 
-            // FileHandling.SaveToFileTurtle(g, "dcat_example2.ttl");
+            
 
-            return dataset;
+            // return dataset;
+            return new Dataset();
         }
 
         // "https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f",
