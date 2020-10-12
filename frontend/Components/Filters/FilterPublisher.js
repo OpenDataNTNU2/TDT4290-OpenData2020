@@ -11,6 +11,7 @@ export default function FilterPublisher(props){
     const [res, setRes] = useState({})
     
     const handleChange = (event) => {
+        props.setChanged(true)
         let newArr = addedFilters
         newArr.push(event.target.value)
         for(let i = 0; i < newArr.length - 1; i++){
@@ -22,6 +23,7 @@ export default function FilterPublisher(props){
             newUrlString += newArr[i] + ','
         }
         props.setUrl(newUrlString)
+        
       
     };
 

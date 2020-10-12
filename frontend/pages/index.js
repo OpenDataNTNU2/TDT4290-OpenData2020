@@ -10,45 +10,79 @@ import FilterCategory from '../Components/Filters/FilterCategory'
 import FilterTag from '../Components/Filters/FilterTag'
 
 import { useRouter } from 'next/router'
-import { parseCookies } from '../utils/parseCookies'
+import {PageRender} from './api/serverSideProps';
 
 import {useState,useEffect} from 'react'
 
+import InfiniteScroll from "react-infinite-scroll-component";
+
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
-export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
+export default function Home() {
   const router = useRouter();
 
 
   const url = 'https://localhost:5001/api/datasets'
   const sUrl = '?Search='
   const fUrl = '&PublisherIds='
+  const fcUrl = '&CategoryId='
+  const pUrl = '&Page='
+  const items = '&ItemsPerPage=10'
+
+  const [searchUrl, setSearchUrl] = useState("")
   const [filterPublishersUrl, setFilterPublishersUrl] = useState("")
+  const [filterCategoriesUrl, setFilterCategoriesUrl] = useState("")
+
+  const [page, setPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+  const [hasMore, setHasMore] = useState(true)
+
+  const [changedFilter, setChangedFilter] = useState(false)
+  
+
+  const [datasets, setDatasets] = useState([])
+  
 
   
-  const [searchUrl, setSearchUrl] = useState("")
-
-  const [datasets, setDatasets] = useState({})
-
-  const getDatasets = async () => {
+  const getDatasets = async (p = page, c = false, s = searchUrl) => {
+    if(changedFilter) setPage(1)
+    if(!hasMore && c) {p = 1; setPage(1); setHasMore(true)}
     try{
-        fetch(url + sUrl + searchUrl + fUrl + filterPublishersUrl, {
+        fetch(url + sUrl + s + fUrl + filterPublishersUrl + pUrl + p + items, {
             method: 'GET',
         })
         .then(response => response.json())
         .then(response => {
+          if(response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c){
+            let newArr = datasets
+            for(let i = 0; i < 10; i++){
+              newArr.push(response.items[i])
+            }
+            setDatasets(newArr)
+            setHasMore(true)
+          }
+          else{
+            setHasMore(true)
             setDatasets(response.items);
-            console.log("fetched")
+            setChangedFilter(false)
+          }
+          setTotalItems(response.totalItems)
         })
     }
     catch(_){
         console.log("failed to fetch datasets")
     }
-    
+    if((page) * 10 > totalItems && totalItems !== 1 && hasMore){ 
+      setHasMore(false)
+    }
 }
+  
 
   useEffect(() => {
     getDatasets()
-  }, [filterPublishersUrl])
+  }, [page, filterPublishersUrl])
+
+
+  
 
   const onClick = (id) => { router.push('/DetailedDataset/' + id) }
 
@@ -61,10 +95,10 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
-            <FilterCategory  />
+            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl}  />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterTag  />
@@ -74,58 +108,36 @@ export default function Home({ data, prevLoggedIn = false, prevLoggedUsername = 
           item
           xs={8}
         >
+         
           
           <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
+          
+          <InfiniteScroll
+            dataLength={page * 10}
+            next={() => setPage(page + 1)}
+            hasMore={hasMore}
+            loader={<h4>Loading...</h4>}
+          >
 
           {
             Object.values(datasets).map(d => (
-              <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+              d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
             ))
           }
           
-          
+          </InfiniteScroll>
+
         </Grid>
       </Grid>
     </div>
   )
 }
 
-// ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
-function createRequestOptions(skipHttpsValidation) {
-  const isNode = typeof window === 'undefined';
-  if (isNode) {
-    var Agent = (require('https')).Agent;
-    return {
-      agent: new Agent({ rejectUnauthorized: !skipHttpsValidation })
-    };
-  }
-}
+
 
 // This gets called on every request
-export async function getServerSideProps({ req }) {
-  // Fetch data from external API
-  // Should be changed to host link when this is done, not localhost.
-  const uri = 'https://localhost:5001/api/datasets';
-  const res = await fetch(uri, createRequestOptions(true))
-  const data = await res.json()
-
-  const cookies = parseCookies(req);
-
-  let propsData = { props: { data } }
-
-  if (JSON.stringify(cookies) !== "{}") {
-    propsData = {
-      props: {
-        data,
-        prevLoggedIn: cookies.prevLoggedIn,
-        prevLoggedUsername: cookies.prevLoggedUsername,
-        prevPublisherId: cookies.prevPublisherId,
-        prevUserId: cookies.prevUserId
-      }
-    }
-  }
-  console.log(cookies)
-
+export async function getServerSideProps(context) {
+  const propsData = PageRender("index", context)
   return propsData
 
 

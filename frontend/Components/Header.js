@@ -1,16 +1,10 @@
-import Paper from '@material-ui/core/Paper'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import {Tabs, Tab, Button, Grid} from '@material-ui/core'
 
 import { useRouter } from 'next/router'
 import { useState } from "react";
+import { parseCookies } from '../pages/api/serverSideProps';
 
-import Cookie from "js-cookie";
-import { parseCookies } from '../utils/parseCookies'
-
-export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
+export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1"}) {
     const router = useRouter();
     const [value, setValue] = useState("/");
 
