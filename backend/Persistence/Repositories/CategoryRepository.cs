@@ -13,7 +13,6 @@ namespace OpenData.API.Persistence.Repositories
         {
         }
 
-        private List<Category> flatCategories = new List<Category>();
         public async Task<IEnumerable<Category>> ListAsync()
         {
             var categories =  await _context.Categories
