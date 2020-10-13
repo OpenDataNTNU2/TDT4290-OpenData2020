@@ -18,11 +18,7 @@ namespace OpenData.API.Domain.Models
         public IList<DatasetTags> DatasetTags { get; set; } = new List<DatasetTags>();
         public int CategoryId { get; set; }
         public Category Category { get; set; }
-<<<<<<< HEAD
-        public int CoordinationId { get; set; }
-=======
         public int? CoordinationId { get; set; }
->>>>>>> 1d80e713f0bad59c31104fdda5acb87c610ea0ff
         public Coordination Coordination { get; set; }
         public int InterestCounter { get; set;}
 
