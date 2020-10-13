@@ -12,16 +12,28 @@ namespace OpenData.API.Persistence.Repositories
         public CategoryRepository(AppDbContext context) : base(context)
         {
         }
-        
+
+        private List<Category> flatCategories = new List<Category>();
         public async Task<IEnumerable<Category>> ListAsync()
         {
             var categories =  await _context.Categories
+                    .Include(p => p.Broader)
                     .AsNoTracking()
                     .ToListAsync();
-                  
+            List<Category> remove = new List<Category>();
             for (var i = 0; i < categories.Count; i++)
             {
+                if(categories[i].Broader != null)
+                {   
+                    remove.Add(categories[i]);
+                    continue;
+                }
                 categories[i] = await getCategoryWithNarrowers(categories[i].Id);
+            }
+
+            foreach (Category r in remove)
+            {
+                categories.Remove(r);
             }
             
             return categories;
