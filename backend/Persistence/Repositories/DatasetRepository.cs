@@ -51,6 +51,8 @@ namespace OpenData.API.Persistence.Repositories
                     if (idString == null || idString == "") continue;
                     int id = Int32.Parse(idString.Trim());
                     categoryIds.Add(id);
+                    Category c = await getCategoryWithNarrowers(id);
+                    categoryIds.AddRange(getNarrowerIds(c));
                 }
 
                 queryable = queryable.Where(d => categoryIds.Contains(d.CategoryId));
@@ -81,6 +83,35 @@ namespace OpenData.API.Persistence.Repositories
                 Items = datasets,
                 TotalItems = totalItems,
             };
+        }
+
+        private List<int> getNarrowerIds(Category category)
+        {
+            List<int> ids = new List<int>();
+            if (category.Narrower != null)
+            {
+                foreach(Category narrow in category.Narrower)
+                {
+                    ids.Add(narrow.Id);
+                    ids.AddRange(getNarrowerIds(narrow));
+                }
+            }
+            return ids;
+        }
+
+        private async Task<Category> getCategoryWithNarrowers(int id)
+        {
+            Category cat = await _context.Categories
+                        .Include(c => c.Narrower)
+                        .FirstOrDefaultAsync(c => c.Id == id);
+            for (var i = 0; i < cat.Narrower.Count; i++)
+            {
+                if (cat.Narrower[i] != null)
+                {
+                    cat.Narrower[i] = await getCategoryWithNarrowers(cat.Narrower[i].Id);
+                }
+            }
+            return cat;
         }
 
         public async Task AddAsync(Dataset dataset)
