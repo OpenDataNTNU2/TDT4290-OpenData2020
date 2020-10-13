@@ -6,7 +6,7 @@ const GetApi = async (url, setResponse) => {
             method: 'GET',    
         })
         .then(response => response.json())
-        .then(response => { setResponse(response); console.log(response)})
+        .then(response => { setResponse(response) })
     }
     catch(_){
         console.log("failed to fetch from: " + url)

@@ -1,18 +1,20 @@
-const PostApi = async (url, data, func) => {
+// Uvisst om denne fungerer per nå, men noe på plass
+
+const PutApi = async (url, data) => {
     try{
         fetch(url, {
-            method: 'POST',
+            method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(data)
         })
         .then(response => response.json())
-        .then(response => {try{func(response.id)}catch(_){console.log(_)}})
+        .then(response => console.log(response))
     }
     catch(_){
-        console.log("failed to post to: " + url)
+        console.log("failed to put to: " + url)
     }
 }
 
-export default PostApi
+export default PutApi

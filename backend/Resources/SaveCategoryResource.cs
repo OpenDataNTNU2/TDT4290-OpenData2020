@@ -7,5 +7,6 @@ namespace OpenData.API.Resources
         [Required]
         [MaxLength(60)]
         public string Name { get; set; }
+        public int? BroaderId { get; set; }
     }
 }

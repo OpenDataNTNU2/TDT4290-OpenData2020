@@ -92,6 +92,17 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        [HttpPost("populate")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostPopulate(int numberOfDatasets)
+        {   
+            Dataset datatset = await _rdfService.populate(numberOfDatasets);
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            return Ok(datasetResource);
+        }
+
         /// <summary>
         /// Updates an existing dataset according to an identifier.
         /// </summary>

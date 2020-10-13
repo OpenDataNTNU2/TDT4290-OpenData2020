@@ -70,6 +70,7 @@ namespace OpenData.API
             services.AddScoped<ICategoryService, CategoryService>();
             services.AddScoped<ICoordinationService, CoordinationService>();
 
+            services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IRdfService, RdfService>();
 
 
