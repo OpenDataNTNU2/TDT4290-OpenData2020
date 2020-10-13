@@ -27,6 +27,7 @@ namespace OpenData.API.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<CoordinationResource>), 200)]
         public async Task<IEnumerable<CoordinationResource>> GetAllAsync()
         {
             var coordinations = await _coordinationService.ListAsync();
@@ -35,7 +36,19 @@ namespace OpenData.API.Controllers
             return resources;
         }
 
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(CoordinationResource), 200)]
+        public async Task<CoordinationResource> FindByIdAsync(int id)
+        {
+            var coordination = await _coordinationService.FindByIdAsync(id);
+            var resource = _mapper.Map<Coordination, CoordinationResource>(coordination.Resource);
+
+            return resource;
+        }
+
         [HttpPost]
+        [ProducesResponseType(typeof(CoordinationResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostAsync([FromBody] SaveCoordinationResource resource)
         {
             if(!ModelState.IsValid)
@@ -46,6 +59,23 @@ namespace OpenData.API.Controllers
 
             if(!result.Success)
                     return BadRequest(result.Message);
+
+            var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
+            return Ok(coordinationResource);
+        }
+
+        [HttpPut("{id}")]
+        [ProducesResponseType(typeof(CoordinationResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PutAsync(int id, [FromBody] SaveCoordinationResource resource)
+        {
+            var coordination = _mapper.Map<SaveCoordinationResource, Coordination>(resource);
+            var result = await _coordinationService.UpdateAsync(id, coordination);
+
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorResource(result.Message));
+            }
 
             var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
             return Ok(coordinationResource);

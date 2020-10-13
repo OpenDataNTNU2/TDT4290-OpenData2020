@@ -20,6 +20,7 @@ namespace OpenData.API.Persistence.Repositories
                             .Include(d => d.Publisher)
                             .Include(d => d.Category)
                             .Include(d => d.Distributions)
+                            .Include(d => d.Coordination)
                             .Include(d => d.DatasetTags)
                                 .ThenInclude(d => d.Tags)
                             .AsNoTracking();
@@ -94,6 +95,7 @@ namespace OpenData.API.Persistence.Repositories
                                 .Include(d => d.Publisher)
                                 .Include(d => d.Category)
                                 .Include(d => d.Distributions)
+                                .Include(d => d.Coordination)
                                 .Include(d => d.DatasetTags)
                                     .ThenInclude(d => d.Tags)
                                 .FirstOrDefaultAsync(i => i.Id == id);
