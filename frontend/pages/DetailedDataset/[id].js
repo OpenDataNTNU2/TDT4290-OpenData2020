@@ -17,17 +17,28 @@ export default function DetailedDataset({data, uri}){
 
   var requestButton;
   var publishedStatus;
-  var distributionCard;
+  const distributionCards = [];
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
       requestButton = null;
-      publishedStatus = "Published";
-      distributionCard = <DistributionCard/>
+      publishedStatus = "Publisert";
+      //console.log(data.distributions[0])
+      //console.log(data.distributions[1])
+      
+      for(let i = 0; i < data.distributions.length; i++){
+        // Per nå settes bare alle kortene til det siste kortet. 
+        distributionCards.push = <DistributionCard 
+        id = {data.distributions[i].id}
+        fileFormat = {data.distributions[i].fileFormat}
+        uri = {data.distributions[i].uri} />           
+      }
+      console.log(distributionCards.map(cards => ({cards})))
     }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
-      publishedStatus = "Not published";
+      publishedStatus = "Ikke publisert";
+      distributionCard = "Dette datasettet har ingen distribusjoner ennå."
     }
   }
 
@@ -119,17 +130,8 @@ export default function DetailedDataset({data, uri}){
               style={{ minHeight: '70vh', minWidth: '90vh', padding: '3%', border: '2%'}}
               >
               <h3 style={{fontWeight: "bold", }}><p>Distribusjoner</p></h3>
-              <Paper variant='outlined' style={{ backgroundColor: '#e6ffee', padding: '1%' , paddingBottom:'1%'}}>
-                
-                <Grid
-                  container
-                  direction="column"
-                  alignItems="stretch"
-                >
-                <p>{ifPublished(data.publicationStatus)}{distributionCard}</p>
-                </Grid>
-
-              </Paper>
+              <p>{ifPublished(data.publicationStatus)}{distributionCards.map(cards => ({cards}))}</p>
+              
             </Grid>
           </Grid>
     )

@@ -1,15 +1,31 @@
 import React from 'react';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Paper } from '@material-ui/core';
 
 const DistributionCard = (props) => {
 
     return (  
-        <Grid>
-            <p><i>Placeholder for distributionCard</i></p>
-            <p><b>ID: </b>{data.distributions.map(distributions => { return (<a key={distributions.id}>{distributions.id} </a> )})}</p>
-            <p><b>Filformat: </b>{data.distributions.map(distributions => { return (<a key={distributions.fileFormat}>{distributions.fileFormat} </a> )})}</p>
-            <p><b>URI: </b>{data.distributions.map(distributions => { return (<a key={distributions.uri}>{distributions.uri} </a> )})}</p>
-        </Grid>
+        <Paper 
+        variant='elevation' 
+        elevation ={3}
+        spacing={2}
+        style={{ backgroundColor: '#e6ffee', padding: '1%'}}>
+                <Grid
+                  container
+                  spacing={2}
+                  direction="row"
+                  alignItems="stretch">
+                    <Grid item xs={6}>
+                        <p><b>ID: </b>{props.id}</p>
+                        <p><b>Filformat: </b>{props.fileFormat}</p>
+                        <p><b>URI: </b>{props.uri}</p>
+                    </Grid>
+                    <Grid item xs={6}>
+                        <p><b>ID: </b>{props.id}</p>
+                        <p><b>Filformat: </b>{props.fileFormat}</p>
+                        <p><b>URI: </b>{props.uri}</p>
+                    </Grid>
+                </Grid>
+              </Paper>
     )
 }
 
