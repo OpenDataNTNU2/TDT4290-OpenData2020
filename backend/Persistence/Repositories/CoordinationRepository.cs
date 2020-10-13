@@ -18,10 +18,12 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<IEnumerable<Coordination>> ListAsync()
         {
-            return await _context.Coordinations.ToListAsync();
+            return await _context.Coordinations
+                                    .Include(c => c.Datasets)
+                                    .ToListAsync();
         }
 
-        public async Task<Coordination> FindByIdAsync(int id)
+        public async Task<Coordination> FindByIdAsync(int? id)
         {
             return await _context.Coordinations.FindAsync(id);
                                 

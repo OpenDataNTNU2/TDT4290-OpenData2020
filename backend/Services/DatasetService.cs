@@ -119,10 +119,12 @@ namespace OpenData.API.Services
 
             existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
             existingDataset.InterestCounter = dataset.InterestCounter; // TODO: consider using _datasetRepository.UpdateAsync?
+            existingDataset.CoordinationId = dataset.CoordinationId;
 
 
             try
             {
+                _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
                 return new DatasetResponse(existingDataset);

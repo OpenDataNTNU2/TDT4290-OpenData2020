@@ -26,7 +26,7 @@ namespace OpenData.API.Services
             return await _coordinationRepository.ListAsync();
         }
 
-        public async Task<CoordinationResponse> FindByIdAsync(int id)
+        public async Task<CoordinationResponse> FindByIdAsync(int? id)
         {
             try
             {
