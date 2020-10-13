@@ -33,9 +33,21 @@ namespace OpenData.API.Mapping
 
             CreateMap<DatasetTags, DatasetTagsResource>();
 
-            CreateMap<Category, CategoryResource>();
+            CreateMap<Category, CategoryResource>()
+                    .ForMember(src => src.Datasets,
+                                opt => opt.MapFrom(src => getCount(src)));
 
             CreateMap<Coordination, CoordinationResource>();
+        }
+
+        private int getCount(Category category)
+        {
+            int sum = category.Datasets.Count;
+            foreach(Category nar in category.Narrower)
+            {
+                sum += getCount(nar);
+            }
+            return sum;
         }
     }
 }
