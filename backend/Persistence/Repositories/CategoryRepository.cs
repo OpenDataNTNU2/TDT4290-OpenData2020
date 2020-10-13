@@ -12,13 +12,10 @@ namespace OpenData.API.Persistence.Repositories
         public CategoryRepository(AppDbContext context) : base(context)
         {
         }
-
+        
         public async Task<IEnumerable<Category>> ListAsync()
         {
             var categories =  await _context.Categories
-                    .Include(p => p.Datasets)
-                        .ThenInclude(d => d.Distributions)
-                    .Include(p => p.Broader)
                     .AsNoTracking()
                     .ToListAsync();
                   
@@ -34,6 +31,8 @@ namespace OpenData.API.Persistence.Repositories
         {
             Category cat = await _context.Categories
                         .Include(c => c.Narrower)
+                        .Include(c => c.Datasets)
+                        .Include(p => p.Broader)
                         .FirstOrDefaultAsync(c => c.Id == id);
             for (var i = 0; i < cat.Narrower.Count; i++)
             {
