@@ -1,4 +1,4 @@
-import { Grid, Button, FormControl, FormLabel, Divider, Snackbar } from '@material-ui/core';
+import { Grid, Button, FormControl, FormLabel, Divider, Snackbar, MenuItem, InputLabel, Select  } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert'
 
 import PostApi from '../ApiCalls/PostApi'
@@ -19,14 +19,20 @@ export default function CreateCoordination(props){
     const [title, setTitle] = useState("")
     const [description, setDescription] = useState("")
 
-    const [addDataset, setAddDataset] = useState("0")
+    const [datasetOption, setDatasetOption] = useState("0")
     const [datasets, setDatasets] = useState([])
 
+    // dataset to add to coordination
+    const [selectedDataset, setSelectedDataset] = useState({})
+
     const handleChange = () => {
+        // make don't have datasets like this, should only be here if selectedDataset !== {}
+        // not sure if this is how its done either
         const data = {
             "title": title,
             "description": description,
-            "publisherId": props.publisherId
+            "publisherId": props.publisherId,
+            "datasets": selectedDataset
         }
         PostApi('https://localhost:5001/api/coordinations', data, submitPostReq)
         console.log(props.publisherId)
@@ -40,6 +46,10 @@ export default function CreateCoordination(props){
         setDescription("")
     }
 
+    // this should be fetched when clicking the radiobutton for choose existing
+    useEffect(() => {
+        GetApi('https://localhost:5001/api/datasets?PublisherIds=' + props.publisherId, setDatasets)
+    },[props])
 
     return(
         <Grid
@@ -69,8 +79,8 @@ export default function CreateCoordination(props){
                 <FormLabel component="legend">Legg til dataset</FormLabel>
                 <RadioInput 
                     id="addDatasetToCoordination"
-                    mainValue={addDataset}
-                    handleChange={setAddDataset}
+                    mainValue={datasetOption}
+                    handleChange={setDatasetOption}
                     value={["1", "2", "3"]}
                     label={["Legg til eksisterende", "Opprett nytt dataset", "Ikke legg til dataset enda"]}
                     color={["normal", "normal", "normal"]}
@@ -78,12 +88,35 @@ export default function CreateCoordination(props){
             </FormControl><br/>
 
             
-                {addDataset === "1" ? 
-                    <div>select bar here</div>
-                : addDataset === "2" ?
+                {datasetOption === "1" ? 
+                    
+                    <div>
+                        {/* Midlertidig funk for å teste */}
+                        <FormControl variant="outlined" style={{width: "50vh"}}>
+                            <InputLabel id="demo-simple-select-label">Velg dataset</InputLabel>
+                            <Select
+                                labelId="demo-simple-select-label"
+                                label="Velg dataset"
+                                id="demo-simple-select"
+                                value={selectedDataset}
+                                onChange={(event) => setSelectedDataset(event.target.value)}
+
+                            >
+                            {Object.values(datasets.items).map((dataset) => (
+                                <MenuItem value={dataset}>{dataset.title}</MenuItem>
+                            ))}
+                            
+                            
+                            </Select>
+                        </FormControl>
+
+                        
+                    </div>
+                : datasetOption === "2" ?
                     <div>add new dataset here</div>
-                :   <Button variant="contained" color="primary" onClick={handleChange}>Opprett</Button>
+                :   null
                 }
+                <Button variant="contained" color="primary" onClick={handleChange}>Opprett</Button>
 
             <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                 <Alert elevation={1} severity="success">Samordning opprettet</Alert>
