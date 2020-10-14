@@ -215,7 +215,7 @@ export default function CreateDataset(props){
         
             <SelectInput 
                 id="category"
-                mainLabel="Kategori: Not relevant yet"
+                mainLabel="Kategori"
                 value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}

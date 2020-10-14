@@ -46,7 +46,7 @@ export default function FilterCategory(props){
 
         let pub = []
         for(let i = 0; i < res.length; i++){
-            pub.push([res[i].name.split(" ")[0], res[i].id, false, i,  res[i].datasets.length]);
+            pub.push([res[i].name.split(" ")[0], res[i].id, false, i,  res[i].datasetsCount]);
         }
         setCategories(pub)
         if(res.length < 5){setShowItems(res.length)}

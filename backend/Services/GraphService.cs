@@ -34,7 +34,7 @@ namespace OpenData.API.Services
         }
 
         // Add a dataset in a graph to the database
-        public async Task<Dataset> AddDataset(Graph g) 
+        public async Task<Dataset> AddDataset(Graph g, int categoryId) 
         {
             // Find publisher id
             Publisher publisher = await AddPublisher(g);
@@ -51,7 +51,7 @@ namespace OpenData.API.Services
                 Description = attributes.GetValueOrDefault("description", ""), 
                 PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
                 PublisherId = publisher.Id, 
-                CategoryId = 100 
+                CategoryId = categoryId 
             };
 
             // Add the dataset to the database
@@ -194,8 +194,8 @@ namespace OpenData.API.Services
             // From the dataset uri make a dictionary with the attributes
             Dictionary<string,string> attributes = getAttributesFromSubject(g, datasetUri[0]);
 
-             String[] prefLabels = attributes.GetValueOrDefault("prefLabel", "").Split(",");
-
+            String[] prefLabels = attributes.GetValueOrDefault("prefLabel", "").Split(",");
+            
             Category category = new Category {
                 Name = prefLabels[0],
                 Broader = broader
