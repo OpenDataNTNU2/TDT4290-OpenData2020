@@ -36,13 +36,15 @@ export default function FilterCategory(props){
         
     // fetches the categories and places all the top level categories into a list. 
     useEffect(() => {
+        
         GetApi('https://localhost:5001/api/categories', setRes)
         let pub = []
         for(let i = 0; i < res.length; i++){
             if(res[i].broader === null) pub.push(res[i])
         }
         setCategories(pub)
-        if(pub.length < 5){setShowItems(pub.length)}
+        console.log(pub.length)
+        
     },[props])
 
    
@@ -63,16 +65,16 @@ export default function FilterCategory(props){
     const items = (cats) => cats.map((category) => (
             <div>
                 {category.narrower.length === 0 ? 
-                    <CheckboxInput handleChange={handleChange} id={category.id} name={category.name} />
+                    <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + category.datasetsCount + ")"} />
                 
                 :   <div>
-                        <CheckboxInput handleChange={handleChange} id={category.id} name={category.name} />
+                        <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + category.datasetsCount + ")"} />
                         {!shownSubItems[category.id] ? 
                             <ExpandMoreIcon style={{cursor:'pointer'}} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
                         :   <ExpandLessIcon style={{cursor:'pointer'}} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
                         }
                         
-                        <div style={{marginLeft: "3vh"}} hidden={!shownSubItems[category.id]} id={category.id} >
+                        <div style={{marginLeft: "2vh"}} hidden={!shownSubItems[category.id]} id={category.id} >
                             {items(category.narrower)}
                         </div>
                         
@@ -89,9 +91,9 @@ export default function FilterCategory(props){
                 <FormGroup >
                     <br/>
 
-                    {items(categories)}
+                    {items(categories.slice(0, showItems))}
                     
-                    {showItems === 5
+                    {showItems === 5 && categories.length > 5
                     ? <ExpandMoreIcon style={{cursor:'pointer'}} onClick={() => setShowItems(categories.length)} fontSize="large"/> 
                     : categories.length > 5 
                     ? <ExpandLessIcon style={{cursor:'pointer'}} onClick={() => setShowItems(5)} fontSize="large" />
