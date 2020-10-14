@@ -11,7 +11,7 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
     const handleChange = (event, newValue) => {
         setValue(newValue);
         router.push(newValue);
-        console.log(prevLoggedIn)
+        
     };
 
     return (

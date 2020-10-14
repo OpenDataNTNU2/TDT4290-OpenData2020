@@ -43,7 +43,7 @@ export default function FilterCategory(props){
             if(res[i].broader === null) pub.push(res[i])
         }
         setCategories(pub)
-        console.log(pub.length)
+        
         
     },[props])
 
