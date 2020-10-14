@@ -10,7 +10,7 @@ namespace OpenData.API.Domain.Services
 {
     public interface IGraphService
     {
-        Task<Dataset> AddDataset(Graph g);
+        Task<Dataset> AddDataset(Graph g, int categoryId);
         Task<List<Distribution>> AddDistribution(Graph g, int datasetId);
         Task<Publisher> AddPublisher(Graph g);
         void AddTags(Graph g, String keywords, Dataset dataset);

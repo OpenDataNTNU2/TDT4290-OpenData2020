@@ -15,13 +15,44 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<IEnumerable<Category>> ListAsync()
         {
-            return await _context.Categories
-                    .Include(p => p.Datasets)
-                         .ThenInclude(d => d.Distributions)
-                    .Include(p => p.Narrower)
+            var categories =  await _context.Categories
                     .Include(p => p.Broader)
                     .AsNoTracking()
                     .ToListAsync();
+            List<Category> remove = new List<Category>();
+            for (var i = 0; i < categories.Count; i++)
+            {
+                if(categories[i].Broader != null)
+                {   
+                    remove.Add(categories[i]);
+                    continue;
+                }
+                categories[i] = await getCategoryWithNarrowers(categories[i].Id);
+            }
+
+            foreach (Category r in remove)
+            {
+                categories.Remove(r);
+            }
+            
+            return categories;
+        }
+
+        private async Task<Category> getCategoryWithNarrowers(int id)
+        {
+            Category cat = await _context.Categories
+                        .Include(c => c.Narrower)
+                        .Include(c => c.Datasets)
+                        .Include(p => p.Broader)
+                        .FirstOrDefaultAsync(c => c.Id == id);
+            for (var i = 0; i < cat.Narrower.Count; i++)
+            {
+                if (cat.Narrower[i] != null)
+                {
+                    cat.Narrower[i] = await getCategoryWithNarrowers(cat.Narrower[i].Id);
+                }
+            }
+            return cat;
         }
 
         public async Task AddAsync(Category category)

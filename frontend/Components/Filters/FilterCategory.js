@@ -41,7 +41,6 @@ export default function FilterCategory(props){
         for(let i = 0; i < res.length; i++){
             if(res[i].broader === null) pub.push(res[i])
         }
-        
         setCategories(pub)
         if(pub.length < 5){setShowItems(pub.length)}
     },[props])

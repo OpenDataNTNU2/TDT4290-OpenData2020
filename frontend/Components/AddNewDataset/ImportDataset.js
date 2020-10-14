@@ -2,10 +2,12 @@ import { Grid, Button, FormControl, FormLabel, Divider, Snackbar } from '@materi
 import Alert from '@material-ui/lab/Alert'
 
 import PostApi from '../ApiCalls/PostApi'
+import GetApi from '../ApiCalls/GetApi'
 
+import SelectInput from '../Forms/SelectInput'
 import Input from '../Forms/Input'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 
 
@@ -16,8 +18,16 @@ export default function CreateDataset(){
     const [numberOfDatasets, setNumberOfDatasets] = useState(10);
     const [open, setOpen] = useState(false)
 
+    const [categories, setCategories] = useState([])
+    const [selectedCategory, setSelectedCategory] = useState("")
+
+    useEffect(() => {
+        GetApi('https://localhost:5001/api/categories', setCategories)
+    }, [])
+
     const importDataset = (event) => {
-        PostApi('https://localhost:5001/api/datasets/import?url=' + importUrl, {"url": importUrl}, importPostReq)
+        let category = selectedCategory ? '&categoryId=' + selectedCategory : ""
+        PostApi('https://localhost:5001/api/datasets/import?url=' + importUrl + category, {"url": importUrl}, importPostReq)
     }
     const populateSite = (event) => {
         PostApi('https://localhost:5001/api/datasets/populate?numberOfDatasets=' + numberOfDatasets, {"numberOfDatasets": numberOfDatasets}, importPostReq)
@@ -48,6 +58,14 @@ export default function CreateDataset(){
                 handleChange={setImportUrl}
                 multiline={false}
             /><br/>
+            <SelectInput 
+                id="category"
+                mainLabel="Kategori"
+                value={categories}
+                setSelectedCategory={setSelectedCategory}
+                selected={selectedCategory}
+            /><br/>
+
             <Grid 
                 container 
                 direction="row"

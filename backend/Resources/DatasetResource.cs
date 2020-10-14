@@ -17,6 +17,7 @@ namespace OpenData.API.Resources
         public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();
         public CategoryResource Category { get; set; }
         public int InterestCounter { get; set; }
+        public CoordinationResource Coordination { get; set; }
 
     }
 }

@@ -84,9 +84,9 @@ namespace OpenData.API.Controllers
         [HttpPost("import")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> PostImportAsync(string url)
+        public async Task<IActionResult> PostImportAsync(string url, int categoryId)
         {   
-            Dataset datatset = await _rdfService.import(url);
+            Dataset datatset = await _rdfService.import(url, categoryId);
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
             return Ok(datasetResource);

@@ -1,4 +1,4 @@
-import { Grid, Button, FormControl, FormLabel, Divider, Snackbar } from '@material-ui/core';
+import { Grid, Button, FormControl, FormLabel, Divider, Snackbar, TextField } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert'
 
 import { useEffect, useState } from "react";
@@ -20,8 +20,12 @@ export default function CreateDataset(props){
     // variables/states for "main data", will add more here
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [published, setPublished] = useState("1");
-    const [publishedStatus, setPublishedStatus] = useState("0")
+    const [published, setPublished] = useState("0");
+
+    // accesslevel
+    const [accessLevel, setAccessLevel] = useState("0")
+    
+    const [startDate, setStartDate] = useState("2020-10-12")
 
     // variables/states for the distribution
     const [distribution, setDistribution] = useState(0);
@@ -42,11 +46,6 @@ export default function CreateDataset(props){
     // show / not show snackbar with successfull submit message
     const [open, setOpen] = useState(false)
 
-    // resets the value of publishedStatus to 0 if "published" is selected
-    const handlePublishChange = (value) => {
-        if(value === "1") setPublishedStatus("0")
-        setPublished(value)
-    }
 
     // data sent to PostApi when posting new dataset
     const data = {
@@ -55,7 +54,8 @@ export default function CreateDataset(props){
         "description": description,
         "publisherId": props.prevPublisherId,
         "publicationStatus": parseInt(published),
-        "detailedPublicationStatus": parseInt(publishedStatus),
+        "detailedPublicationStatus": 0,
+        "accessLevel": parseInt(accessLevel),
         "categoryId": selectedCategory,
         "tagsIds": selectedTags
     }
@@ -64,6 +64,13 @@ export default function CreateDataset(props){
     const postDistributions = (dataId) => {
         setOpen(true);
         clearStates(); 
+    }
+
+    const setPublishedStatus = (value) => {
+        setPublished(value)
+        if(value === "1") setStartDate("2020-10-12")
+        else if(value === "2") setAccessLevel("0")
+        else{setStartDate("2020-10-12"); setAccessLevel("0")}
     }
 
     // this is run inside of PostApi for datasets, adds distributions
@@ -94,7 +101,7 @@ export default function CreateDataset(props){
     useEffect(() => {
         GetApi('https://localhost:5001/api/tags', setTags)
         GetApi('https://localhost:5001/api/categories', setCategories)
-
+        
         setCheckedTags(tags)
     }, [props.prevLoggedIn])
 
@@ -153,29 +160,50 @@ export default function CreateDataset(props){
                 multiline={false}
             /><br/>
 
-            <FormControl component="fieldset">
+            {/* Denne er basert på kundemail */}
+            <FormControl component="fieldset" style={{minWidth: "50vh"}}>
                 <FormLabel component="legend">Status for publisering</FormLabel>
-                <RadioInput 
+                <RadioInput
                     id="publishStatus"
                     mainValue={published}
-                    handleChange={handlePublishChange}
-                    value={["1", "2"]}
-                    label={["Publisert", "Ikke publisert"]}
-                    color={["normal", "normal"]}
+                    handleChange={setPublishedStatus}
+                    value={["1", "2", "3"]}
+                    label={["Publisert", "Publisering planlagt", "Ikke publisert"]}
+                    color={["normal", "normal", "normal"]}
                 />
-                {published !== "1" ? 
-                    <div style={{marginLeft: "5vh"}}>
-                        <RadioInput 
-                            id="detailedPublishStatus"
-                            mainValue={publishedStatus}
-                            handleChange={setPublishedStatus}
-                            value={["1", "2", "3"]}
-                            label={["Skal publiseres", "Under vurdering", "Kan ikke publiseres"]}
-                            color={["green", "yellow", "red"]}
-                        />
-                    </div>
-                : null }
+            </FormControl><br />
+
+            {/* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis status er "publisering planlagt" */}
+            {published === "2" ? 
+                <FormControl variant="outlined" style={{width: "50vh"}}>
+                    <TextField
+                        variant="outlined"
+                        size="medium"
+                        id="dateForPublish"
+                        label="Planlagt publisering (valgfri)"
+                        type="date"
+                        defaultValue={startDate}
+                        onChange={(event) => setStartDate(event.target.value)}
+                        InputLabelProps={{
+                        shrink: true,
+                        }}
+                    />
+                </FormControl>
+             : null}
+
+            {published === "1" ? 
+            <FormControl component="fieldset" style={{minWidth: "50vh"}}>
+                <FormLabel component="legend">Tilgangsnivå</FormLabel>
+                <RadioInput 
+                    id="accessLevel"
+                    mainValue={accessLevel}
+                    handleChange={setAccessLevel}
+                    value={["1", "2", "3"]}
+                    label={["Offentlig", "Begrenset offentlighet", "Unntatt offentlighet"]}
+                    color={["green", "yellow", "red"]}
+                />
             </FormControl>
+            : null } <br />
             
             <Input 
                 id="description"
@@ -187,7 +215,7 @@ export default function CreateDataset(props){
         
             <SelectInput 
                 id="category"
-                mainLabel="Kategori: Not relevant yet"
+                mainLabel="Kategori"
                 value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
@@ -226,7 +254,7 @@ export default function CreateDataset(props){
                     })}
                 </Grid> }
 
-            {distribution !== 0 ? 
+            {distribution !== 0 && published === "1" ?
                 <div>
                     <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern</Button>
                     <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>Legg til</Button>
