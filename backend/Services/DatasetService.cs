@@ -16,15 +16,17 @@ namespace OpenData.API.Services
         private readonly IDatasetRepository _datasetRepository;
         private readonly IPublisherRepository _publisherRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ICoordinationRepository _coordinationRepository;
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
             _publisherRepository = publisherRepository;
             _categoryRepository = categoryRepository;
+            _coordinationRepository = coordinationRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
@@ -74,6 +76,14 @@ namespace OpenData.API.Services
                 if (existingCategory == null)
                     return new DatasetResponse("Invalid category id.");
 
+                // Make sure the coordination exists if present
+                if (dataset.CoordinationId != null)
+                {
+                    var existingCoordination = await _coordinationRepository.FindByIdAsync((int)dataset.CoordinationId);
+                    if (existingCoordination == null)
+                        return new DatasetResponse("Invalid category id.");
+                }
+
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
 
@@ -117,8 +127,8 @@ namespace OpenData.API.Services
             if (existingDataset == null)
                 return new DatasetResponse("Dataset not found.");
 
-            existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
-            existingDataset.InterestCounter = dataset.InterestCounter; // TODO: consider using _datasetRepository.UpdateAsync?
+            existingDataset.Title = dataset.Title; 
+            existingDataset.InterestCounter = dataset.InterestCounter;
             existingDataset.CoordinationId = dataset.CoordinationId;
 
 
