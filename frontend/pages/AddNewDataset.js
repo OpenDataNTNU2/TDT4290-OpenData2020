@@ -9,6 +9,7 @@ import { useState } from "react";
 // imports for what is displayed in the TabPanels
 import CreateDataset from '../Components/AddNewDataset/CreateDataset'
 import ImportDataset from '../Components/AddNewDataset/ImportDataset'
+import CreateCoordination from '../Components/AddNewDataset/CreateCoordination';
 
 export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPublisherId, prevUserId  }){
     
@@ -39,6 +40,7 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
                                 >
                                     <Tab value="1" label={<h3 style={{ fontWeight: "normal" }}>Legg til dataset</h3>} />
                                     <Tab value="2" label={<h3 style={{ fontWeight: "normal" }}>Importer dataset</h3>} />
+                                    <Tab value="3" label={<h3 style={{ fontWeight: "normal" }}>Opprett samordning</h3>} />
                                 </TabList>
                             </AppBar>
 
@@ -51,6 +53,10 @@ export default function AddNewDataset({ prevLoggedIn, prevLoggedUsername, prevPu
 
                             <TabPanel value="2">
                                 <ImportDataset />
+                            </TabPanel>
+
+                            <TabPanel value="3">
+                                <CreateCoordination publisherId={prevPublisherId} />
                             </TabPanel>
 
                         </TabContext>

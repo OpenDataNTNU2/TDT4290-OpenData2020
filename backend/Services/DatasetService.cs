@@ -16,15 +16,17 @@ namespace OpenData.API.Services
         private readonly IDatasetRepository _datasetRepository;
         private readonly IPublisherRepository _publisherRepository;
         private readonly ICategoryRepository _categoryRepository;
+        private readonly ICoordinationRepository _coordinationRepository;
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
             _publisherRepository = publisherRepository;
             _categoryRepository = categoryRepository;
+            _coordinationRepository = coordinationRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
@@ -64,42 +66,16 @@ namespace OpenData.API.Services
         {
             try
             {
-                // Make sure the publisher exists
-                var existingPublisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
-                if (existingPublisher == null)
-                    return new DatasetResponse("Invalid publisher id.");
-
-                // Make sure the category exists
-                var existingCategory = await _categoryRepository.FindByIdAsync(dataset.CategoryId);
-                if (existingCategory == null)
-                    return new DatasetResponse("Invalid category id.");
+                (Boolean success, String error) check = await idChecks(dataset);
+                if (!check.success)
+                {
+                    return new DatasetResponse(check.error);
+                }
 
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
 
-                try
-                {
-
-                    // Tries to parse tag ids from string to int
-                    foreach (string idString in dataset.TagsIds.Split(','))
-                    {
-                        if (idString == null || idString == "") continue;
-                        int id = Int32.Parse(idString.Trim());
-                        Tags existingTag = await _tagsRepository.FindByIdAsync(id);
-                        if (existingTag != null)
-                        {
-                            // If the tag exists, add it to the list of tags in the dataset
-                            DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
-                            dataset.DatasetTags.Add(datasetTag);
-                        }
-                    }
-                    await _unitOfWork.CompleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    await _unitOfWork.CompleteAsync();
-                    Console.WriteLine(ex.Message);
-                }
+                await addTags(dataset);
 
                 return new DatasetResponse(dataset);
             }
@@ -117,13 +93,30 @@ namespace OpenData.API.Services
             if (existingDataset == null)
                 return new DatasetResponse("Dataset not found.");
 
-            existingDataset.Title = dataset.Title; // TODO: consider using _datasetRepository.UpdateAsync?
-            existingDataset.InterestCounter = dataset.InterestCounter; // TODO: consider using _datasetRepository.UpdateAsync?
-            existingDataset.CoordinationId = dataset.CoordinationId;
-
-
             try
             {
+                (Boolean success, String error) check = await idChecks(dataset);
+                if (!check.success)
+                {
+                    return new DatasetResponse(check.error);
+                }
+                // Update attributes
+                existingDataset.Title = dataset.Title; 
+                existingDataset.Identifier = dataset.Identifier; 
+                existingDataset.Description = dataset.Description; 
+                existingDataset.PublisherId = dataset.PublisherId; 
+                existingDataset.PublicationStatus = dataset.PublicationStatus; 
+                existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
+                existingDataset.DetailedPublicationStatus = dataset.DetailedPublicationStatus; 
+                existingDataset.AccessLevel = dataset.AccessLevel; 
+                existingDataset.TagsIds = dataset.TagsIds; 
+                existingDataset.CategoryId = dataset.CategoryId; 
+                existingDataset.CoordinationId = dataset.CoordinationId;
+                existingDataset.InterestCounter = dataset.InterestCounter;
+
+                existingDataset.DatasetTags.Clear();
+                await addTags(existingDataset);
+
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
@@ -154,6 +147,54 @@ namespace OpenData.API.Services
             {
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when deleting the dataset: {ex.Message}");
+            }
+        }
+
+        private async Task<(Boolean success,String error)> idChecks(Dataset dataset)
+        {
+            // Make sure the publisher exists
+            var existingPublisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
+            if (existingPublisher == null)
+                return (false, "Invalid publisher id.");
+
+            // Make sure the category exists
+            var existingCategory = await _categoryRepository.FindByIdAsync(dataset.CategoryId);
+            if (existingCategory == null)
+                return (false, "Invalid category id.");
+
+            // Make sure the coordination exists if present
+            if (dataset.CoordinationId != null)
+            {
+                var existingCoordination = await _coordinationRepository.FindByIdAsync((int)dataset.CoordinationId);
+                if (existingCoordination == null)
+                    return (false, "Invalid coordination id.");
+            }
+            return (true, "Success.");
+        }
+
+        private async Task addTags(Dataset dataset)
+        {
+            try
+            {
+                // Tries to parse tag ids from string to int
+                foreach (string idString in dataset.TagsIds.Split(','))
+                {
+                    if (idString == null || idString == "") continue;
+                    int id = Int32.Parse(idString.Trim());
+                    Tags existingTag = await _tagsRepository.FindByIdAsync(id);
+                    if (existingTag != null)
+                    {
+                        // If the tag exists, add it to the list of tags in the dataset
+                        DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
+                        dataset.DatasetTags.Add(datasetTag);
+                    }
+                }
+                await _unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.CompleteAsync();
+                Console.WriteLine(ex.Message);
             }
         }
     }

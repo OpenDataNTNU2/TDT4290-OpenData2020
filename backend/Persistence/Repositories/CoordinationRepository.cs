@@ -20,6 +20,7 @@ namespace OpenData.API.Persistence.Repositories
         {
             IQueryable<Coordination> queryable = _context.Coordinations
                                     .Include(c => c.Datasets)
+                                        .ThenInclude(c => c.Publisher)
                                     .Include(d => d.Category)
                                     .Include(c => c.Publisher)
                                     .Include(c => c.CoordinationTags)

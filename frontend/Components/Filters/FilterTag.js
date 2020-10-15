@@ -1,12 +1,12 @@
 import { Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel, Button } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 
-export default function FilterTag(props){
+export default function FilterTag(props) {
 
     const [addedFilters, setAddedFilters] = useState([])
     const [tags, setTags] = useState([])
 
-    
+
     const handleChange = (event) => {
         /*
         let newArr = addedFilters
@@ -21,24 +21,24 @@ export default function FilterTag(props){
         }
         props.setUrl(newUrlString)
         */
-      
+
     };
-    
-    
 
-    
 
-    return(
+
+
+
+    return (
         <div>
             <FormControl>
                 <FormLabel>Velg tags</FormLabel>
                 <FormGroup >
-                    <br/>
-                    {tags.map((tag) => 
-                        <FormControlLabel control={<Checkbox value={tag[1]} onChange={handleChange} name={tag[0]} />} 
-                        label={tag[0]} 
-                    />)}
-                    
+                    <br />
+                    {tags.map((tag) =>
+                        <FormControlLabel control={<Checkbox value={tag[1]} onChange={handleChange} name={tag[0]} />}
+                            label={tag[0]}
+                        />)}
+
                 </FormGroup>
             </FormControl>
         </div>
