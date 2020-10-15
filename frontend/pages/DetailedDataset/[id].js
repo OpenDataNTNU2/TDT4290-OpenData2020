@@ -28,11 +28,12 @@ export default function DetailedDataset({data, uri}){
       for(let i = 0; i < data.distributions.length; i++){
         distributionCards.push(data.distributions[i]);
       }
-      cardOrNoCard = Object.values(distributionCards).map(dist => (<DistributionCard id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} />));
+      cardOrNoCard = Object.values(distributionCards).map(dist => { return (<a key={dist.id}> <DistributionCard id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} /> </a>)});
       console.log("Antall elementer i distributions er " + data.distributions.length)
     }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
+      console.log("kommer vi oss hit mon tro")
       publishedStatus = "Ikke publisert";
       cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
     }
@@ -97,14 +98,12 @@ export default function DetailedDataset({data, uri}){
               <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'1%'}}>
                 
                 <Grid
-                container
-                item xs={12} 
+                container 
                 direction="row"
                 justify="space-between"
-                alignItems="baseline"
-              >
-                  <span><b>Beskrivelse: </b>{data.description}</span>
-                  <span>{requestButton}</span>
+                alignItems="baseline">
+                  <p><b>Beskrivelse: </b>{data.description}</p>
+                  <span>{ifPublished(data.publicationStatus)}{requestButton}</span>
                   <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                   <Alert elevation={1} severity="info">Interesse for datasett registrert</Alert>
                   </Snackbar>
@@ -112,21 +111,21 @@ export default function DetailedDataset({data, uri}){
                 </Grid>
               
                 <p><b>Eier:</b> {data.publisher.name}</p>
-                <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
-                <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}{publishedStatus}</i></p>
+                <p><b>Publiseringsstatus: </b><i>{publishedStatus}</i></p>
                 <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-                <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a key={distributions.id} href={distributions.uri}> {distributions.uri} </a> )})} </p>
+                <p><b>Kategori: </b> {data.category.name}</p>
               
               </Paper>
             </Grid>
             <Grid 
               container
+              item xs={5}
               direction="column"
               alignItems="stretch"
               style={{ minHeight: '70vh', minWidth: '90vh', padding: '3%', border: '2%'}}
               >
               <h3 style={{fontWeight: "bold", }}><p>Distribusjoner</p></h3>
-              <p>{cardOrNoCard}</p>
+              <span>{cardOrNoCard}</span>
             </Grid>
           </Grid>
     )

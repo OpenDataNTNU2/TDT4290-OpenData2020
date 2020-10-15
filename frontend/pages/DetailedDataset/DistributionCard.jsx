@@ -8,7 +8,7 @@ const DistributionCard = (props) => {
         variant='elevation' 
         elevation ={3}
         spacing={2}
-        style={{ backgroundColor: '#e6ffee', padding: '2%'}}>
+        style={{ backgroundColor: '#e6ffee', padding: '1%', marginBottom: '2%' }}>
                 <Grid
                   container
                   spacing={2}
