@@ -28,12 +28,10 @@ export default function DetailedDataset({data, uri}){
       for(let i = 0; i < data.distributions.length; i++){
         distributionCards.push(data.distributions[i]);
       }
-      cardOrNoCard = Object.values(distributionCards).map(dist => { return (<a key={dist.id}> <DistributionCard id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} /> </a>)});
-      console.log("Antall elementer i distributions er " + data.distributions.length)
+      cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />)});
     }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
-      console.log("kommer vi oss hit mon tro")
       publishedStatus = "Ikke publisert";
       cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
     }
@@ -75,18 +73,20 @@ export default function DetailedDataset({data, uri}){
         <Grid
         container
         direction = "column"
-        justify = "space-evenly"
+        justify = "center"
+        alignItems="center"
         spacing={2}
         >
             <Grid
               container
               direction="column"
-              alignItems="stretch"
-              style={{ minHeight: '70vh', minWidth: '90vh', padding: '3%', border: '2%'}}
+              alignItems="center"
+              xs={6}
+              style={{ minWidth: '100vh'}}
           >
               <Grid
               container
-              spacing={0}
+              spacing={3}
               direction="row"
               justify="space-between"
               alignItems="center"
@@ -101,6 +101,7 @@ export default function DetailedDataset({data, uri}){
                 container 
                 direction="row"
                 justify="space-between"
+                style={{ minWidth: '100vh'}}
                 alignItems="baseline">
                   <p><b>Beskrivelse: </b>{data.description}</p>
                   <span>{ifPublished(data.publicationStatus)}{requestButton}</span>
@@ -122,7 +123,7 @@ export default function DetailedDataset({data, uri}){
               item xs={5}
               direction="column"
               alignItems="stretch"
-              style={{ minHeight: '70vh', minWidth: '90vh', padding: '3%', border: '2%'}}
+              style={{paddingBottom: '20vh', minWidth: '100vh'}}
               >
               <h3 style={{fontWeight: "bold", }}><p>Distribusjoner</p></h3>
               <span>{cardOrNoCard}</span>
