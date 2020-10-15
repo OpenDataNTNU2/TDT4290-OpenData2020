@@ -79,6 +79,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Coordination>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Coordination>().Property(p => p.Title).IsRequired();
             builder.Entity<Coordination>().Property(p => p.PublisherId).IsRequired();
+            builder.Entity<Coordination>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.UnderCoordination).HasDefaultValue(false);
             builder.Entity<Coordination>()
             .HasMany(p => p.Datasets)
@@ -206,7 +207,9 @@ namespace OpenData.API.Persistence.Contexts
             {
                 Id = 100,
                 Title = "Bicycle coordination",
-                PublisherId = 101
+                Description = "Dette er en samordning av datasett om strender",
+                PublisherId = 101,
+                CategoryId = 101
             };
 
             Coordination beachCoordination = new Coordination
@@ -214,7 +217,8 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 101,
                 Title = "Strand samordning",
                 Description = "Dette er en samordning av datasett om strender",
-                PublisherId = 100
+                PublisherId = 100,
+                CategoryId = 101
             };
             AddRange(bicycleCoordination, beachCoordination);
 

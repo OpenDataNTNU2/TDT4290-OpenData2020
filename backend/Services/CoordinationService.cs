@@ -23,12 +23,12 @@ namespace OpenData.API.Services
             _publisherRepository = publisherRepository;
             _unitOfWork = unitOfWork;
         }
-        public async Task<IEnumerable<Coordination>> ListAsync()
+        public async Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query)
         {
-            return await _coordinationRepository.ListAsync();
+            return await _coordinationRepository.ListAsync(query);
         }
 
-        public async Task<CoordinationResponse> FindByIdAsync(int? id)
+        public async Task<CoordinationResponse> FindByIdAsync(int id)
         {
             try
             {

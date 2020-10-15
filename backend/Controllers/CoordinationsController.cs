@@ -27,12 +27,13 @@ namespace OpenData.API.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(typeof(IEnumerable<CoordinationResource>), 200)]
-        public async Task<IEnumerable<CoordinationResource>> GetAllAsync()
+        [ProducesResponseType(typeof(QueryResultResource<CoordinationResource>), 200)]
+        public async Task<QueryResultResource<CoordinationResource>> ListAsync([FromQuery] CoordinationQueryResource query)
         {
-            var coordinations = await _coordinationService.ListAsync();
-            var resources = _mapper.Map<IEnumerable<Coordination>, IEnumerable<CoordinationResource>>(coordinations);
+            var coordinationsQuery = _mapper.Map<CoordinationQueryResource, CoordinationQuery>(query);
+            var coordinations = await _coordinationService.ListAsync(coordinationsQuery);
 
+            var resources = _mapper.Map<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>(coordinations);
             return resources;
         }
 
