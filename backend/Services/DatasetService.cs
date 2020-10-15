@@ -144,7 +144,7 @@ namespace OpenData.API.Services
                 {
                     var existingCoordination = await _coordinationRepository.FindByIdAsync((int)dataset.CoordinationId);
                     if (existingCoordination == null)
-                        return new DatasetResponse("Invalid category id.");
+                        return new DatasetResponse("Invalid coordination id.");
                 }
                 // Update attributes
                 existingDataset.Title = dataset.Title; 
@@ -162,6 +162,30 @@ namespace OpenData.API.Services
 
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
+
+                try
+                {
+                    existingDataset.DatasetTags.Clear();
+                    // Tries to parse tag ids from string to int
+                    foreach (string idString in dataset.TagsIds.Split(','))
+                    {
+                        if (idString == null || idString == "") continue;
+                        int tagId = Int32.Parse(idString.Trim());
+                        Tags existingTag = await _tagsRepository.FindByIdAsync(tagId);
+                        if (existingTag != null)
+                        {
+                            // If the tag exists, add it to the list of tags in the dataset
+                            DatasetTags datasetTag = new DatasetTags { Dataset = dataset, Tags = existingTag };
+                            existingDataset.DatasetTags.Add(datasetTag);
+                        }
+                    }
+                    await _unitOfWork.CompleteAsync();
+                }
+                catch (Exception ex)
+                {
+                    await _unitOfWork.CompleteAsync();
+                    Console.WriteLine(ex.Message);
+                }
 
                 return new DatasetResponse(existingDataset);
             }
