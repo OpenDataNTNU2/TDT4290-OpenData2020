@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 using OpenData.API.Domain.Models;
-
+using System;
 
 namespace OpenData.API.Resources
 {
@@ -18,6 +18,7 @@ namespace OpenData.API.Resources
         public int? PublisherId { get; set; }
         [Range(1, 3)]
         public int PublicationStatus { get; set; }
+        public Nullable<DateTime> DatePlannedPublished {get; set; }
         [Range(1, 3)]
         public int DetailedPublicationStatus { get; set; }
         [Range(1, 3)]
