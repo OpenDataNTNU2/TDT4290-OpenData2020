@@ -15,7 +15,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<DatasetTags> DatasetTags { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Coordination> Coordinations { get; set; }
-        public DbSet<DatasetTags> CoordinationTags { get; set; }
+        public DbSet<CoordinationTags> CoordinationTags { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

@@ -31,6 +31,7 @@ namespace Tests
                 new DatasetRepository(Context),
                 new PublisherRepository(Context),
                 new CategoryRepository(Context),
+                new CoordinationRepository(Context),
                 new TagsRepository(Context),
                 new UnitOfWork(Context),
                 new MemoryCache(new MemoryCacheOptions()));
