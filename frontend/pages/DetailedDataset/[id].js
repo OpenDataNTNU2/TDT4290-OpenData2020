@@ -6,7 +6,7 @@ import { useState } from "react";
 import Alert from '@material-ui/lab/Alert';
 
 import {PageRender} from '../api/serverSideProps'
-import PutApi from '../../Components/ApiCalls/PutApi'
+import PatchApi from '../../Components/ApiCalls/PatchApi'
 
 export default function DetailedDataset({data, uri}){
   
@@ -50,21 +50,19 @@ export default function DetailedDataset({data, uri}){
       
       // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
       // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
-      const data2 = {
-        "interestCounter" : interestCounter+1,
-        "identifier" : data.identifier,
-        "title": data.title,
-        "description": data.description,
-        "publisherId": data.publisher.id,
-        "publicationStatus": 1,
-        "detailedPublicationStatus": 0,
-        "categoryId": data.category.id,
-      }
+      const data2 = 
+        [
+          {
+            "value": interestCounter+1,
+            "path": "/interestCounter",
+            "op": "replace",
+          }
+        ]
       /*console.log("Interest counter FØR setInterestCounter: "+ interestCounter);
       setInterestCounter(interestCounter + 1);*/
       console.log("Interest counter er nå: "+ data2.interestCounter);
       setOpen(true);
-      PutApi(uri, data2);
+      PatchApi(uri, data2);
       console.log('Requests er oppdatert!');
     }
   

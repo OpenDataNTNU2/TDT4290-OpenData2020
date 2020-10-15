@@ -9,6 +9,9 @@ using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
 using OpenData.API;
 using System;
+using Microsoft.AspNetCore.JsonPatch;
+using OpenData.API.Domain.Repositories;
+
 
 namespace OpenData.API.Controllers
 {
@@ -20,12 +23,14 @@ namespace OpenData.API.Controllers
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
         private readonly IRdfService _rdfService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper)
+        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper, IUnitOfWork unitOfWork)
         {
             _rdfService = rdfService;
             _datasetService = datasetService;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -124,6 +129,30 @@ namespace OpenData.API.Controllers
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
             return Ok(datasetResource);
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(DatasetResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<Dataset> patch)
+        {
+            if (patch != null)
+            {
+                var datasetResponse = await _datasetService.FindByIdAsync(id);
+                Dataset dataset = datasetResponse.Resource;
+                patch.ApplyTo(dataset, ModelState);
+
+                await _unitOfWork.CompleteAsync();
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
+                return Ok(datasetResource);
+            }
+            return BadRequest(ModelState);
         }
 
         /// <summary>

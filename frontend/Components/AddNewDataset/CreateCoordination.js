@@ -4,6 +4,7 @@ import Alert from '@material-ui/lab/Alert'
 import PostApi from '../ApiCalls/PostApi'
 import GetApi from '../ApiCalls/GetApi'
 import PutApi from '../ApiCalls/PutApi';
+import PatchApi from '../ApiCalls/PatchApi';
 
 import SelectInput from '../Forms/SelectInput'
 import Input from '../Forms/Input'
@@ -42,6 +43,9 @@ export default function CreateCoordination(props) {
             "title": title,
             "description": description,
             "publisherId": props.publisherId,
+            "categoryId": 100,
+            "tagsIds": "100",
+            "statusDescription": "string",
             "underCoordination": coordinationStatus === "false" ? false : true
         }
         if (title !== "" && description !== "") {
@@ -54,7 +58,15 @@ export default function CreateCoordination(props) {
 
     // resetter alle feltene etter en submit, sender også inn coordination til det valgte datasettet hvis datasetOption = "1"
     const submitPostReq = (id) => {
-        if (datasetOption === "1") PutApi('https://localhost:5001/api/datasets/' + selectedDataset.id, { "coordinationId": id })
+        const data = 
+        [
+          {
+            "value": id,
+            "path": "/coordinationId",
+            "op": "replace",
+          }
+        ]
+        if (datasetOption === "1") PatchApi('https://localhost:5001/api/datasets/' + selectedDataset.id, data)
         console.log("Posted coordination to: https://localhost:5001/api/coordinations")
         setOpen(true)
         setTitle("")
