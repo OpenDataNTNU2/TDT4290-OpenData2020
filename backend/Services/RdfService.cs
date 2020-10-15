@@ -79,8 +79,8 @@ namespace OpenData.API.Services
             List<string> urls = findUrlsFromFellesKatalogen(numberOfDatasets);
             Dataset dataset = new Dataset();
 
-            List<Category> categories = (List<Category>)await _categoryRepository.ListAsync();
-
+            List<Category> categories = (List<Category>)await _categoryRepository.FlatListAsync();
+            
             // Parse the content in the urls and add them to the database
             foreach (string url in urls)
             {

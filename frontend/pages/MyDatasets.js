@@ -17,7 +17,7 @@ export default function MyDatasets({prevLoggedIn, prevLoggedUsername, prevPublis
     }
 
     useEffect(() => {
-        GetApi('https://localhost:5001/api/datasets?PublisherIds=101', setMyDatasets)
+        GetApi('https://localhost:5001/api/datasets?PublisherIds=' + prevPublisherId, setMyDatasets)
     }, [prevPublisherId])
 
     const onClick = (id) => { router.push('/DetailedDataset/' + id) }

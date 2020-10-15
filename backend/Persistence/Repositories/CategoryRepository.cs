@@ -55,6 +55,13 @@ namespace OpenData.API.Persistence.Repositories
             return cat;
         }
 
+        public async Task<IEnumerable<Category>> FlatListAsync()
+        {
+            return await _context.Categories
+                        .AsNoTracking()
+                        .ToListAsync();
+        }
+
         public async Task AddAsync(Category category)
         {
             await _context.Categories.AddAsync(category);
