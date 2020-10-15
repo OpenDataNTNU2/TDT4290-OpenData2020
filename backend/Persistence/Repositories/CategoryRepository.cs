@@ -43,6 +43,7 @@ namespace OpenData.API.Persistence.Repositories
             Category cat = await _context.Categories
                         .Include(c => c.Narrower)
                         .Include(c => c.Datasets)
+                        .Include(c => c.Coordinations)
                         .Include(p => p.Broader)
                         .FirstOrDefaultAsync(c => c.Id == id);
             for (var i = 0; i < cat.Narrower.Count; i++)

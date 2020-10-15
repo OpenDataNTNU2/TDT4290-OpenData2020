@@ -2,8 +2,11 @@ import cookie from "cookie";
 
 export async function PageRender(page, context) {
   let uri = 'https://localhost:5001/api/datasets';
-  if(page=="ID"){
+  if (page == "ID") {
     uri = 'https://localhost:5001/api/datasets/' + context.params.id;
+  }
+  else if (page == "CoordinationID") {
+    uri = 'https://localhost:5001/api/coordinations/' + context.params.id
   }
   const res = await fetch(uri, createRequestOptions(true))
   const data = await res.json()
@@ -11,6 +14,17 @@ export async function PageRender(page, context) {
   const cookies = parseCookies(context.req)
 
   let propsData = { props: { data, uri } }
+
+  if (page == "CoordinationID") {
+    propsData =
+    {
+      props: {
+        data,
+        uri,
+        prevPublisherId: cookies.prevPublisherId
+      }
+    }
+  }
 
   if (JSON.stringify(cookies) !== "{}") {
     propsData = {
