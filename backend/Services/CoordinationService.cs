@@ -52,42 +52,16 @@ namespace OpenData.API.Services
         {
             try
             {
-                var existingPublisher = await _publisherRepository.FindByIdAsync(coordination.PublisherId);
-                if (existingPublisher == null)
-                    return new CoordinationResponse("Invalid publisher id.");
-
-                // Make sure the category exists
-                var existingCategory = await _categoryRepository.FindByIdAsync(coordination.CategoryId);
-                if (existingCategory == null)
-                    return new CoordinationResponse("Invalid category id.");
+                (Boolean success, String error) check = await idChecks(coordination);
+                if (!check.success)
+                {
+                    return new CoordinationResponse(check.error);
+                }
 
                 await _coordinationRepository.AddAsync(coordination);
                 await _unitOfWork.CompleteAsync();
                 
-                try
-                {
-
-                    // Tries to parse tag ids from string to int
-                    foreach (string idString in coordination.TagsIds.Split(','))
-                    {
-                        if (idString == null || idString == "") continue;
-                        int id = Int32.Parse(idString.Trim());
-                        Tags existingTag = await _tagsRepository.FindByIdAsync(id);
-                        if (existingTag != null)
-                        {
-                            // If the tag exists, add it to the list of tags in the coordination
-                            CoordinationTags coordinationTag = new CoordinationTags { Coordination = coordination, Tags = existingTag };
-                            coordination.CoordinationTags.Add(coordinationTag);
-                        }
-                    }
-                    await _unitOfWork.CompleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    await _unitOfWork.CompleteAsync();
-                    Console.WriteLine(ex.Message);
-                }
-
+                await addTags(coordination);
 
                 return new CoordinationResponse(coordination);
             }
@@ -105,18 +79,13 @@ namespace OpenData.API.Services
             if (existingCoordination == null)
                 return new CoordinationResponse("Coordination not found.");
 
-
             try
             {
-                // Make sure the publisher exists
-                var existingPublisher = await _publisherRepository.FindByIdAsync(coordination.PublisherId);
-                if (existingPublisher == null)
-                    return new CoordinationResponse("Invalid publisher id.");
-
-                // Make sure the category exists
-                var existingCategory = await _categoryRepository.FindByIdAsync(coordination.CategoryId);
-                if (existingCategory == null)
-                    return new CoordinationResponse("Invalid category id.");
+                (Boolean success, String error) check = await idChecks(coordination);
+                if (!check.success)
+                {
+                    return new CoordinationResponse(check.error);
+                }
 
                 existingCoordination.Title = coordination.Title;
                 existingCoordination.Description = coordination.Description;
@@ -125,33 +94,15 @@ namespace OpenData.API.Services
                 existingCoordination.StatusDescription = coordination.StatusDescription;
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
-                
+
+
+                // This doesnt work to remove and gets an error when adding already added tags.
+                existingCoordination.CoordinationTags.Clear();
+                await addTags(existingCoordination);
+
                 _coordinationRepository.Update(existingCoordination);
                 await _unitOfWork.CompleteAsync();
 
-                try
-                {
-                    existingCoordination.CoordinationTags.Clear();
-                    // Tries to parse tag ids from string to int
-                    foreach (string idString in coordination.TagsIds.Split(','))
-                    {
-                        if (idString == null || idString == "") continue;
-                        int tagId = Int32.Parse(idString.Trim());
-                        Tags existingTag = await _tagsRepository.FindByIdAsync(tagId);
-                        if (existingTag != null)
-                        {
-                            // If the tag exists, add it to the list of tags in the coordination
-                            CoordinationTags coordinationTag = new CoordinationTags { Coordination = coordination, Tags = existingTag };
-                            existingCoordination.CoordinationTags.Add(coordinationTag);
-                        }
-                    }
-                    await _unitOfWork.CompleteAsync();
-                }
-                catch (Exception ex)
-                {
-                    await _unitOfWork.CompleteAsync();
-                    Console.WriteLine(ex.Message);
-                }
 
                 return new CoordinationResponse(existingCoordination);
             }
@@ -159,6 +110,47 @@ namespace OpenData.API.Services
             {
                 // Do some logging stuff
                 return new CoordinationResponse($"An error occurred when updating the coordination: {ex.Message}");
+            }
+        }
+
+        private async Task<(Boolean success,String error)> idChecks(Coordination coordination)
+        {
+            // Make sure the publisher exists
+            var existingPublisher = await _publisherRepository.FindByIdAsync(coordination.PublisherId);
+            if (existingPublisher == null)
+                return (false, "Invalid publisher id.");
+
+            // Make sure the category exists
+            var existingCategory = await _categoryRepository.FindByIdAsync(coordination.CategoryId);
+            if (existingCategory == null)
+                return (false, "Invalid category id.");
+
+            return (true, "Success.");
+        }
+
+        private async Task addTags(Coordination coordination)
+        {
+            try
+            {
+                // Tries to parse tag ids from string to int
+                foreach (string idString in coordination.TagsIds.Split(','))
+                {
+                    if (idString == null || idString == "") continue;
+                    int tagId = Int32.Parse(idString.Trim());
+                    Tags existingTag = await _tagsRepository.FindByIdAsync(tagId);
+                    if (existingTag != null)
+                    {
+                        // If the tag exists, add it to the list of tags in the coordination
+                        CoordinationTags coordinationTag = new CoordinationTags { Coordination = coordination, Tags = existingTag };
+                        coordination.CoordinationTags.Add(coordinationTag);
+                    }
+                }
+                await _unitOfWork.CompleteAsync();
+            }
+            catch (Exception ex)
+            {
+                await _unitOfWork.CompleteAsync();
+                Console.WriteLine(ex.Message);
             }
         }
     }
