@@ -127,13 +127,39 @@ namespace OpenData.API.Services
             if (existingDataset == null)
                 return new DatasetResponse("Dataset not found.");
 
-            existingDataset.Title = dataset.Title; 
-            existingDataset.InterestCounter = dataset.InterestCounter;
-            existingDataset.CoordinationId = dataset.CoordinationId;
-
-
             try
             {
+                // Make sure the publisher exists
+                var existingPublisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
+                if (existingPublisher == null)
+                    return new DatasetResponse("Invalid publisher id.");
+
+                // Make sure the category exists
+                var existingCategory = await _categoryRepository.FindByIdAsync(dataset.CategoryId);
+                if (existingCategory == null)
+                    return new DatasetResponse("Invalid category id.");
+
+                // Make sure the coordination exists if present
+                if (dataset.CoordinationId != null)
+                {
+                    var existingCoordination = await _coordinationRepository.FindByIdAsync((int)dataset.CoordinationId);
+                    if (existingCoordination == null)
+                        return new DatasetResponse("Invalid category id.");
+                }
+                // Update attributes
+                existingDataset.Title = dataset.Title; 
+                existingDataset.Identifier = dataset.Identifier; 
+                existingDataset.Description = dataset.Description; 
+                existingDataset.PublisherId = dataset.PublisherId; 
+                existingDataset.PublicationStatus = dataset.PublicationStatus; 
+                existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
+                existingDataset.DetailedPublicationStatus = dataset.DetailedPublicationStatus; 
+                existingDataset.AccessLevel = dataset.AccessLevel; 
+                existingDataset.TagsIds = dataset.TagsIds; 
+                existingDataset.CategoryId = dataset.CategoryId; 
+                existingDataset.CoordinationId = dataset.CoordinationId;
+                existingDataset.InterestCounter = dataset.InterestCounter;
+
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
