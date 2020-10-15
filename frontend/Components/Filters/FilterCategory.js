@@ -63,8 +63,9 @@ export default function FilterCategory(props){
     // if that is true, it runs this function again, but with the narrower list instead. 
     
     const items = (cats) => cats.map((category) => (
-            <div>
-                {category.narrower.length === 0 ? 
+        <div>
+            { category.datasetsCount > 0 ?
+                category.narrower.length === 0 ? 
                     <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + category.datasetsCount + ")"} />
                 
                 :   <div>
@@ -79,8 +80,8 @@ export default function FilterCategory(props){
                         </div>
                         
                     </div>
-                }
-            </div>  
+            : null } 
+            </div>
         )
     )
         
