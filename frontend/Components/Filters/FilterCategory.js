@@ -65,10 +65,10 @@ export default function FilterCategory(props) {
     const items = (cats) => cats.map((category) => (
         <div>
             {category.narrower.length === 0 ?
-                <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + category.datasetsCount + ")"} />
+                <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + (props.dataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
 
                 : <div>
-                    <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + category.datasetsCount + ")"} />
+                    <CheckboxInput handleChange={handleChange} id={category.id} name={category.name + " (" + (props.dataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
                     {!shownSubItems[category.id] ?
                         <ExpandMoreIcon style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
                         : <ExpandLessIcon style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />

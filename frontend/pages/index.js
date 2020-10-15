@@ -114,7 +114,7 @@ export default function Home() {
             <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
-            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} />
+            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} dataset={url.includes("dataset")}/>
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterTag />

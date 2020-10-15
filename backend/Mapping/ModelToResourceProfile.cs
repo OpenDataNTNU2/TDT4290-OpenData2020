@@ -35,7 +35,9 @@ namespace OpenData.API.Mapping
 
             CreateMap<Category, CategoryResource>()
                     .ForMember(src => src.DatasetsCount,
-                                opt => opt.MapFrom(src => getCount(src)));
+                                opt => opt.MapFrom(src => getDatasetsCount(src)))
+                    .ForMember(src => src.CoordinationsCount,
+                                opt => opt.MapFrom(src => getCoordinationsCount(src)));
 
             CreateMap<Coordination, CoordinationResource>();
             CreateMap<CoordinationTags, CoordinationTagsResource>();
@@ -44,12 +46,21 @@ namespace OpenData.API.Mapping
 
         }
 
-        private int getCount(Category category)
+        private int getDatasetsCount(Category category)
         {   
             int sum = category.Datasets.Count;
             foreach(Category nar in category.Narrower)
             {
-                sum += getCount(nar);
+                sum += getDatasetsCount(nar);
+            }
+            return sum;
+        }
+        private int getCoordinationsCount(Category category)
+        {   
+            int sum = category.Coordinations.Count;
+            foreach(Category nar in category.Narrower)
+            {
+                sum += getCoordinationsCount(nar);
             }
             return sum;
         }
