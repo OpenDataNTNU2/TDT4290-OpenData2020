@@ -14,11 +14,13 @@ namespace OpenData.API.Services
     public class CoordinationService : ICoordinationService
     {
         private readonly ICoordinationRepository _coordinationRepository;
+        private readonly IPublisherRepository _publisherRepository;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CoordinationService(ICoordinationRepository coordinationRepository, IUnitOfWork unitOfWork)
+        public CoordinationService(ICoordinationRepository coordinationRepository, IPublisherRepository publisherRepository, IUnitOfWork unitOfWork)
         {
             _coordinationRepository = coordinationRepository;
+            _publisherRepository = publisherRepository;
             _unitOfWork = unitOfWork;
         }
         public async Task<IEnumerable<Coordination>> ListAsync()
@@ -46,6 +48,10 @@ namespace OpenData.API.Services
         {
             try
             {
+                var existingPublisher = await _publisherRepository.FindByIdAsync(coordination.PublisherId);
+                if (existingPublisher == null)
+                    return new CoordinationResponse("Invalid publisher id.");
+
                 await _coordinationRepository.AddAsync(coordination);
                 await _unitOfWork.CompleteAsync();
 
@@ -63,10 +69,12 @@ namespace OpenData.API.Services
             var existingCoordination = await _coordinationRepository.FindByIdAsync(id);
 
             if (existingCoordination == null)
-                return new CoordinationResponse("Category not found.");
+                return new CoordinationResponse("Coordination not found.");
 
             existingCoordination.Title = coordination.Title;
             existingCoordination.Description = coordination.Description;
+            existingCoordination.UnderCoordination = coordination.UnderCoordination;
+            existingCoordination.StatusDescription = coordination.StatusDescription;
 
             try
             {

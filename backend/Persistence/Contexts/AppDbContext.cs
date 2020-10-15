@@ -78,6 +78,8 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Coordination>().HasKey(p => p.Id);
             builder.Entity<Coordination>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Coordination>().Property(p => p.Title).IsRequired();
+            builder.Entity<Coordination>().Property(p => p.PublisherId).IsRequired();
+            builder.Entity<Coordination>().Property(p => p.UnderCoordination).HasDefaultValue(false);
             builder.Entity<Coordination>()
             .HasMany(p => p.Datasets)
             .WithOne(p => p.Coordination)
@@ -203,7 +205,8 @@ namespace OpenData.API.Persistence.Contexts
             Coordination bicycleCoordination = new Coordination
             {
                 Id = 100,
-                Title = "Bicycle coordination"
+                Title = "Bicycle coordination",
+                PublisherId = 101
             };
 
             Coordination beachCoordination = new Coordination
