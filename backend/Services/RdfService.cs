@@ -18,10 +18,12 @@ namespace OpenData.API.Services
     {
         
         private readonly IGraphService _graphService;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public RdfService(IGraphService graphService)
+        public RdfService(IGraphService graphService, ICategoryRepository categoryRepository)
         {
             _graphService = graphService;
+            _categoryRepository = categoryRepository;
         }
 
         // TODO: De fra data.norge.no har flere format på en distribution?? Skal vi støtte det? :o
@@ -76,6 +78,8 @@ namespace OpenData.API.Services
         {
             List<string> urls = findUrlsFromFellesKatalogen(numberOfDatasets);
             Dataset dataset = new Dataset();
+
+            List<Category> categories = (List<Category>)await _categoryRepository.FlatListAsync();
             
             // Parse the content in the urls and add them to the database
             foreach (string url in urls)
@@ -83,7 +87,9 @@ namespace OpenData.API.Services
                 // A small part of the datasets in the fellesdatakatalog does not have a rdf version
                 try 
                 {
-                    dataset = await import(url, 100);
+                    Random rnd = new Random();
+                    int randomCategoryId = categories.ElementAt(rnd.Next(categories.Count)).Id;
+                    dataset = await import(url, randomCategoryId);
                 }
                 catch (Exception ex)
                 {

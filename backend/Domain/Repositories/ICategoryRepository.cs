@@ -7,6 +7,7 @@ namespace OpenData.API.Domain.Repositories
     public interface ICategoryRepository
     {
         Task<IEnumerable<Category>> ListAsync();
+        Task<IEnumerable<Category>> FlatListAsync();
         Task AddAsync(Category category);
         Task<Category> FindByIdAsync(int id);
     }
