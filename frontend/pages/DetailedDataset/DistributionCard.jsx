@@ -1,5 +1,5 @@
 import React from 'react';
-import { Grid, Paper } from '@material-ui/core';
+import { Grid, Paper, Box } from '@material-ui/core';
 
 const DistributionCard = (props) => {
 
@@ -8,17 +8,12 @@ const DistributionCard = (props) => {
         variant='elevation' 
         elevation ={3}
         spacing={2}
-        style={{ backgroundColor: '#e6ffee', padding: '1%'}}>
+        style={{ backgroundColor: '#e6ffee', padding: '2%'}}>
                 <Grid
                   container
                   spacing={2}
                   direction="row"
                   alignItems="stretch">
-                    <Grid item xs={6}>
-                        <p><b>ID: </b>{props.id}</p>
-                        <p><b>Filformat: </b>{props.fileFormat}</p>
-                        <p><b>URI: </b>{props.uri}</p>
-                    </Grid>
                     <Grid item xs={6}>
                         <p><b>ID: </b>{props.id}</p>
                         <p><b>Filformat: </b>{props.fileFormat}</p>

@@ -18,27 +18,23 @@ export default function DetailedDataset({data, uri}){
   var requestButton;
   var publishedStatus;
   const distributionCards = [];
+  var cardOrNoCard;
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
       requestButton = null;
       publishedStatus = "Publisert";
-      //console.log(data.distributions[0])
-      //console.log(data.distributions[1])
       
       for(let i = 0; i < data.distributions.length; i++){
-        // Per nå settes bare alle kortene til det siste kortet. 
-        distributionCards.push = <DistributionCard 
-        id = {data.distributions[i].id}
-        fileFormat = {data.distributions[i].fileFormat}
-        uri = {data.distributions[i].uri} />           
+        distributionCards.push(data.distributions[i]);
       }
-      console.log(distributionCards.map(cards => ({cards})))
+      cardOrNoCard = Object.values(distributionCards).map(dist => (<DistributionCard id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} />));
+      console.log("Antall elementer i distributions er " + data.distributions.length)
     }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
       publishedStatus = "Ikke publisert";
-      distributionCard = "Dette datasettet har ingen distribusjoner ennå."
+      cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
     }
   }
 
@@ -108,7 +104,7 @@ export default function DetailedDataset({data, uri}){
                 alignItems="baseline"
               >
                   <span><b>Beskrivelse: </b>{data.description}</span>
-                  <span>{ifPublished(data.publicationStatus)} {requestButton}</span>
+                  <span>{requestButton}</span>
                   <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                   <Alert elevation={1} severity="info">Interesse for datasett registrert</Alert>
                   </Snackbar>
@@ -130,8 +126,7 @@ export default function DetailedDataset({data, uri}){
               style={{ minHeight: '70vh', minWidth: '90vh', padding: '3%', border: '2%'}}
               >
               <h3 style={{fontWeight: "bold", }}><p>Distribusjoner</p></h3>
-              <p>{ifPublished(data.publicationStatus)}{distributionCards.map(cards => ({cards}))}</p>
-              
+              <p>{cardOrNoCard}</p>
             </Grid>
           </Grid>
     )
