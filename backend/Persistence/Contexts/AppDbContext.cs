@@ -15,6 +15,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<DatasetTags> DatasetTags { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Coordination> Coordinations { get; set; }
+        public DbSet<DatasetTags> CoordinationTags { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -74,11 +75,25 @@ namespace OpenData.API.Persistence.Contexts
                 .WithMany(t => t.DatasetTags)
                 .HasForeignKey(dt => dt.TagsId);
 
+            builder.Entity<CoordinationTags>().ToTable("CoordinationTags");
+
+            builder.Entity<CoordinationTags>()
+                .HasKey(dt => new { dt.CoordinationId, dt.TagsId });
+            builder.Entity<CoordinationTags>()
+                .HasOne(dt => dt.Coordination)
+                .WithMany(d => d.CoordinationTags)
+                .HasForeignKey(dt => dt.CoordinationId);
+            builder.Entity<CoordinationTags>()
+                .HasOne(dt => dt.Tags)
+                .WithMany(t => t.CoordinationTags)
+                .HasForeignKey(dt => dt.TagsId);
+
             builder.Entity<Coordination>().ToTable("Coordinations");
             builder.Entity<Coordination>().HasKey(p => p.Id);
             builder.Entity<Coordination>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Coordination>().Property(p => p.Title).IsRequired();
             builder.Entity<Coordination>().Property(p => p.PublisherId).IsRequired();
+            builder.Entity<Coordination>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.UnderCoordination).HasDefaultValue(false);
             builder.Entity<Coordination>()
             .HasMany(p => p.Datasets)
@@ -201,12 +216,26 @@ namespace OpenData.API.Persistence.Contexts
                 TagsId = 101
             };
             AddRange(cultureDataTag, bicycleDataTag);
+            
+            CoordinationTags cultureCoordTag = new CoordinationTags
+            {
+                CoordinationId = 100,
+                TagsId = 100
+            };
+            CoordinationTags bicycleCoordTag = new CoordinationTags
+            {
+                CoordinationId = 101,
+                TagsId = 101
+            };
+            AddRange(cultureCoordTag, bicycleCoordTag);
 
             Coordination bicycleCoordination = new Coordination
             {
                 Id = 100,
                 Title = "Bicycle coordination",
-                PublisherId = 101
+                Description = "Dette er en samordning av datasett om strender",
+                PublisherId = 101,
+                CategoryId = 101
             };
 
             Coordination beachCoordination = new Coordination
@@ -214,7 +243,8 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 101,
                 Title = "Strand samordning",
                 Description = "Dette er en samordning av datasett om strender",
-                PublisherId = 100
+                PublisherId = 100,
+                CategoryId = 101
             };
             AddRange(bicycleCoordination, beachCoordination);
 

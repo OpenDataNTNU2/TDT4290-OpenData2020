@@ -12,5 +12,9 @@ namespace OpenData.API.Domain.Models
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
         public IList<Dataset> Datasets { get; set; } = new List<Dataset>();
+        public int CategoryId { get; set; }
+        public Category Category { get; set; }
+        public string TagsIds { get; set; }
+        public IList<CoordinationTags> CoordinationTags { get; set; } = new List<CoordinationTags>();
     }
 }
