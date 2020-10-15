@@ -12,6 +12,6 @@ namespace OpenData.API.Resources
         public PublisherResource Publisher { get; set; }
         public IList<DatasetResource> Datasets { get; set; } = new List<DatasetResource>();
         public CategoryResource Category { get; set; }
-        // public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();
+        public IList<CoordinationTagsResource> CoordinationTags { get; set; } = new List<CoordinationTagsResource>();
     }
 }

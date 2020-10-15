@@ -22,6 +22,8 @@ namespace OpenData.API.Persistence.Repositories
                                     .Include(c => c.Datasets)
                                     .Include(d => d.Category)
                                     .Include(c => c.Publisher)
+                                    .Include(c => c.CoordinationTags)
+                                        .ThenInclude(c => c.Tags)
                                     .AsNoTracking();
 
             // Filter on multiple publishers
@@ -63,8 +65,8 @@ namespace OpenData.API.Persistence.Repositories
                 queryable = queryable.Where(d =>
                    d.Title.ToLower().Contains(query.Search.Trim().ToLower()) ||
                    d.Description.ToLower().Contains(query.Search.Trim().ToLower()) ||
-                   d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) //||
-                //    d.DatasetTags.Any(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower()))
+                   d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) ||
+                   d.CoordinationTags.Any(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower()))
                    );
             }
 

@@ -15,6 +15,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<DatasetTags> DatasetTags { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Coordination> Coordinations { get; set; }
+        public DbSet<DatasetTags> CoordinationTags { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -72,6 +73,19 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<DatasetTags>()
                 .HasOne(dt => dt.Tags)
                 .WithMany(t => t.DatasetTags)
+                .HasForeignKey(dt => dt.TagsId);
+
+            builder.Entity<CoordinationTags>().ToTable("CoordinationTags");
+
+            builder.Entity<CoordinationTags>()
+                .HasKey(dt => new { dt.CoordinationId, dt.TagsId });
+            builder.Entity<CoordinationTags>()
+                .HasOne(dt => dt.Coordination)
+                .WithMany(d => d.CoordinationTags)
+                .HasForeignKey(dt => dt.CoordinationId);
+            builder.Entity<CoordinationTags>()
+                .HasOne(dt => dt.Tags)
+                .WithMany(t => t.CoordinationTags)
                 .HasForeignKey(dt => dt.TagsId);
 
             builder.Entity<Coordination>().ToTable("Coordinations");
@@ -202,6 +216,18 @@ namespace OpenData.API.Persistence.Contexts
                 TagsId = 101
             };
             AddRange(cultureDataTag, bicycleDataTag);
+            
+            CoordinationTags cultureCoordTag = new CoordinationTags
+            {
+                CoordinationId = 100,
+                TagsId = 100
+            };
+            CoordinationTags bicycleCoordTag = new CoordinationTags
+            {
+                CoordinationId = 101,
+                TagsId = 101
+            };
+            AddRange(cultureCoordTag, bicycleCoordTag);
 
             Coordination bicycleCoordination = new Coordination
             {

@@ -14,7 +14,7 @@ namespace OpenData.API.Resources
         public string StatusDescription { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        // public string TagsIds { get; set; }
+        public string TagsIds { get; set; }
         
     }
 }
