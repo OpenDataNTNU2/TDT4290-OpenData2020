@@ -42,7 +42,7 @@ export default function CreateCoordination(props) {
             "title": title,
             "description": description,
             "publisherId": props.publisherId,
-            "underCoordination": parse(coordinationStatus)
+            "underCoordination": coordinationStatus === "false" ? false : true
         }
         if (title !== "" && description !== "") {
             PostApi('https://localhost:5001/api/coordinations', data, submitPostReq)

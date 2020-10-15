@@ -1,6 +1,6 @@
 import { Grid, Paper, Box } from '@material-ui/core/';
 
-export default function CoordinationCard(props){
+export default function CoordinationCard(props) {
 
     const cutString = (string) => {
         if (string != null && string.length > 200) {
@@ -24,13 +24,14 @@ export default function CoordinationCard(props){
     }
 
 
-    return(
-        <div key={props.id*2} >
-            <Paper variant='outlined' style={{ maxWidth: "80vh", backgroundColor: "#dedcf7", padding: '1%', marginBottom: '2%', cursor: "pointer" }}>
+    return (
+        <div key={props.id * 2} onClick={props.onClick} >
+            <Paper variant='outlined' style={{ backgroundColor: "#dedcf7", padding: '1%', marginBottom: '2%', cursor: "pointer" }}>
                 <Grid container wrap='wrap'>
                     <Grid item xs={9}>
-                        <h3>{props.title}</h3>
-                        <p>{cutString(props.description)}</p>
+                        <h3>{props.coordination.title}</h3>
+                        <p><b>Utgiver: </b>{props.coordination.publisher.name}</p>
+                        <p>{cutString(props.coordination.description)}</p>
                     </Grid>
                     <Grid item xs={2} style={{ margin: '1em' }}>
                         <Paper elevation={0}
@@ -53,7 +54,7 @@ export default function CoordinationCard(props){
                             </Paper>
                     </Grid>
                     <Grid container direction="row">
-                        <p><strong>Kommuner:</strong> Trondheim, Oslo og Placeholder og mer</p>
+                        <p><strong>Deltagende kommuner:</strong>{props.coordination.datasets.map((dataset) => (dataset.publisher.name))}</p>
                     </Grid>
                 </Grid>
             </Paper>

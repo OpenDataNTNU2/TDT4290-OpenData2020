@@ -22,13 +22,23 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
         setDatasets(datasets.items)
     }
 
+    const setMyCoordinations = (coordinations) => {
+        let newArr = []
+        for (let i = 0; i < coordinations.items.length; i++) {
+            if (coordinations.items[i].publisher.id == prevPublisherId) {
+                newArr.push(coordinations.items[i])
+            }
+        }
+        setCoordinations(newArr)
+    }
+
     // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
     useEffect(() => {
         GetApi('https://localhost:5001/api/datasets?PublisherIds=101', setMyDatasets)
-        GetApi('https://localhost:5001/api/coordinations', setCoordinations)
+        GetApi('https://localhost:5001/api/coordinations', setMyCoordinations)
     }, [prevPublisherId])
 
-    const onClick = (id) => { router.push('/DetailedDataset/' + id) }
+    const onClick = (path, id) => { router.push(path + id) }
 
     return (
         <Grid
@@ -43,15 +53,15 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
             <div style={{ minWidth: "80vh" }}>
                 {
                     Object.values(datasets).map(d => (
-                        d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+                        d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
                     ))
                 }
             </div>
 
-            <div >
+            <div style={{ minWidth: "80vh" }}>
                 {
                     Object.values(coordinations).map(c => (
-                        c && <CoordinationCard id={c.id} title={c.title} description={c.description} />
+                        c && <CoordinationCard key={c.id} id={c.id} coordination={c} onClick={() => onClick('/DetailedCoordination/', c.id)} />
                     ))
                 }
             </div>

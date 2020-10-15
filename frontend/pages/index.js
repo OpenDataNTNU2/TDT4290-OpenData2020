@@ -94,9 +94,13 @@ export default function Home() {
   }, [page, filterPublishersUrl, filterCategoriesUrl, url])
 
 
+  const changeUrl = (value) => {
+    setDatasets([])
+    setUrl(value)
+  }
 
 
-  const onClick = (id) => { router.push('/DetailedDataset/' + id) }
+  const onClick = (path, id) => { router.push(path + id) }
 
   return (
     <div className='datakatalog'>
@@ -127,13 +131,13 @@ export default function Home() {
 
             {/* Midlertidig select bar, bør opprette et form */}
             <FormControl variant="outlined" style={{ width: "20vh", marginLeft: "3vh" }}>
-              <InputLabel id="demo-simple-select-label">Dataset/samordning</InputLabel>
+              <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
               <Select
                 labelId="chooseWhatToView"
-                label="Dataset/samordning"
+                label="Datasett / Samordning"
                 id="chooseWhatToViewId"
                 value={url}
-                onChange={(event) => setUrl(event.target.value)}
+                onChange={(event) => changeUrl(event.target.value)}
               >
                 <MenuItem value="https://localhost:5001/api/datasets">Dataset</MenuItem>
                 <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
@@ -149,12 +153,12 @@ export default function Home() {
           >
 
             {url === 'https://localhost:5001/api/datasets' ?
-              Object.values(datasets).map(d => (
-                d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+              datasets && Object.values(datasets).map(d => (
+                d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
               ))
               : url === 'https://localhost:5001/api/coordinations' ?
-                Object.values(datasets).map(c => (
-                  c && <CoordinationCard id={c.id} title={c.title} description={c.description} />
+                datasets && Object.values(datasets).map(c => (
+                  c && <CoordinationCard key={c.id} id={c.id} coordination={c} onClick={() => onClick('/DetailedCoordination/', c.id)} />
                 ))
                 : <p>laster...</p>
             }
