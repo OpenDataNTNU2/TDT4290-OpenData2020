@@ -148,7 +148,7 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand",
                 Identifier = "/api/datasets/101",
                 Description = "Strender i Bodø",
-                PublicationStatus = EPublicationStatus.notPublished,
+                PublicationStatus = EPublicationStatus.plannedPublished,
                 DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
                 AccessLevel = EAccessLevel.yellow,
                 PublisherId = 101,
