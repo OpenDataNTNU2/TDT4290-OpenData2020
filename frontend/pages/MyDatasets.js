@@ -11,7 +11,7 @@ import CoordinationCard from '../Components/CoordinationCard';
 
 // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
 
-export default function MyDatasets({prevLoggedIn, prevLoggedUsername, prevPublisherId = 0, prevUserId}){
+export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPublisherId = 0, prevUserId }) {
     const router = useRouter();
     const [datasets, setDatasets] = useState([])
 
@@ -29,23 +29,23 @@ export default function MyDatasets({prevLoggedIn, prevLoggedUsername, prevPublis
     }, [prevPublisherId])
 
     const onClick = (id) => { router.push('/DetailedDataset/' + id) }
-    
-    return(
+
+    return (
         <Grid
             container
             spacing={1}
             direction="column"
             alignItems="center"
         >
-            <br/>
+            <br />
             {prevLoggedIn ? <h2 style={{ fontWeight: "normal" }}>{JSON.parse(prevLoggedUsername)} sine dataset</h2> : null}
-            <br/>
-            <div style={{minWidth: "80vh"}}>
+            <br />
+            <div style={{ minWidth: "80vh" }}>
                 {
                     Object.values(datasets).map(d => (
-                    d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
+                        d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick(d.id)} />
                     ))
-                }   
+                }
             </div>
 
             <div >
@@ -55,17 +55,17 @@ export default function MyDatasets({prevLoggedIn, prevLoggedUsername, prevPublis
                     ))
                 }
             </div>
-            
+
             {datasets.length === 0 ? <h3 style={{ fontWeight: "normal" }}>Ingen dataset</h3> : null}
         </Grid>
     )
-    
+
 }
 
-MyDatasets.getInitialProps = ({req}) => {
+MyDatasets.getInitialProps = ({ req }) => {
     const cookies = parseCookies(req);
 
-    return{
+    return {
         prevLoggedIn: cookies.prevLoggedIn,
         prevLoggedUsername: cookies.prevLoggedUsername,
         prevPublisherId: cookies.prevPublisherId,

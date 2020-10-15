@@ -38,6 +38,10 @@ namespace OpenData.API.Mapping
                                 opt => opt.MapFrom(src => getCount(src)));
 
             CreateMap<Coordination, CoordinationResource>();
+            CreateMap<CoordinationTags, CoordinationTagsResource>();
+            
+            CreateMap<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>();
+
         }
 
         private int getCount(Category category)
