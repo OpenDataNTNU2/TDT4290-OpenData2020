@@ -9,8 +9,8 @@ namespace OpenData.API.Domain.Services
     {
         Task<IEnumerable<Application>> ListAsync();
         Task<ApplicationResponse> FindByIdAsync(int id);
-        Task<ApplicationResponse> SaveAsync(Application Application);
-        Task<ApplicationResponse> UpdateAsync(int id, Application Application);
+        Task<ApplicationResponse> SaveAsync(Application application);
+        Task<ApplicationResponse> UpdateAsync(int id, Application application);
         Task<ApplicationResponse> DeleteAsync(int id);
     }
 }

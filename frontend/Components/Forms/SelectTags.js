@@ -1,120 +1,112 @@
-import { FormControl, InputLabel, Select } from '@material-ui/core'
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
-import Input from '@material-ui/core/Input';
-import Checkbox from '@material-ui/core/Checkbox';
-import ListItemText from '@material-ui/core/ListItemText';
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
+import { TextField, makeStyles } from "@material-ui/core";
 
-import PostApi from '../ApiCalls/PostApi'
+import PostApi from "../ApiCalls/PostApi";
 
-import InputForm from '../Forms/Input'
+import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import { useState } from "react";
+const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
-    
-    chips: {
-      display: 'flex',
-      flexWrap: 'wrap',
-    },
-    chip: {
-      margin: 2,
-    },
-    
-  }));
-
-
-
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-      style: {
-        maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        width: 250,
-      },
-    },
-  };
+  chips: {
+    display: "flex",
+    flexWrap: "wrap",
+  },
+  chip: {
+    margin: 2,
+  },
+}));
 
 const SelectTags = (props) => {
-    
-    const classes = useStyles();    
+  const classes = useStyles();
 
-   
-    // garra en bedre måte å legge til dette på...
-    const handleChange = (event) => {
-        props.setCheckedTags(event.target.value)
-        let name = event.target.value
-        let newString = ""
-        for(let i = 0; i < props.tags.length; i++){
-            for(let j = 0; j < name.length; j++){
-                if(name[j] === props.tags[i].name){
-                    newString += (props.tags[i].id.toString() + ", ")
-                }
-            }
-        }
-        props.onChange(newString)
-        
+  const handleSubmit = (newTag) => {
+    if (!props.tags[newTag.newTagId] || !props.newTags[newTag.newTagName]) {
+      props.setNewTags([
+        ...props.newTags,
+        { id: newTag.newTagId, name: newTag.newTagName },
+      ]);
+      props.setTags([
+        ...props.tags,
+        { id: newTag.newTagId, name: newTag.newTagName },
+      ]);
     }
+  };
 
-    const addTags = () => {
-        console.log("added tags to 'https://localhost:5001/api/tags'")
-    }
+  const removeNewTag = (idList) => {
+    props.newTags.map((tagObject) => {
+      if (!idList.includes(tagObject.id) || !idList) {
+        props.setNewTags(
+          props.newTags.filter((tag) => tag.id !== tagObject.id)
+        );
+        props.setTags(props.tags.filter((tag) => tag.id !== tagObject.id));
+      }
+    });
+  };
 
-    const submitNewTag = (event) => {
-        PostApi('https://localhost:5001/api/tags', {"name": props.createTag}, addTags )
-        props.setTags([...props.tags, {id: props.tags[props.tags.length - 1].id + 1, name: props.createTag}])
-        props.setCreateTag("")
-    }
+  const handleChange = (value) => {
+    let tagId = "";
+    value.map((tag) => {
+      tagId += tag.id + ", ";
+    });
+    props.onChange(tagId);
+    removeNewTag(tagId);
+  };
 
+  return (
+    <div style={{ display: "inline-block", width: "50vh" }}>
+      <Autocomplete
+        multiple
+        onChange={(event, newValue) => {
+          const lastAdded =
+            newValue.length >= 1 ? newValue[newValue.length - 1] : null;
+          if (
+            lastAdded?.inputValue &&
+            !props.selectedTags.includes(lastAdded?.id)
+          ) {
+            handleSubmit({
+              newTagId: lastAdded.id,
+              newTagName: lastAdded.inputValue,
+            });
+          }
+          handleChange(newValue);
+        }}
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params);
 
-    return (  
-        <FormControl variant="outlined" style={{width: "50vh"}}>
-            <InputLabel htmlFor="outlined-age-native-simple">Tags</InputLabel>
-            <Select
-                id="selectTags"
-                multiple
-                value={props.checkedTags}
-                onChange={handleChange}
-                label="Tags"
-                renderValue={(selected) => (
-                    <div >
-                    {selected.map((value, index) => (
-                        <Chip key={value + index} label={value} className={classes.chip} />
-                    ))}
-                    </div>
-                )}
-                MenuProps={MenuProps}
-            >
-                <div style={{display: "inline-block"}}>
-                    <form noValidate autoComplete="off" style={{width: "30vh", display: "inline-block", margin: "0 1vh 0 1vh", padding: "0"}}>
-                        <TextField 
-                            id='tags' 
-                            label="Egendefinerte tags"
-                            size="medium" 
-                            variant="outlined" 
-                            fullWidth={true}
-                            value={props.createTag} 
-                            onChange={(e) => props.setCreateTag(e.target.value)}
-                        />
-                    </form>
-                    <Button size="large" variant="contained" color="primary" onClick={submitNewTag} style={{marginTop: "3vh", height: "5.5vh"}}>Lag ny tag</Button>
-                </div>
+          if (params.inputValue !== "") {
+            filtered.push({
+              inputValue: params.inputValue,
+              id: props.tags[props.tags.length - 1].id + 1,
+              name: `Legg til "${params.inputValue}" som en ny tag`,
+            });
+          }
 
-                
-            {props.tags.map((tag) => (
-                <MenuItem key={tag.name} value={tag.name}>
-                    <Checkbox checked={props.checkedTags.indexOf(tag.name) > -1} />
-                    <ListItemText primary={tag.name} />
-                </MenuItem>
-            ))}
-            </Select>
-      </FormControl>
-)
-}
+          return filtered;
+        }}
+        id="free-solo-dialog-demo"
+        options={props.tags}
+        getOptionLabel={(option) => {
+          if (option.inputValue) {
+            return option.inputValue;
+          }
+          return option.name;
+        }}
+        selectOnFocus
+        clearOnBlur
+        handleHomeEndKeys
+        renderOption={(option) => option.name}
+        freeSolo
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Tags"
+            placeholder="Skriv for å søke"
+          />
+        )}
+      />
+    </div>
+  );
+};
 
 export default SelectTags;
-
