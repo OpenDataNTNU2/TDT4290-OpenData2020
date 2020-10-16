@@ -43,7 +43,6 @@ export default function CreateDataset(props) {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState("");
   const [createdTag, setCreatedTag] = useState("");
-  const [checkedTags, setCheckedTags] = useState([]);
 
   // variables/states for categories
   const [categories, setCategories] = useState([]);
@@ -51,8 +50,6 @@ export default function CreateDataset(props) {
 
   // show / not show snackbar with successfull submit message
   const [open, setOpen] = useState(false);
-
-  console.log("Dette er valgte tags", selectedTags);
 
   // data sent to PostApi when posting new dataset
   const data = {
@@ -111,6 +108,7 @@ export default function CreateDataset(props) {
   // posts data into the api with datasets
   // and if successfull runs addDistributions
   const handleChange = async () => {
+    console.log("Vi har postet med denne data:", data);
     PostApi("https://localhost:5001/api/datasets", data, addDistributions);
   };
 
@@ -118,8 +116,6 @@ export default function CreateDataset(props) {
   useEffect(() => {
     GetApi("https://localhost:5001/api/tags", setTags);
     GetApi("https://localhost:5001/api/categories", setCategories);
-
-    setCheckedTags(tags);
   }, [props.prevLoggedIn]);
 
   // updates the distribution states when adding more distributions
@@ -152,7 +148,6 @@ export default function CreateDataset(props) {
     setDistribution(0);
 
     setSelectedTags("");
-    setCheckedTags([]);
 
     setSelectedCategory("");
   };
@@ -245,8 +240,6 @@ export default function CreateDataset(props) {
         onChange={setSelectedTags}
         setCreateTag={setCreatedTag}
         createTag={createdTag}
-        checkedTags={checkedTags}
-        setCheckedTags={setCheckedTags}
       />
       <br />
       {published === "1" && distribution === 0 ? (

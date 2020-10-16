@@ -1,21 +1,21 @@
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Chip,
-  Checkbox,
-  ListItemText,
   Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
   TextField,
+  makeStyles,
 } from "@material-ui/core";
+
+import { useState } from "react";
 
 import PostApi from "../ApiCalls/PostApi";
 
-import InputForm from "../Forms/Input";
+import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 
-import { makeStyles, useTheme } from "@material-ui/core/styles";
-import { Autocomplete } from "@material-ui/lab";
+const filter = createFilterOptions();
 
 const useStyles = makeStyles((theme) => ({
   chips: {
@@ -27,40 +27,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-  PaperProps: {
-    style: {
-      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-      width: 250,
-    },
-  },
-};
-
 const SelectTags = (props) => {
   const classes = useStyles();
 
-  // garra en bedre måte å legge til dette på...
-  const handleChange = (event) => {
-    props.setCheckedTags(event.target.value);
-    let name = event.target.value;
-    let newString = "";
-    for (let i = 0; i < props.tags.length; i++) {
-      for (let j = 0; j < name.length; j++) {
-        if (name[j] === props.tags[i].name) {
-          newString += props.tags[i].id.toString() + ", ";
-        }
-      }
-    }
-    props.onChange(newString);
+  const [open, toggleOpen] = useState(false);
+
+  const handleClose = () => {
+    props.setCreateTag("");
+    toggleOpen(false);
   };
 
-  const addTags = () => {
-    console.log("added tags to 'https://localhost:5001/api/tags'");
-  };
+  const [dialogValue, setDialogValue] = useState({ name: "" });
 
-  const submitNewTag = (event) => {
+  const handleSubmit = (event) => {
+    //event.preventDefault();
     PostApi(
       "https://localhost:5001/api/tags",
       { name: props.createTag },
@@ -71,190 +51,97 @@ const SelectTags = (props) => {
       { id: props.tags[props.tags.length - 1].id + 1, name: props.createTag },
     ]);
     props.setCreateTag("");
+    handleClose();
+  };
+
+  const handleChange = (value) => {
+    let tagId = "";
+    value.map((tag) => {
+      tagId += tag.id + ", ";
+    });
+    props.onChange(tagId);
+  };
+
+  const addTags = () => {
+    console.log("added tags to 'https://localhost:5001/api/tags'");
   };
 
   return (
-    <FormControl variant="outlined" style={{ width: "50vh" }}>
-      <div style={{ display: "inline-block" }}>
-        <Autocomplete
-          multiple
-          id="tags-outlined"
-          options={tags}
-          getOptionLabel={(option) => option.name}
-          defaultValue={[]}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              {...console.log(params)}
-              variant="outlined"
-              label="Tags"
-              placeholder="Favorites"
-              onChange={(e) => props.setCreateTag(e.target.value)}
-            />
-          )}
-        />
-      </div>
+    <div style={{ display: "inline-block", width: "50vh" }}>
+      <Autocomplete
+        onChange={(event, value) => {
+          if (typeof value === "string") {
+            setTimeout(() => {
+              toggleOpen(true);
+              setDialogValue(value);
+            });
+          } else if (value && value.inputValue) {
+            toggleOpen(true);
+            setDialogValue(value.inputValue);
+          }
+          handleChange(value);
+        }}
+        filterOptions={(options, params) => {
+          const filtered = filter(options, params);
 
-      {/* {props.tags.map((tag) => (
-          <MenuItem key={tag.name} value={tag.name}>
-            <Checkbox checked={props.checkedTags.indexOf(tag.name) > -1} />
-            <ListItemText primary={tag.name} />
-          </MenuItem>
-        ))} */}
-      {/* </Select> */}
-    </FormControl>
+          if (params.inputValue !== "") {
+            filtered.push({
+              inputValue: params.inputValue,
+              title: `Add "${params.inputValue}"`,
+            });
+          }
+
+          return filtered;
+        }}
+        multiple
+        id="tags-outlined"
+        options={props.tags}
+        getOptionLabel={(option) => option.name}
+        defaultValue={[]}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            variant="outlined"
+            label="Tags"
+            placeholder=""
+          />
+        )}
+      />
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <form onSubmit={handleSubmit}>
+          <DialogTitle id="form-dialog-title">Legg til en ny tag</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              Fant du ikke en passende tag? Legg til en ny!
+            </DialogContentText>
+            <TextField
+              autoFocus
+              margin="dense"
+              id="name"
+              value={dialogValue.name}
+              onChange={(event) =>
+                setCreateTag({ ...dialogValue, name: event.target.value })
+              }
+              label="title"
+              type="text"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary">
+              Add
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </div>
   );
 };
-
-const tags = [
-  {
-    id: 100,
-    name: "Culture",
-  },
-  {
-    id: 101,
-    name: "Bicycle",
-  },
-  {
-    id: 102,
-    name: "fstg",
-  },
-  {
-    id: 103,
-    name: "teater",
-  },
-  {
-    id: 104,
-    name: "førerkort",
-  },
-  {
-    id: 105,
-    name: "kjøretøy",
-  },
-  {
-    id: 106,
-    name: "bil",
-  },
-  {
-    id: 107,
-    name: "Arealplan",
-  },
-  {
-    id: 108,
-    name: "Arealformål",
-  },
-  {
-    id: 109,
-    name: "fellesDatakatalog",
-  },
-  {
-    id: 110,
-    name: "Kommune",
-  },
-  {
-    id: 111,
-    name: "Plandata",
-  },
-  {
-    id: 112,
-    name: "Planområde",
-  },
-  {
-    id: 113,
-    name: "Plan",
-  },
-  {
-    id: 114,
-    name: "Planregister",
-  },
-  {
-    id: 115,
-    name: "Kommuneplan",
-  },
-  {
-    id: 116,
-    name: "Norge digitalt",
-  },
-  {
-    id: 117,
-    name: "Norges fastland",
-  },
-  {
-    id: 118,
-    name: "Arealbruk",
-  },
-  {
-    id: 119,
-    name: "Kommunedelplan",
-  },
-  {
-    id: 120,
-    name: "Land use",
-  },
-  {
-    id: 121,
-    name: "regionale enheter",
-  },
-  {
-    id: 122,
-    name: "standard",
-  },
-  {
-    id: 123,
-    name: "kommunenummer",
-  },
-  {
-    id: 124,
-    name: "kommuner",
-  },
-  {
-    id: 125,
-    name: "kommunenummerliste",
-  },
-  {
-    id: 126,
-    name: "Kommuneinndeling",
-  },
-  {
-    id: 127,
-    name: "kommunekodeliste",
-  },
-  {
-    id: 128,
-    name: "Idrett",
-  },
-  {
-    id: 129,
-    name: "idrettslokaler",
-  },
-  {
-    id: 130,
-    name: "valg",
-  },
-  {
-    id: 131,
-    name: "kommunestyre",
-  },
-  {
-    id: 132,
-    name: "Budsjett",
-  },
-  {
-    id: 133,
-    name: "idrettsavdelingen",
-  },
-  {
-    id: 134,
-    name: "regnskapsresultat",
-  },
-  {
-    id: 135,
-    name: "Regnskap",
-  },
-  {
-    id: 136,
-    name: "2017",
-  },
-];
 
 export default SelectTags;
