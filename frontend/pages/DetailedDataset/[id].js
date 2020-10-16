@@ -24,12 +24,16 @@ export default function DetailedDataset({data, uri}){
     if (pub === "Published"){
       requestButton = null;
       publishedStatus = "Publisert";
-      
-      for(let i = 0; i < data.distributions.length; i++){
-        distributionCards.push(data.distributions[i]);
+      if (data.distributions.length == 0){
+        cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
       }
-      cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />)});
-    }
+      else{
+        for(let i = 0; i < data.distributions.length; i++){
+        distributionCards.push(data.distributions[i]);
+        }
+        cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />)});
+      }
+      }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
       publishedStatus = "Ikke publisert";
@@ -77,9 +81,9 @@ export default function DetailedDataset({data, uri}){
         >
             <Grid
               container
+              item xs ={6}
               direction="column"
               alignItems="center"
-              xs={6}
               style={{ minWidth: '100vh'}}
           >
               <Grid

@@ -18,7 +18,6 @@ import RadioInput from "../Forms/RadioInput";
 import SelectInput from "../Forms/SelectInput";
 import SelectTags from "../Forms/SelectTags";
 
-// import api functions
 import GetApi from "../ApiCalls/GetApi";
 import PostApi from "../ApiCalls/PostApi";
 
@@ -39,17 +38,17 @@ export default function CreateDataset(props) {
   const [distUri, setDistUri] = useState([""]);
   const [distFileFormat, setDistFileFormat] = useState(["1"]);
 
-  // variables/states for tags
-  const [tags, setTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState("");
-  const [newTags, setNewTags] = useState([]);
-
   // variables/states for categories
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
 
   // show / not show snackbar with successfull submit message
   const [open, setOpen] = useState(false);
+
+  // variables/states for tags
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [newTags, setNewTags] = useState([]);
 
   // data sent to PostApi when posting new dataset
   const data = {
@@ -65,7 +64,7 @@ export default function CreateDataset(props) {
   };
 
   // this is run inside of PostApi in distribution, clear states after added distributions
-  const postDistributions = () => {
+  const postDistributions = (dataId) => {
     setOpen(true);
     clearStates();
   };

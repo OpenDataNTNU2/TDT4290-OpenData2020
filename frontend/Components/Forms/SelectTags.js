@@ -21,11 +21,6 @@ const SelectTags = (props) => {
 
   const handleSubmit = (newTag) => {
     if (!props.tags[newTag.newTagId] || !props.newTags[newTag.newTagName]) {
-      /* PostApi(
-        "https://localhost:5001/api/tags",
-        { name: newTag.newTagName },
-        addTags
-      ); */
       props.setNewTags([
         ...props.newTags,
         { id: newTag.newTagId, name: newTag.newTagName },
