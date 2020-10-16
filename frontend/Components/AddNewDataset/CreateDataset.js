@@ -31,10 +31,8 @@ export default function CreateDataset(props) {
   const [accessLevel, setAccessLevel] = useState("0");
 
   const date = new Date();
-  console.log(date);
 
   const [startDate, setStartDate] = useState(fixDate(date));
-  console.log(startDate);
 
   // variables/states for the distribution
   const [distribution, setDistribution] = useState(0);
