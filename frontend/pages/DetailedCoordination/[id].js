@@ -11,16 +11,26 @@ import DatasetCard from '../../Components/DatasetCard'
 import Input from '../../Components/Forms/Input';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
+import PatchApi from '../../Components/ApiCalls/PatchApi'
+import DeleteApi from '../../Components/ApiCalls/DeleteApi'
 
 export default function DetailedCoordination({ data, uri, prevPublisherId }) {
+
+    const [coordinationData, setCoordinationData] = useState(data)
 
     // variable for which dataset other municipalities will join with
     const [selectedDataset, setSelectedDataset] = useState("")
     const [joinCoordinationReason, setJoinCoordinationReason] = useState("")
 
+    // datasets to choose from when creating application to join coordination
     const [datasets, setDatasets] = useState([])
 
+    // All the applications to join a coordination
     const [applicationsToJoin, setApplicationsToJoin] = useState([])
+
+    // feedback for actions
+    const [openCreateApplicationFeedback, setOpenCreateApplicationFeedback] = useState(false)
+    const [openRespondToApplicationFeedback, setOpenRespondToApplicationFeedback] = useState(false)
 
     useEffect(() => {
         if (parseInt(JSON.parse(prevPublisherId)) > 99 && parseInt(prevPublisherId) !== data.publisher.id) {
@@ -29,8 +39,8 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
     }, [data])
 
-    const submitApplicationToJoinCoordination = () => {
-        d = {
+    const submitApplicationToJoinCoordination = (id) => {
+        let d = {
             "reason": joinCoordinationReason,
             "coordinationId": data.id,
             "datasetId": selectedDataset
@@ -40,11 +50,25 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
     const successfullySentApplication = (id) => {
         console.log("application sent to: https://localhost:5001/api/applications")
-        // reset fields here
+        setSelectedDataset("")
+        setJoinCoordinationReason("")
+        setOpenCreateApplicationFeedback(true)
     }
 
-    const approveApplication = () => {
+    const approveApplication = (datasetId, applicationId) => {
+        let d =
+            [
+                {
+                    "value": data.id,
+                    "path": "/coordinationId",
+                    "op": "replace",
+                }
+            ]
 
+        PatchApi('https://localhost:5001/api/datasets/' + datasetId, d)
+        DeleteApi('https://localhost:5001/api/applications/' + applicationId)
+        GetApi('https://localhost:5001/api/coordinations/' + data.id, setCoordinationData)
+        setOpenRespondToApplicationFeedback(true)
     }
 
 
@@ -72,7 +96,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 <p><b>Beskrivelse: </b>{data.description}</p>
                 <p><b>Utgiver av samordning: </b>{data.publisher.name}</p>
-                <p><b>Deltakere i samordningen: </b>{data.datasets.map((dataset) => (dataset.publisher.name))}</p>
+                <p><b>Deltakere i samordningen: </b>{coordinationData.datasets.map((dataset) => dataset && (dataset.publisher.name) + ", ")}</p>
                 <br /><p>Legg til mer info i samordningen og display det her...</p>
 
             </Grid>
@@ -82,9 +106,9 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             {/* Datasettene som er med i samordningen */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 <h1 style={{ fontWeight: "normal" }}>Samordnede data</h1>
-                <p>Følgende datasett er med i samordningen</p>
+                <p>Følgende datasett er med i samordningen</p><br />
 
-                {data.datasets && Object.values(data.datasets).map(d => (
+                {coordinationData.datasets && Object.values(coordinationData.datasets).map(d => (
                     d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
                 ))}
 
@@ -126,7 +150,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                         </FormControl>
                         : null}
                     <br /><br />
-                    <Button variant="contained" color="primary" onClick={() => console.log(selectedDataset)}>Send Forespørsel</Button>
+                    <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>Send Forespørsel</Button>
 
 
 
@@ -134,22 +158,31 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             }
 
             {/* Forespørsler om å bli med i samordningen */}
-            {parseInt(prevPublisherId) === data.publisher.id ?
+            {/* TODO: Nå kan kommuner legge til flere datasett til samme samordning, bør dette endres? */}
+            {parseInt(prevPublisherId) === coordinationData.publisher.id ?
                 <Grid style={{ padding: "3% 0 3% 0" }}>
                     <h1 style={{ fontWeight: "normal" }}>Forespørsler om å bli med i samordningen</h1>
-                    {datasets.length !== 0 ?
-                        Object.values(applicationsToJoin).map((application) => (
-                            applicationsToJoin && <div>
-                                <p>Utgiver</p>
-                                <p>Beskrivelse</p>
-                                <p>datasetkort</p>
+                    {coordinationData.applications.length !== 0 ?
+                        Object.values(coordinationData.applications).map((application) => (
+                            applicationsToJoin && <div style={{ paddingBottom: "5%" }}>
+                                <p><b>Utgiver:</b> {application.dataset.publisher.name}</p>
+                                <p><b>Begrunnelse for forespørsel:</b> {application.reason}</p>
+                                <DatasetCard dataset={application.dataset} onClick={() => onClick('/DetailedDataset/', application.dataset.id)} />
                                 <Button variant="contained" color="secondary">Avslå forespørsel</Button>
-                                <Button variant="contained" color="primary">Godta forespørsel</Button>
+                                <Button variant="contained" color="primary" onClick={() => approveApplication(application.dataset.id, application.id)}>Godta forespørsel</Button>
+
                             </div>
                         ))
                         : <p>Ingen forespørsler</p>}
                 </Grid>
                 : null}
+
+            <Snackbar open={openCreateApplicationFeedback} autoHideDuration={5000} onClose={() => setOpenCreateApplicationFeedback(false)}>
+                <Alert elevation={1} severity="success">Forespørsel sendt</Alert>
+            </Snackbar>
+            <Snackbar open={openRespondToApplicationFeedback} autoHideDuration={5000} onClose={() => setOpenRespondToApplicationFeedback(false)}>
+                <Alert elevation={1} severity="success">Datasett lagt til i samordningen</Alert>
+            </Snackbar>
         </Grid >
     )
 }
