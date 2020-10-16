@@ -20,22 +20,41 @@ const SelectTags = (props) => {
   const classes = useStyles();
 
   const handleSubmit = (newTag) => {
-    PostApi("https://localhost:5001/api/tags", { name: newTag }, addTags);
-    const newId = props.tags[props.tags.length - 1].id + 1;
-    props.setTags([...props.tags, { id: newId, name: newTag }]);
-    if (!props.selectedTags.includes(newId)) {
-      props.onChange(props.selectedTags + newId + ", ");
+    if (!props.tags[newTag.newTagId] || !props.newTags[newTag.newTagName]) {
+      /* PostApi(
+        "https://localhost:5001/api/tags",
+        { name: newTag.newTagName },
+        addTags
+      ); */
+      props.setNewTags([
+        ...props.newTags,
+        { id: newTag.newTagId, name: newTag.newTagName },
+      ]);
+      props.setTags([
+        ...props.tags,
+        { id: newTag.newTagId, name: newTag.newTagName },
+      ]);
     }
+  };
+
+  const removeNewTag = (idList) => {
+    props.newTags.map((tagObject) => {
+      if (!idList.includes(tagObject.id) || !idList) {
+        props.setNewTags(
+          props.newTags.filter((tag) => tag.id !== tagObject.id)
+        );
+        props.setTags(props.tags.filter((tag) => tag.id !== tagObject.id));
+      }
+    });
   };
 
   const handleChange = (value) => {
-    if (!props.selectedTags.includes(value.id)) {
-      props.onChange(props.selectedTags + value.id + ", ");
-    }
-  };
-
-  const addTags = () => {
-    console.log("added tags to 'https://localhost:5001/api/tags'");
+    let tagId = "";
+    value.map((tag) => {
+      tagId += tag.id + ", ";
+    });
+    props.onChange(tagId);
+    removeNewTag(tagId);
   };
 
   return (
@@ -43,21 +62,27 @@ const SelectTags = (props) => {
       <Autocomplete
         multiple
         onChange={(event, newValue) => {
-          const lastAdded = newValue[newValue.length - 1];
-          if (lastAdded.name.includes("Add")) {
-            let newTag = lastAdded.name.split('"')[1];
-            handleSubmit(newTag);
-          } else {
-            handleChange(lastAdded);
+          const lastAdded =
+            newValue.length >= 1 ? newValue[newValue.length - 1] : null;
+          if (
+            lastAdded?.inputValue &&
+            !props.selectedTags.includes(lastAdded?.id)
+          ) {
+            handleSubmit({
+              newTagId: lastAdded.id,
+              newTagName: lastAdded.inputValue,
+            });
           }
+          handleChange(newValue);
         }}
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
 
           if (params.inputValue !== "") {
             filtered.push({
+              inputValue: params.inputValue,
               id: props.tags[props.tags.length - 1].id + 1,
-              name: `Add "${params.inputValue}"`,
+              name: `Legg til "${params.inputValue}" som en ny tag`,
             });
           }
 
@@ -66,10 +91,6 @@ const SelectTags = (props) => {
         id="free-solo-dialog-demo"
         options={props.tags}
         getOptionLabel={(option) => {
-          // e.g value selected with enter, right from the input
-          if (typeof option === "string") {
-            return option;
-          }
           if (option.inputValue) {
             return option.inputValue;
           }
@@ -85,7 +106,7 @@ const SelectTags = (props) => {
             {...params}
             variant="outlined"
             label="Tags"
-            placeholder=""
+            placeholder="Skriv for å søke"
           />
         )}
       />
