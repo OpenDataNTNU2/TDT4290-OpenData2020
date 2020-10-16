@@ -45,7 +45,7 @@ export default function FilterPublisher(props) {
     }, [props])
 
     const items = publishers.slice(0, showItems).map(pub =>
-        <FormControlLabel control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />}
+        <FormControlLabel key={pub[1]} control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />}
             label={pub[0] + " (" + pub[4] + ")"}
         />)
 
