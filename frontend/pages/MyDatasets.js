@@ -22,14 +22,14 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
             setDatasets(datasets.items)
     }
 
-    const ifPublished = (pub) => {
+    /*const ifPublished = (pub) => {
         if (pub === "Published"){
             reqCounter = "Ingen requests på et tilgjengelig datasett, duh";
         }
         else {
             reqCounter = Object.values(datasets).map(data => { return (<InterestCard key = {data.id} interestCounter = {data.interestCounter}/>)});
         }
-      }
+      }*/
 
     const setMyCoordinations = (coordinations) => {
         let newArr = []
@@ -69,8 +69,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
                 container
                 alignItems="stretch"
                 direction="row">
-                    {ifPublished(datasets.publicationStatus)}
-                    <p>{"Antall forespørsler på dette datasettet: "}{reqCounter}</p>
+                    
                 </Grid>
             </div>
 
