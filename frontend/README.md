@@ -29,6 +29,8 @@ You need to call `npm install` first, if you haven't.
 ## Writing tests
 
 Any file within the \_\_tests\_\_ folder are considered tests by Jest.  
+Use FilterPublisherTests.js as an example.  
+
 Tests are defined by calling `test()`, with a name/success message and a method (this method is the actual test),  
 use `() => ` to define an anonymous function in the second argument.  
 Use `expect(variable)` and [any number of extensions](https://jestjs.io/docs/en/expect) to define the expected execution.  
