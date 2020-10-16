@@ -42,7 +42,7 @@ export default function CreateDataset(props) {
   // variables/states for tags
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState("");
-  const [createdTag, setCreatedTag] = useState("");
+  console.log(selectedTags);
 
   // variables/states for categories
   const [categories, setCategories] = useState([]);
@@ -238,8 +238,7 @@ export default function CreateDataset(props) {
         tags={tags}
         setTags={setTags}
         onChange={setSelectedTags}
-        setCreateTag={setCreatedTag}
-        createTag={createdTag}
+        selectedTags={selectedTags}
       />
       <br />
       {published === "1" && distribution === 0 ? (

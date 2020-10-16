@@ -1,15 +1,4 @@
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  TextField,
-  makeStyles,
-} from "@material-ui/core";
-
-import { useState } from "react";
+import { TextField, makeStyles } from "@material-ui/core";
 
 import PostApi from "../ApiCalls/PostApi";
 
@@ -30,36 +19,19 @@ const useStyles = makeStyles((theme) => ({
 const SelectTags = (props) => {
   const classes = useStyles();
 
-  const [open, toggleOpen] = useState(false);
-
-  const handleClose = () => {
-    props.setCreateTag("");
-    toggleOpen(false);
-  };
-
-  const [dialogValue, setDialogValue] = useState({ name: "" });
-
-  const handleSubmit = (event) => {
-    //event.preventDefault();
-    PostApi(
-      "https://localhost:5001/api/tags",
-      { name: props.createTag },
-      addTags
-    );
-    props.setTags([
-      ...props.tags,
-      { id: props.tags[props.tags.length - 1].id + 1, name: props.createTag },
-    ]);
-    props.setCreateTag("");
-    handleClose();
+  const handleSubmit = (newTag) => {
+    PostApi("https://localhost:5001/api/tags", { name: newTag }, addTags);
+    const newId = props.tags[props.tags.length - 1].id + 1;
+    props.setTags([...props.tags, { id: newId, name: newTag }]);
+    if (!props.selectedTags.includes(newId)) {
+      props.onChange(props.selectedTags + newId + ", ");
+    }
   };
 
   const handleChange = (value) => {
-    let tagId = "";
-    value.map((tag) => {
-      tagId += tag.id + ", ";
-    });
-    props.onChange(tagId);
+    if (!props.selectedTags.includes(value.id)) {
+      props.onChange(props.selectedTags + value.id + ", ");
+    }
   };
 
   const addTags = () => {
@@ -69,35 +41,45 @@ const SelectTags = (props) => {
   return (
     <div style={{ display: "inline-block", width: "50vh" }}>
       <Autocomplete
-        onChange={(event, value) => {
-          if (typeof value === "string") {
-            setTimeout(() => {
-              toggleOpen(true);
-              setDialogValue(value);
-            });
-          } else if (value && value.inputValue) {
-            toggleOpen(true);
-            setDialogValue(value.inputValue);
+        multiple
+        onChange={(event, newValue) => {
+          const lastAdded = newValue[newValue.length - 1];
+          if (lastAdded.name.includes("Add")) {
+            let newTag = lastAdded.name.split('"')[1];
+            handleSubmit(newTag);
+          } else {
+            handleChange(lastAdded);
           }
-          handleChange(value);
         }}
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
 
           if (params.inputValue !== "") {
             filtered.push({
-              inputValue: params.inputValue,
-              title: `Add "${params.inputValue}"`,
+              id: props.tags[props.tags.length - 1].id + 1,
+              name: `Add "${params.inputValue}"`,
             });
           }
 
           return filtered;
         }}
-        multiple
-        id="tags-outlined"
+        id="free-solo-dialog-demo"
         options={props.tags}
-        getOptionLabel={(option) => option.name}
-        defaultValue={[]}
+        getOptionLabel={(option) => {
+          // e.g value selected with enter, right from the input
+          if (typeof option === "string") {
+            return option;
+          }
+          if (option.inputValue) {
+            return option.inputValue;
+          }
+          return option.name;
+        }}
+        selectOnFocus
+        clearOnBlur
+        handleHomeEndKeys
+        renderOption={(option) => option.name}
+        freeSolo
         renderInput={(params) => (
           <TextField
             {...params}
@@ -107,39 +89,6 @@ const SelectTags = (props) => {
           />
         )}
       />
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="form-dialog-title"
-      >
-        <form onSubmit={handleSubmit}>
-          <DialogTitle id="form-dialog-title">Legg til en ny tag</DialogTitle>
-          <DialogContent>
-            <DialogContentText>
-              Fant du ikke en passende tag? Legg til en ny!
-            </DialogContentText>
-            <TextField
-              autoFocus
-              margin="dense"
-              id="name"
-              value={dialogValue.name}
-              onChange={(event) =>
-                setCreateTag({ ...dialogValue, name: event.target.value })
-              }
-              label="title"
-              type="text"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleClose} color="primary">
-              Cancel
-            </Button>
-            <Button type="submit" color="primary">
-              Add
-            </Button>
-          </DialogActions>
-        </form>
-      </Dialog>
     </div>
   );
 };
