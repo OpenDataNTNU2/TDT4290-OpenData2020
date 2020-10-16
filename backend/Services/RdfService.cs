@@ -18,16 +18,18 @@ namespace OpenData.API.Services
     {
         
         private readonly IGraphService _graphService;
+        private readonly ICategoryRepository _categoryRepository;
 
-        public RdfService(IGraphService graphService)
+        public RdfService(IGraphService graphService, ICategoryRepository categoryRepository)
         {
             _graphService = graphService;
+            _categoryRepository = categoryRepository;
         }
 
         // TODO: De fra data.norge.no har flere format på en distribution?? Skal vi støtte det? :o
         // RART: Finner ikke kategori kobling i rdfene
         // Import dataset from link containing rdf schema. 
-        public async Task<Dataset> import(String url)
+        public async Task<Dataset> import(String url, int categoryId)
         {   
             Graph g;
             // Guess the url is actually an url.
@@ -55,10 +57,10 @@ namespace OpenData.API.Services
             }
 
             // Try to parse the dataset and save it in the database
-            Dataset dataset = await _graphService.AddDataset(g);
+            Dataset dataset = await _graphService.AddDataset(g, categoryId);
 
             // return dataset;
-            return new Dataset();
+            return dataset;
         }
 
         // Import categories
@@ -77,13 +79,17 @@ namespace OpenData.API.Services
             List<string> urls = findUrlsFromFellesKatalogen(numberOfDatasets);
             Dataset dataset = new Dataset();
 
+            List<Category> categories = (List<Category>)await _categoryRepository.FlatListAsync();
+            
             // Parse the content in the urls and add them to the database
             foreach (string url in urls)
             {
                 // A small part of the datasets in the fellesdatakatalog does not have a rdf version
                 try 
                 {
-                    dataset = await import(url);
+                    Random rnd = new Random();
+                    int randomCategoryId = categories.ElementAt(rnd.Next(categories.Count)).Id;
+                    dataset = await import(url, randomCategoryId);
                 }
                 catch (Exception ex)
                 {

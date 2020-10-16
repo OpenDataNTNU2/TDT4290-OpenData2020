@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using OpenData.API.Domain.Models;
+using System;
 
 namespace OpenData.API.Resources
 {
@@ -12,6 +13,7 @@ namespace OpenData.API.Resources
         public PublisherResource Publisher { get; set; }
         public IList<DistributionResource> Distributions { get; set; } = new List<DistributionResource>();
         public string PublicationStatus { get; set; }
+        public Nullable<DateTime> DatePlannedPublished {get; set; }
         public string DetailedPublicationStatus { get; set; }
         public string AccessLevel { get; set; }
         public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();

@@ -275,6 +275,75 @@ export default function CreateDataset(props) {
           })}
         </Grid>
       )}
+      /* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis
+      status er "publisering planlagt" */
+      {published === "2" ? (
+        <FormControl variant="outlined" style={{ width: "50vh" }}>
+          <TextField
+            variant="outlined"
+            size="medium"
+            id="dateForPublish"
+            label="Planlagt publisering (valgfri)"
+            type="date"
+            defaultValue={startDate}
+            onChange={(event) => setStartDate(event.target.value)}
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+        </FormControl>
+      ) : null}
+      {published === "1" ? (
+        <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+          <FormLabel component="legend">Tilgangsnivå</FormLabel>
+          <RadioInput
+            id="accessLevel"
+            mainValue={accessLevel}
+            handleChange={setAccessLevel}
+            value={["1", "2", "3"]}
+            label={[
+              "Offentlig",
+              "Begrenset offentlighet",
+              "Unntatt offentlighet",
+            ]}
+            color={["green", "yellow", "red"]}
+          />
+        </FormControl>
+      ) : null}{" "}
+      <br />
+      {published === "1" && distribution === 0 ? (
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => setDistribution(1)}
+        >
+          Legg til distribusjon
+        </Button>
+      ) : null}
+      {distribution === 0 ? null : (
+        <Grid>
+          <br />
+          <h1 style={{ fontWeight: "normal", textAlign: "center" }}>
+            Legg til distribusjon
+          </h1>
+          {Array.from(Array(distribution), (e, i) => {
+            return (
+              <div key={"dist" + i.toString()}>
+                <Divider variant="middle" />
+                <Distribution
+                  title={distTitle}
+                  setTitle={setDistTitle}
+                  uri={distUri}
+                  setUri={setDistUri}
+                  fileFormat={distFileFormat}
+                  setFileFormat={setDistFileFormat}
+                  number={i}
+                />
+              </div>
+            );
+          })}
+        </Grid>
+      )}
       {distribution !== 0 && published === "1" ? (
         <div>
           <Button

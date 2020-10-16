@@ -1,11 +1,12 @@
 import { Paper, Grid, Snackbar } from '@material-ui/core';
 import RequestButtonComp from './RequestButtonComp';
+import DistributionCard from './DistributionCard';
 import { useState } from "react";
 
 import Alert from '@material-ui/lab/Alert';
 
 import {PageRender} from '../api/serverSideProps'
-import PutApi from '../../Components/ApiCalls/PutApi'
+import PatchApi from '../../Components/ApiCalls/PatchApi'
 
 export default function DetailedDataset({data, uri}){
   
@@ -16,15 +17,23 @@ export default function DetailedDataset({data, uri}){
 
   var requestButton;
   var publishedStatus;
+  const distributionCards = [];
+  var cardOrNoCard;
 
   const ifPublished = (pub) => {
     if (pub === "Published"){
       requestButton = null;
-      publishedStatus = "Published";
+      publishedStatus = "Publisert";
+      
+      for(let i = 0; i < data.distributions.length; i++){
+        distributionCards.push(data.distributions[i]);
+      }
+      cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />)});
     }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
-      publishedStatus = "Not published";
+      publishedStatus = "Ikke publisert";
+      cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
     }
   }
 
@@ -41,67 +50,82 @@ export default function DetailedDataset({data, uri}){
       
       // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
       // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
-      const data2 = {
-        "interestCounter" : interestCounter+1,
-        "identifier" : data.identifier,
-        "title": data.title,
-        "description": data.description,
-        "publisherId": data.publisher.id,
-        "publicationStatus": 1,
-        "detailedPublicationStatus": 0,
-        "categoryId": data.category.id,
-      }
+      const data2 = 
+        [
+          {
+            "value": interestCounter+1,
+            "path": "/interestCounter",
+            "op": "replace",
+          }
+        ]
       /*console.log("Interest counter FØR setInterestCounter: "+ interestCounter);
       setInterestCounter(interestCounter + 1);*/
       console.log("Interest counter er nå: "+ data2.interestCounter);
       setOpen(true);
-      PutApi(uri, data2);
+      PatchApi(uri, data2);
       console.log('Requests er oppdatert!');
     }
   
 
     return(
         <Grid
-            container
-            direction="column"
-            alignItems="stretch"
-            style={{ minHeight: '70vh', minWidth: '90vh', padding: '5%', border: '2%'}}
+        container
+        direction = "column"
+        justify = "center"
+        alignItems="center"
+        spacing={2}
         >
             <Grid
-            container
-            spacing={0}
-            direction="row"
-            justify="space-between"
-            alignItems="center"
-            >
-                <h1 style={{fontWeight: "bold", }}><p>{data.title}</p></h1>
-                <p style={{paddingRight: '5%'}}><b>Oppdatert: <i>{'Placeholder'}</i></b></p>
-            </Grid>
-            
-            <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'4%'}}>
-              
+              container
+              direction="column"
+              alignItems="center"
+              xs={6}
+              style={{ minWidth: '100vh'}}
+          >
               <Grid
               container
-              item xs={12} 
+              spacing={3}
               direction="row"
               justify="space-between"
               alignItems="center"
-            >
-                <span><b>Beskrivelse: </b>{data.description}</span>
-                <span>{ifPublished(data.publicationStatus)} {requestButton}</span>
-                <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
-                <Alert elevation={1} severity="info">Interesse for datasett registrert</Alert>
-                </Snackbar>
-
+              >
+                  <h1 style={{fontWeight: "bold", }}><p>{data.title}</p></h1>
+                  <p style={{paddingRight: '5%'}}><b>Oppdatert: <i>{'Placeholder'}</i></b></p>
               </Grid>
-            
-              <p><b>Eier:</b> {data.publisher.name}</p>
-              <p><b>Type:</b>  {data.distributions.map(distributions => { return (distributions.fileFormat) })} </p>
-              <p><b>Publiseringsstatus: </b><i>{ifPublished(data.publicationStatus)}{publishedStatus}</i></p>
-              <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
-              <p><b>Link til datasett: </b> {data.distributions.map(distributions => { return (<a key={distributions.id} href={distributions.uri}> {distributions.uri} </a> )})} </p>
-            
-            </Paper>
+              
+              <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '1%' , paddingBottom:'1%'}}>
+                
+                <Grid
+                container 
+                direction="row"
+                justify="space-between"
+                style={{ minWidth: '100vh'}}
+                alignItems="baseline">
+                  <p><b>Beskrivelse: </b>{data.description}</p>
+                  <span>{ifPublished(data.publicationStatus)}{requestButton}</span>
+                  <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
+                  <Alert elevation={1} severity="info">Interesse for datasett registrert</Alert>
+                  </Snackbar>
+
+                </Grid>
+              
+                <p><b>Eier:</b> {data.publisher.name}</p>
+                <p><b>Publiseringsstatus: </b><i>{publishedStatus}</i></p>
+                <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
+                <p><b>Kategori: </b> {data.category.name}</p>
+              
+              </Paper>
+            </Grid>
+            <Grid 
+              container
+              item xs={5}
+              direction="column"
+              alignItems="stretch"
+              style={{paddingBottom: '20vh', minWidth: '100vh'}}
+              >
+              <h3 style={{fontWeight: "bold", }}><p>Distribusjoner</p></h3>
+              <span>{cardOrNoCard}</span>
+            </Grid>
           </Grid>
     )
 }

@@ -10,7 +10,7 @@ namespace OpenData.API.Domain.Services
 {
     public interface IRdfService
     {
-        Task<Dataset> import(string url);
+        Task<Dataset> import(string url, int categoryId);
         Task<Dataset> populate(int numberOfDatasets);
         Task<Boolean> importCategories(String url);
         void export();

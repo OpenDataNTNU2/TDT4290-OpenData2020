@@ -12,6 +12,11 @@ using OpenData.API.Extensions;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Options;
+using System.Linq;
 
 namespace OpenData.API
 {
@@ -79,6 +84,11 @@ namespace OpenData.API
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
+
+            services.AddControllersWithViews(options =>
+            {
+                options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -101,5 +111,21 @@ namespace OpenData.API
                 endpoints.MapControllers();
             });
         }
+        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
+        {
+            var builder = new ServiceCollection()
+                .AddLogging()
+                .AddMvc()
+                .AddNewtonsoftJson()
+                .Services.BuildServiceProvider();
+
+            return builder
+                .GetRequiredService<IOptions<MvcOptions>>()
+                .Value
+                .InputFormatters
+                .OfType<NewtonsoftJsonPatchInputFormatter>()
+                .First();
+        }
+
     }
 }

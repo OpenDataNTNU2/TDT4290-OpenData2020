@@ -8,6 +8,7 @@ namespace OpenData.API.Resources
         public string Name { get; set; }
         public CategoryResource Broader { get; set; }
         public IList<CategoryResource> Narrower { get; set; } = new List<CategoryResource>();
-        public IList<DatasetResource> Datasets { get; set; } = new List<DatasetResource>();
+        public int DatasetsCount { get; set; }
+        public int CoordinationsCount { get; set; }
     }
 }
