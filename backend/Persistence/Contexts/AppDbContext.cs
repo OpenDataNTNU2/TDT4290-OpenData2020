@@ -16,6 +16,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Category> Categories { get; set; }
         public DbSet<Coordination> Coordinations { get; set; }
         public DbSet<CoordinationTags> CoordinationTags { get; set; }
+        public DbSet<Application> Applications { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -50,6 +51,10 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Dataset>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Dataset>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Dataset>().HasMany(p => p.Distributions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
+            builder.Entity<Dataset>()
+            .HasMany(p => p.Applications)
+            .WithOne(p => p.Dataset)
+            .HasForeignKey(p => p.DatasetId);
 
             builder.Entity<Distribution>().ToTable("Distributions");
             builder.Entity<Distribution>().HasKey(p => p.Id);
@@ -99,6 +104,17 @@ namespace OpenData.API.Persistence.Contexts
             .HasMany(p => p.Datasets)
             .WithOne(p => p.Coordination)
             .HasForeignKey(p => p.CoordinationId);
+            builder.Entity<Coordination>()
+            .HasMany(p => p.Applications)
+            .WithOne(p => p.Coordination)
+            .HasForeignKey(p => p.CoordinationId);
+
+            builder.Entity<Application>().ToTable("Applications");
+            builder.Entity<Application>().HasKey(p => p.Id);
+            builder.Entity<Application>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Application>().Property(p => p.Reason).IsRequired();
+            builder.Entity<Application>().Property(p => p.DatasetId).IsRequired();
+            builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
         }
 
         public void AddTestData()

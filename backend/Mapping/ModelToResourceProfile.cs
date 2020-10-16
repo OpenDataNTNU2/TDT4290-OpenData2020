@@ -43,6 +43,7 @@ namespace OpenData.API.Mapping
             CreateMap<CoordinationTags, CoordinationTagsResource>();
             
             CreateMap<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>();
+            CreateMap<Application, ApplicationResource>();
 
         }
 

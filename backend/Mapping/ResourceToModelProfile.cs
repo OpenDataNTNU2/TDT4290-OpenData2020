@@ -32,6 +32,7 @@ namespace OpenData.API.Mapping
 
             CreateMap<SaveCoordinationResource, Coordination>();
             CreateMap<CoordinationQueryResource, CoordinationQuery>();
+            CreateMap<SaveApplicationResource, Application>();
 
         }
     }

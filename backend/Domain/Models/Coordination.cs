@@ -16,5 +16,6 @@ namespace OpenData.API.Domain.Models
         public Category Category { get; set; }
         public string TagsIds { get; set; }
         public IList<CoordinationTags> CoordinationTags { get; set; } = new List<CoordinationTags>();
+        public IList<Application> Applications { get; set; } = new List<Application>();
     }
 }
