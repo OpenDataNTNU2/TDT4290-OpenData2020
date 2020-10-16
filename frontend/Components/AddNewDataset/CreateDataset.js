@@ -94,7 +94,6 @@ export default function CreateDataset(props) {
     // posts data into the api with datasets 
     // and if successfull runs addDistributions
     const handleChange = async () => {
-        console.log(data)
         PostApi('https://localhost:5001/api/datasets', data, addDistributions)
     }
 

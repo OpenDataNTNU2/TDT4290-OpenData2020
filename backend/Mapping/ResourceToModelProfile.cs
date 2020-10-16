@@ -11,7 +11,6 @@ namespace OpenData.API.Mapping
         {
             CreateMap<SaveDatasetResource, Dataset>()
                 .ForMember(src => src.PublicationStatus, opt => opt.MapFrom(src => (EPublicationStatus)src.PublicationStatus))
-                .ForMember(src => src.DetailedPublicationStatus, opt => opt.MapFrom(src => (EDetailedPublicationStatus)src.DetailedPublicationStatus))
                 .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => (EAccessLevel)src.AccessLevel));
 
 
@@ -32,6 +31,7 @@ namespace OpenData.API.Mapping
 
             CreateMap<SaveCoordinationResource, Coordination>();
             CreateMap<CoordinationQueryResource, CoordinationQuery>();
+            CreateMap<SaveApplicationResource, Application>();
 
         }
     }

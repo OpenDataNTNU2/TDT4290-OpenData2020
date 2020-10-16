@@ -13,8 +13,6 @@ namespace OpenData.API.Mapping
             CreateMap<Dataset, DatasetResource>()
                 .ForMember(src => src.PublicationStatus,
                             opt => opt.MapFrom(src => src.PublicationStatus.ToDescriptionString()))
-                .ForMember(src => src.DetailedPublicationStatus,
-                            opt => opt.MapFrom(src => src.DetailedPublicationStatus.ToDescriptionString()))
                 .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => src.AccessLevel.ToDescriptionString()));
 
             CreateMap<QueryResult<Dataset>, QueryResultResource<DatasetResource>>();
@@ -43,6 +41,7 @@ namespace OpenData.API.Mapping
             CreateMap<CoordinationTags, CoordinationTagsResource>();
             
             CreateMap<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>();
+            CreateMap<Application, ApplicationResource>();
 
         }
 
