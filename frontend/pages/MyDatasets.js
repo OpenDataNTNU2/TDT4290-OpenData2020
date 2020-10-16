@@ -6,7 +6,6 @@ import GetApi from '../Components/ApiCalls/GetApi'
 import DatasetCard from '../Components/DatasetCard'
 import { Paper, Grid } from '@material-ui/core';
 import CoordinationCard from '../Components/CoordinationCard';
-import InterestCard from '../Components/InterestCard';
 
 // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
 
@@ -16,20 +15,9 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
 
     const [coordinations, setCoordinations] = useState([])
     
-    let reqCounter;
-    
     const setMyDatasets = (datasets) => {
             setDatasets(datasets.items)
     }
-
-    const ifPublished = (pub) => {
-        if (pub === "Published"){
-            reqCounter = "Ingen requests på et tilgjengelig datasett, duh";
-        }
-        else {
-            reqCounter = Object.values(datasets).map(data => { return (<InterestCard key = {data.id} interestCounter = {data.interestCounter}/>)});
-        }
-      }
 
     const setMyCoordinations = (coordinations) => {
         let newArr = []
@@ -69,8 +57,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
                 container
                 alignItems="stretch"
                 direction="row">
-                    {ifPublished(datasets.publicationStatus)}
-                    <p>{"Antall forespørsler på dette datasettet: "}{reqCounter}</p>
+                    
                 </Grid>
             </div>
 
