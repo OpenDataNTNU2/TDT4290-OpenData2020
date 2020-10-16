@@ -30,7 +30,11 @@ export default function CreateDataset(props) {
   // accesslevel
   const [accessLevel, setAccessLevel] = useState("0");
 
-  const [startDate, setStartDate] = useState("2020-10-12");
+  const date = new Date();
+  console.log(date);
+
+  const [startDate, setStartDate] = useState(fixDate(date));
+  console.log(startDate);
 
   // variables/states for the distribution
   const [distribution, setDistribution] = useState(0);
@@ -62,6 +66,15 @@ export default function CreateDataset(props) {
     categoryId: selectedCategory,
     tagsIds: selectedTags,
   };
+
+  function fixDate(date) {
+    let dd = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+    let mm = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
+    // month is from 0-11 in javascript but 1-12 in html:)
+    mm = parseInt(mm) + 1;
+    let yyyy = date.getFullYear();
+    return yyyy + "-" + mm + "-" + dd;
+  }
 
   // this is run inside of PostApi in distribution, clear states after added distributions
   const postDistributions = () => {
