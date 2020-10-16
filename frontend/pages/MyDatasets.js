@@ -4,10 +4,9 @@ import { parseCookies } from './api/serverSideProps';
 import { useRouter } from 'next/router'
 import GetApi from '../Components/ApiCalls/GetApi'
 import DatasetCard from '../Components/DatasetCard'
-import Grid from '@material-ui/core/Grid'
+import { Paper, Grid } from '@material-ui/core';
 import CoordinationCard from '../Components/CoordinationCard';
-
-
+import InterestCard from '../Components/InterestCard';
 
 // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
 
@@ -16,11 +15,21 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     const [datasets, setDatasets] = useState([])
 
     const [coordinations, setCoordinations] = useState([])
-
-
+    
+    let reqCounter;
+    
     const setMyDatasets = (datasets) => {
-        setDatasets(datasets.items)
+            setDatasets(datasets.items)
     }
+
+    const ifPublished = (pub) => {
+        if (pub === "Published"){
+            reqCounter = "Ingen requests på et tilgjengelig datasett, duh";
+        }
+        else {
+            reqCounter = Object.values(datasets).map(data => { return (<InterestCard key = {data.id} interestCounter = {data.interestCounter}/>)});
+        }
+      }
 
     const setMyCoordinations = (coordinations) => {
         let newArr = []
@@ -41,12 +50,12 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     const onClick = (path, id) => { router.push(path + id) }
 
     return (
+        <Grid>
         <Grid
             container
             spacing={1}
             direction="column"
-            alignItems="center"
-        >
+            alignItems="center">
             <br />
             {prevLoggedIn ? <h2 style={{ fontWeight: "normal" }}>{JSON.parse(prevLoggedUsername)} sine dataset</h2> : null}
             <br />
@@ -56,6 +65,13 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
                         d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
                     ))
                 }
+                <Grid
+                container
+                alignItems="stretch"
+                direction="row">
+                    {ifPublished(datasets.publicationStatus)}
+                    <p>{"Antall forespørsler på dette datasettet: "}{reqCounter}</p>
+                </Grid>
             </div>
 
             <div style={{ minWidth: "80vh" }}>
@@ -67,6 +83,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
             </div>
 
             {datasets.length === 0 ? <h3 style={{ fontWeight: "normal" }}>Ingen dataset</h3> : null}
+        </Grid>
         </Grid>
     )
 

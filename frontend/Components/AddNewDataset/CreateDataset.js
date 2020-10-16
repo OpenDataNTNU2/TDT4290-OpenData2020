@@ -95,6 +95,7 @@ export default function CreateDataset(props){
     // and if successfull runs addDistributions
     const handleChange = async () => {
         PostApi('https://localhost:5001/api/datasets', data, addDistributions )
+        
     }
 
     // every time prevLoggedIn changes / aka the page refreshes, it fetches tags and categories
