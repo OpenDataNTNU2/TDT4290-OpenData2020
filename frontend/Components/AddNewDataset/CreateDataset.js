@@ -38,17 +38,17 @@ export default function CreateDataset(props) {
   const [distUri, setDistUri] = useState([""]);
   const [distFileFormat, setDistFileFormat] = useState(["1"]);
 
+  // variables/states for tags
+  const [tags, setTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState("");
+  const [newTags, setNewTags] = useState([]);
+
   // variables/states for categories
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
 
   // show / not show snackbar with successfull submit message
   const [open, setOpen] = useState(false);
-
-  // variables/states for tags
-  const [tags, setTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState("");
-  const [newTags, setNewTags] = useState([]);
 
   // data sent to PostApi when posting new dataset
   const data = {
@@ -64,7 +64,7 @@ export default function CreateDataset(props) {
   };
 
   // this is run inside of PostApi in distribution, clear states after added distributions
-  const postDistributions = (dataId) => {
+  const postDistributions = () => {
     setOpen(true);
     clearStates();
   };
@@ -117,7 +117,6 @@ export default function CreateDataset(props) {
   // posts data into the api with datasets
   // and if successfull runs addDistributions
   const handleChange = async () => {
-    console.log("Vi har postet med denne data:", data);
     PostApi("https://localhost:5001/api/datasets", data, addDistributions);
     addTags();
   };
@@ -158,6 +157,7 @@ export default function CreateDataset(props) {
     setDistribution(0);
 
     setSelectedTags("");
+    setNewTags([]);
 
     setSelectedCategory("");
   };
@@ -252,75 +252,6 @@ export default function CreateDataset(props) {
         newTags={newTags}
         setNewTags={setNewTags}
       />
-      <br />
-      {published === "1" && distribution === 0 ? (
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => setDistribution(1)}
-        >
-          Legg til distribusjon
-        </Button>
-      ) : null}
-      {distribution === 0 ? null : (
-        <Grid>
-          <br />
-          <h1 style={{ fontWeight: "normal", textAlign: "center" }}>
-            Legg til distribusjon
-          </h1>
-          {Array.from(Array(distribution), (e, i) => {
-            return (
-              <div key={"dist" + i.toString()}>
-                <Divider variant="middle" />
-                <Distribution
-                  title={distTitle}
-                  setTitle={setDistTitle}
-                  uri={distUri}
-                  setUri={setDistUri}
-                  fileFormat={distFileFormat}
-                  setFileFormat={setDistFileFormat}
-                  number={i}
-                />
-              </div>
-            );
-          })}
-        </Grid>
-      )}
-      /* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis
-      status er "publisering planlagt" */
-      {published === "2" ? (
-        <FormControl variant="outlined" style={{ width: "50vh" }}>
-          <TextField
-            variant="outlined"
-            size="medium"
-            id="dateForPublish"
-            label="Planlagt publisering (valgfri)"
-            type="date"
-            defaultValue={startDate}
-            onChange={(event) => setStartDate(event.target.value)}
-            InputLabelProps={{
-              shrink: true,
-            }}
-          />
-        </FormControl>
-      ) : null}
-      {published === "1" ? (
-        <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
-          <FormLabel component="legend">Tilgangsnivå</FormLabel>
-          <RadioInput
-            id="accessLevel"
-            mainValue={accessLevel}
-            handleChange={setAccessLevel}
-            value={["1", "2", "3"]}
-            label={[
-              "Offentlig",
-              "Begrenset offentlighet",
-              "Unntatt offentlighet",
-            ]}
-            color={["green", "yellow", "red"]}
-          />
-        </FormControl>
-      ) : null}{" "}
       <br />
       {published === "1" && distribution === 0 ? (
         <Button
