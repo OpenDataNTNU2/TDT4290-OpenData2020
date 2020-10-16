@@ -43,7 +43,6 @@ export default function CreateDataset(props) {
   const [tags, setTags] = useState([]);
   const [selectedTags, setSelectedTags] = useState("");
   const [newTags, setNewTags] = useState([]);
-  console.log("tags", tags, "selected", selectedTags, "nye", newTags);
 
   // variables/states for categories
   const [categories, setCategories] = useState([]);
@@ -66,7 +65,7 @@ export default function CreateDataset(props) {
   };
 
   // this is run inside of PostApi in distribution, clear states after added distributions
-  const postDistributions = (dataId) => {
+  const postDistributions = () => {
     setOpen(true);
     clearStates();
   };
@@ -106,11 +105,22 @@ export default function CreateDataset(props) {
     }
   };
 
+  const addTags = () => {
+    newTags.map((tag) =>
+      PostApi(
+        "https://localhost:5001/api/tags",
+        { name: tag.name },
+        postDistributions
+      )
+    );
+  };
+
   // posts data into the api with datasets
   // and if successfull runs addDistributions
   const handleChange = async () => {
     console.log("Vi har postet med denne data:", data);
     PostApi("https://localhost:5001/api/datasets", data, addDistributions);
+    addTags();
   };
 
   // every time prevLoggedIn changes / aka the page refreshes, it fetches tags and categories
