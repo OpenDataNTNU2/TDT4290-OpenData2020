@@ -14,8 +14,8 @@ import SelectTags from '../Forms/SelectTags'
 import GetApi from '../ApiCalls/GetApi'
 import PostApi from '../ApiCalls/PostApi'
 
-export default function CreateDataset(props){
-    
+export default function CreateDataset(props) {
+
 
     // variables/states for "main data", will add more here
     const [title, setTitle] = useState("");
@@ -24,7 +24,7 @@ export default function CreateDataset(props){
 
     // accesslevel
     const [accessLevel, setAccessLevel] = useState("0")
-    
+
     const [startDate, setStartDate] = useState("2020-10-12")
 
     // variables/states for the distribution
@@ -38,7 +38,7 @@ export default function CreateDataset(props){
     const [selectedTags, setSelectedTags] = useState("")
     const [createdTag, setCreatedTag] = useState("")
     const [checkedTags, setCheckedTags] = useState([])
-    
+
     // variables/states for categories
     const [categories, setCategories] = useState([])
     const [selectedCategory, setSelectedCategory] = useState("")
@@ -54,7 +54,7 @@ export default function CreateDataset(props){
         "description": description,
         "publisherId": props.prevPublisherId,
         "publicationStatus": parseInt(published),
-        "detailedPublicationStatus": 0,
+        "detailedPublicationStatus": 1,
         "accessLevel": parseInt(accessLevel),
         "categoryId": selectedCategory,
         "tagsIds": selectedTags
@@ -63,29 +63,29 @@ export default function CreateDataset(props){
     // this is run inside of PostApi in distribution, clear states after added distributions
     const postDistributions = (dataId) => {
         setOpen(true);
-        clearStates(); 
+        clearStates();
     }
 
     const setPublishedStatus = (value) => {
         setPublished(value)
-        if(value === "1") setStartDate("2020-10-12")
-        else if(value === "2") setAccessLevel("0")
-        else{setStartDate("2020-10-12"); setAccessLevel("0")}
+        if (value === "1") setStartDate("2020-10-12")
+        else if (value === "2") setAccessLevel("0")
+        else { setStartDate("2020-10-12"); setAccessLevel("0") }
     }
 
     // this is run inside of PostApi for datasets, adds distributions
     const addDistributions = (dataId) => {
-        for(let i = 0; i < distribution; i++){
+        for (let i = 0; i < distribution; i++) {
             const data2 = {
                 "title": distTitle[i],
                 "uri": distUri[i],
                 "fileFormat": parseInt(distFileFormat[i]),
                 "datasetId": dataId
             }
-            try{ PostApi('https://localhost:5001/api/distributions', data2, postDistributions) }
-            catch(_){ alert("failed to post dataset") }     
+            try { PostApi('https://localhost:5001/api/distributions', data2, postDistributions) }
+            catch (_) { alert("failed to post dataset") }
         }
-        if(distribution===0){
+        if (distribution === 0) {
             setOpen(true)
             clearStates()
         }
@@ -94,14 +94,15 @@ export default function CreateDataset(props){
     // posts data into the api with datasets 
     // and if successfull runs addDistributions
     const handleChange = async () => {
-        PostApi('https://localhost:5001/api/datasets', data, addDistributions )
+        console.log(data)
+        PostApi('https://localhost:5001/api/datasets', data, addDistributions)
     }
 
     // every time prevLoggedIn changes / aka the page refreshes, it fetches tags and categories
     useEffect(() => {
         GetApi('https://localhost:5001/api/tags', setTags)
         GetApi('https://localhost:5001/api/categories', setCategories)
-        
+
         setCheckedTags(tags)
     }, [props.prevLoggedIn])
 
@@ -116,9 +117,9 @@ export default function CreateDataset(props){
 
     // removes last distribution from states when removing a distribution
     const removeDistribution = () => {
-        setDistTitle(distTitle.splice(-1,1))
-        setDistUri(distUri.splice(-1,1))
-        setDistFileFormat(distFileFormat.splice(-1,1))
+        setDistTitle(distTitle.splice(-1, 1))
+        setDistUri(distUri.splice(-1, 1))
+        setDistFileFormat(distFileFormat.splice(-1, 1))
         setDistribution(distribution - 1)
     }
 
@@ -129,7 +130,7 @@ export default function CreateDataset(props){
         setDescription("")
         setPublished("1")
         setPublishedStatus("0")
-        
+
         setDistTitle([""])
         setDistUri([""])
         setDistFileFormat([0])
@@ -141,27 +142,27 @@ export default function CreateDataset(props){
         setSelectedCategory("")
 
     }
-    
-    
-    return(
+
+
+    return (
         <Grid
             container
             spacing={1}
             direction="column"
             alignItems="center"
-            style={{ minHeight: '70vh', minWidth: '60vh', marginTop: "5vh"}}
+            style={{ minHeight: '70vh', minWidth: '60vh', marginTop: "5vh" }}
         >
 
-            <Input 
+            <Input
                 id="title"
                 label="Tittel"
                 value={title}
                 handleChange={setTitle}
                 multiline={false}
-            /><br/>
+            /><br />
 
             {/* Denne er basert på kundemail */}
-            <FormControl component="fieldset" style={{minWidth: "50vh"}}>
+            <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
                 <FormLabel component="legend">Status for publisering</FormLabel>
                 <RadioInput
                     id="publishStatus"
@@ -174,8 +175,8 @@ export default function CreateDataset(props){
             </FormControl><br />
 
             {/* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis status er "publisering planlagt" */}
-            {published === "2" ? 
-                <FormControl variant="outlined" style={{width: "50vh"}}>
+            {published === "2" ?
+                <FormControl variant="outlined" style={{ width: "50vh" }}>
                     <TextField
                         variant="outlined"
                         size="medium"
@@ -185,44 +186,44 @@ export default function CreateDataset(props){
                         defaultValue={startDate}
                         onChange={(event) => setStartDate(event.target.value)}
                         InputLabelProps={{
-                        shrink: true,
+                            shrink: true,
                         }}
                     />
                 </FormControl>
-             : null}
+                : null}
 
-            {published === "1" ? 
-            <FormControl component="fieldset" style={{minWidth: "50vh"}}>
-                <FormLabel component="legend">Tilgangsnivå</FormLabel>
-                <RadioInput 
-                    id="accessLevel"
-                    mainValue={accessLevel}
-                    handleChange={setAccessLevel}
-                    value={["1", "2", "3"]}
-                    label={["Offentlig", "Begrenset offentlighet", "Unntatt offentlighet"]}
-                    color={["green", "yellow", "red"]}
-                />
-            </FormControl>
-            : null } <br />
-            
-            <Input 
+            {published === "1" ?
+                <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+                    <FormLabel component="legend">Tilgangsnivå</FormLabel>
+                    <RadioInput
+                        id="accessLevel"
+                        mainValue={accessLevel}
+                        handleChange={setAccessLevel}
+                        value={["1", "2", "3"]}
+                        label={["Offentlig", "Begrenset offentlighet", "Unntatt offentlighet"]}
+                        color={["green", "yellow", "red"]}
+                    />
+                </FormControl>
+                : null} <br />
+
+            <Input
                 id="description"
                 label="Beskrivelse"
                 value={description}
                 handleChange={setDescription}
                 multiline={true}
-            /><br/>
-        
-            <SelectInput 
+            /><br />
+
+            <SelectInput
                 id="category"
                 mainLabel="Kategori"
                 value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
                 label={["Option 1", "Option 2", "Option 3"]}
-            /><br/>
+            /><br />
 
-            <SelectTags 
+            <SelectTags
                 mainLabel="Tags"
                 tags={tags}
                 setTags={setTags}
@@ -231,38 +232,38 @@ export default function CreateDataset(props){
                 createTag={createdTag}
                 checkedTags={checkedTags}
                 setCheckedTags={setCheckedTags}
-            /><br/>
-            
-            {published === "1" && distribution === 0 ? <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Legg til distribusjon</Button> : null }
-            
+            /><br />
+
+            {published === "1" && distribution === 0 ? <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>Legg til distribusjon</Button> : null}
+
             {distribution === 0 ? null
-            :   <Grid><br/>
-                    <h1 style={{fontWeight: "normal", textAlign: "center"}}>Legg til distribusjon</h1>
+                : <Grid><br />
+                    <h1 style={{ fontWeight: "normal", textAlign: "center" }}>Legg til distribusjon</h1>
                     {Array.from(Array(distribution), (e, i) => {
                         return <div key={"dist" + i.toString()}>
-                                    <Divider variant="middle" />
-                                    <Distribution 
-                                        title={distTitle}
-                                        setTitle={setDistTitle}
-                                        uri={distUri}
-                                        setUri={setDistUri}
-                                        fileFormat={distFileFormat}
-                                        setFileFormat={setDistFileFormat}
-                                        number={i}
-                                    />
-                                </div>
+                            <Divider variant="middle" />
+                            <Distribution
+                                title={distTitle}
+                                setTitle={setDistTitle}
+                                uri={distUri}
+                                setUri={setDistUri}
+                                fileFormat={distFileFormat}
+                                setFileFormat={setDistFileFormat}
+                                number={i}
+                            />
+                        </div>
                     })}
-                </Grid> }
+                </Grid>}
 
             {distribution !== 0 && published === "1" ?
                 <div>
                     <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern</Button>
                     <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>Legg til</Button>
                 </div>
-            :   null }<br/>
-            
-            <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br/>
-            
+                : null}<br />
+
+            <Button variant="contained" color="primary" onClick={handleChange}>Send inn</Button><br />
+
             <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                 <Alert elevation={1} severity="success">Datasett publisert</Alert>
             </Snackbar>

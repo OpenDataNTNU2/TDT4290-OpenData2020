@@ -30,11 +30,14 @@ export default function CreateCoordination(props) {
     // radio knapper for coordination status, true for ongoing and false for coordinated (samordnet)
     const [coordinationStatus, setCoordinationStatus] = useState("true")
 
+    // beskrivelse av hvor i samordningsprossessen man er
+    const [statusDescription, setStatusDescription] = useState("")
+
     // hvis bruker trykker på legg til dataset, kommer datasettene de "eier" inn her
     const [datasets, setDatasets] = useState([])
 
     // dataset to add to coordination
-    const [selectedDataset, setSelectedDataset] = useState({})
+    const [selectedDataset, setSelectedDataset] = useState("")
 
 
     const handleChange = () => {
@@ -45,7 +48,7 @@ export default function CreateCoordination(props) {
             "publisherId": props.publisherId,
             "categoryId": 100,
             "tagsIds": "100",
-            "statusDescription": "string",
+            "statusDescription": coordinationStatus === "true" ? statusDescription : "",
             "underCoordination": coordinationStatus === "false" ? false : true
         }
         if (title !== "" && description !== "") {
@@ -58,21 +61,24 @@ export default function CreateCoordination(props) {
 
     // resetter alle feltene etter en submit, sender også inn coordination til det valgte datasettet hvis datasetOption = "1"
     const submitPostReq = (id) => {
-        const data = 
-        [
-          {
-            "value": id,
-            "path": "/coordinationId",
-            "op": "replace",
-          }
-        ]
+        const data =
+            [
+                {
+                    "value": id,
+                    "path": "/coordinationId",
+                    "op": "replace",
+                }
+            ]
         if (datasetOption === "1") PatchApi('https://localhost:5001/api/datasets/' + selectedDataset.id, data)
         console.log("Posted coordination to: https://localhost:5001/api/coordinations")
-        setOpen(true)
+
+        setOpenSuccessFeedback(true)
         setTitle("")
         setDescription("")
         setDatasetOption("0")
         setCoordinationStatus("true")
+        setStatusDescription("")
+        setSelectedDataset("")
     }
 
     // this should be fetched when clicking the radiobutton for choose existing
@@ -114,7 +120,18 @@ export default function CreateCoordination(props) {
                     label={["Pågående samordning", "Samordnet"]}
                     color={["normal", "normal"]}
                 />
-            </FormControl><br />
+            </FormControl>
+
+            {coordinationStatus === "true" ?
+                <Input
+                    id="coordinationStatusId"
+                    multiline={true}
+                    label="Nåværende status for samordningen"
+                    value={statusDescription}
+                    handleChange={setStatusDescription}
+                />
+                : null
+            }<br />
 
             <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
                 <FormLabel component="legend">Legg til dataset</FormLabel>
@@ -146,7 +163,7 @@ export default function CreateCoordination(props) {
 
                         >
                             {Object.values(datasets.items).map((dataset) => (
-                                <MenuItem value={dataset}>{dataset.title}</MenuItem>
+                                dataset && <MenuItem value={dataset} key={dataset.id}>{dataset.title}</MenuItem>
                             ))}
 
 

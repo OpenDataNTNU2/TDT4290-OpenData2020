@@ -1,5 +1,5 @@
 
-import { Checkbox,  FormControlLabel} from '@material-ui/core';
+import { Checkbox, FormControlLabel } from '@material-ui/core';
 
 import { useState } from 'react'
 
@@ -9,10 +9,10 @@ const CheckboxInput = (props) => {
         props.handleChange(event)
     }
 
-    return (  
-        <FormControlLabel control={<Checkbox value={props.id} onClick={handleChange} name={props.name} />} 
+    return (
+        <FormControlLabel key={props.id} control={<Checkbox value={props.id} onClick={handleChange} name={props.name} />}
             label={props.name} />
-)
+    )
 }
 
 export default CheckboxInput;
