@@ -10,6 +10,7 @@ import PutApi from '../../Components/ApiCalls/PutApi'
 import DatasetCard from '../../Components/DatasetCard'
 import Input from '../../Components/Forms/Input';
 import GetApi from '../../Components/ApiCalls/GetApi';
+import PostApi from '../../Components/ApiCalls/PostApi';
 
 export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
@@ -28,8 +29,23 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
     }, [data])
 
+    const submitApplicationToJoinCoordination = () => {
+        d = {
+            "reason": joinCoordinationReason,
+            "coordinationId": data.id,
+            "datasetId": selectedDataset
+        }
+        PostApi('https://localhost:5001/api/applications', d, successfullySentApplication)
+    }
 
+    const successfullySentApplication = (id) => {
+        console.log("application sent to: https://localhost:5001/api/applications")
+        // reset fields here
+    }
 
+    const approveApplication = () => {
+
+    }
 
 
     const onClick = (path, id) => { router.push(path + id) }
@@ -102,7 +118,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                             >
 
                                 {Object.values(datasets.items).map((dataset) => (
-                                    dataset && <MenuItem value={dataset} key={dataset.id}>{dataset.title}</MenuItem>
+                                    dataset && <MenuItem value={dataset.id} key={dataset.id}>{dataset.title}</MenuItem>
                                 ))}
 
 

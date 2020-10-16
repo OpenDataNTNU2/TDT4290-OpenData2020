@@ -54,7 +54,6 @@ export default function CreateDataset(props) {
         "description": description,
         "publisherId": props.prevPublisherId,
         "publicationStatus": parseInt(published),
-        "detailedPublicationStatus": 1,
         "accessLevel": parseInt(accessLevel),
         "categoryId": selectedCategory,
         "tagsIds": selectedTags
