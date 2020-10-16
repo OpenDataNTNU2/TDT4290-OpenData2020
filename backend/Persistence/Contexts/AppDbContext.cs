@@ -183,7 +183,6 @@ namespace OpenData.API.Persistence.Contexts
                 Description = "Strender i Bodø",
                 PublicationStatus = EPublicationStatus.plannedPublished,
                 DatePlannedPublished = System.DateTime.Parse("2020-10-15"),
-                DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
                 AccessLevel = EAccessLevel.yellow,
                 PublisherId = 101,
                 CategoryId = 100,

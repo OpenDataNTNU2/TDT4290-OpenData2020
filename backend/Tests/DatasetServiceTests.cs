@@ -42,7 +42,6 @@ namespace Tests
                 Identifier = "/api/datasets/104",
                 Description = "Lorem Ipsum",
                 PublicationStatus = EPublicationStatus.notPublished,
-                DetailedPublicationStatus = EDetailedPublicationStatus.underEvaluation,
                 AccessLevel = EAccessLevel.green,
                 PublisherId = 101,
                 CategoryId = 100
@@ -162,7 +161,6 @@ namespace Tests
                 string Description,
                 int PublisherId,
                 EPublicationStatus PublicationStatus,
-                EDetailedPublicationStatus DetailedPublicationStatus,
                 EAccessLevel AccessLevel,
                 string TagsIds,
                 int CategoryId
@@ -175,7 +173,6 @@ namespace Tests
                     d.Description,
                     d.PublisherId,
                     d.PublicationStatus,
-                    d.DetailedPublicationStatus,
                     d.AccessLevel,
                     d.TagsIds,
                     d.CategoryId
