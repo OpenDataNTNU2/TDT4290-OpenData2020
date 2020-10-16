@@ -13,21 +13,22 @@ namespace OpenData.API.Controllers
     [Produces("application/json")]
     [ApiController]
 
-    public class ApplicationController : Controller
+    public class ApplicationsController : Controller
     {
         private readonly IApplicationService _applicationService;
         private readonly IMapper _mapper;
-        public ApplicationController(IApplicationService applicationService, IMapper mapper)
+        public ApplicationsController(IApplicationService applicationService, IMapper mapper)
         {
             _applicationService = applicationService;
             _mapper = mapper;
         }
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ApplicationResource>), 200)]
         public async Task<IEnumerable<ApplicationResource>> GetAllAsync()
         {
-            var Application = await _applicationService.ListAsync();
-            var resources = _mapper.Map<IEnumerable<Application>, IEnumerable<ApplicationResource>>(Application);
+            var application = await _applicationService.ListAsync();
+            var resources = _mapper.Map<IEnumerable<Application>, IEnumerable<ApplicationResource>>(application);
 
             return resources;
         }
@@ -50,14 +51,14 @@ namespace OpenData.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var Application = _mapper.Map<SaveApplicationResource, Application>(resource);
-            var result = await _applicationService.SaveAsync(Application);
+            var application = _mapper.Map<SaveApplicationResource, Application>(resource);
+            var result = await _applicationService.SaveAsync(application);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var ApplicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
-            return Ok(ApplicationResource);
+            var applicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
+            return Ok(applicationResource);
         }
 
         [HttpPut("{id}")]
@@ -68,15 +69,16 @@ namespace OpenData.API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.GetErrorMessages());
 
-            var Application = _mapper.Map<SaveApplicationResource, Application>(resource);
-            var result = await _applicationService.UpdateAsync(id, Application);
+            var application = _mapper.Map<SaveApplicationResource, Application>(resource);
+            var result = await _applicationService.UpdateAsync(id, application);
 
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var ApplicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
-            return Ok(ApplicationResource);
+            var applicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
+            return Ok(applicationResource);
         }
+
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(ApplicationResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -87,8 +89,8 @@ namespace OpenData.API.Controllers
             if (!result.Success)
                 return BadRequest(result.Message);
 
-            var ApplicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
-            return Ok(ApplicationResource);
+            var applicationResource = _mapper.Map<Application, ApplicationResource>(result.Resource);
+            return Ok(applicationResource);
         }
     }
 }
