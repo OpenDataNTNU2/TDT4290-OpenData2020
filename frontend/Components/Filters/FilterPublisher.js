@@ -38,7 +38,8 @@ export default function FilterPublisher(props) {
 
         let pub = []
         for (let i = 0; i < res.length; i++) {
-            pub.push([res[i].name.split(" ")[0], res[i].id, false, i, res[i].datasets.length]);
+            length = props.isDataset ? res[i].datasets.length : res[i].coordinations.length
+            length > 0 ? pub.push([res[i].name.split(" ")[0], res[i].id, false, i, length]) : null
         }
         setPublishers(pub)
         if (res.length < 5) { setShowItems(res.length) }
