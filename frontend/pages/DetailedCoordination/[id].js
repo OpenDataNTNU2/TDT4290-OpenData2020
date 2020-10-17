@@ -15,7 +15,7 @@ import PatchApi from '../../Components/ApiCalls/PatchApi'
 import DeleteApi from '../../Components/ApiCalls/DeleteApi'
 
 export default function DetailedCoordination({ data, uri, prevPublisherId }) {
-
+    const router = useRouter();
     const [coordinationData, setCoordinationData] = useState(data)
 
     // variable for which dataset other municipalities will join with
@@ -167,7 +167,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                             applicationsToJoin && <div style={{ paddingBottom: "5%" }}>
                                 <p><b>Utgiver:</b> {application.dataset.publisher.name}</p>
                                 <p><b>Begrunnelse for forespørsel:</b> {application.reason}</p>
-                                <DatasetCard dataset={application.dataset} onClick={() => onClick('/DetailedDataset/', application.dataset.id)} />
+                                <DatasetCard dataset={application.dataset} pathName="/DetailedCoordination" onClick={() => onClick('/DetailedDataset/', application.dataset.id)} />
                                 <Button variant="contained" color="secondary">Avslå forespørsel</Button>
                                 <Button variant="contained" color="primary" onClick={() => approveApplication(application.dataset.id, application.id)}>Godta forespørsel</Button>
 

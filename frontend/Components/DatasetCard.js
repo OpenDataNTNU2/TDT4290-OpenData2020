@@ -21,8 +21,6 @@ export default function DatasetCard({ dataset, onClick, pathName="" }) {
     }
   };
 
-
-
   const cutString = (string) => {
     if (string != null && string.length > 200) {
       return string.substr(0, 200) + "\u2026";
@@ -48,7 +46,6 @@ export default function DatasetCard({ dataset, onClick, pathName="" }) {
     else if (samordna.underCoordination) {
       return ["#E8E6EF", "Pågående samordning"];
     }
-    return ["#E8E6EF", "Ikke samordna"];
   };
 
   return (
