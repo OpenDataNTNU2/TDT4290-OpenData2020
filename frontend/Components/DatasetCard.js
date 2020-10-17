@@ -21,8 +21,6 @@ export default function DatasetCard({ dataset, onClick, pathName="" }) {
     }
   };
 
-
-
   const cutString = (string) => {
     if (string != null && string.length > 200) {
       return string.substr(0, 200) + "\u2026";
@@ -39,10 +37,18 @@ export default function DatasetCard({ dataset, onClick, pathName="" }) {
 
   const setSamordna = (samordna) => {
     // checking if we have coordination information. If null it is not samordna
-    if (samordna) {
+    if (pathName==="/DetailedCoordination") {
+      return ["#FFFFFF", ""];
+    }
+    if (samordna==null) {
+      return ["#E8E6EF", "Ikke samordna"];
+    }
+    if (!samordna.underCoordination) {
       return ["#EBE4FF", "Samordna"];
     }
-    return ["#E8E6EF", "Ikke samordna"];
+    else if (samordna.underCoordination) {
+      return ["#E8E6EF", "Pågående samordning"];
+    }
   };
 
   return (

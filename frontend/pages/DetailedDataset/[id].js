@@ -117,6 +117,7 @@ export default function DetailedDataset({data, uri}){
                 <p><b>Publiseringsstatus: </b><i>{publishedStatus}</i></p>
                 <p><b>Dato publisert: </b> <i>{'Placeholder'}</i></p>
                 <p><b>Kategori: </b> {data.category.name}</p>
+                {data.coordination && <p><b>Samordningsstatus: </b> {data.coordination.underCoordination ? "Pågående samordning - " + data.coordination.statusDescription : "Samordnet"}</p>}
               
               </Paper>
             </Grid>
