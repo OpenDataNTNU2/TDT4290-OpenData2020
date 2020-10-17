@@ -50,7 +50,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
             <div style={{ minWidth: "80vh" }}>
                 {
                     Object.values(datasets).map(d => (
-                        d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
+                        d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} pathName="/MyDatasets"/>
                     ))
                 }
                 <Grid
