@@ -38,8 +38,14 @@ export default function DatasetCard({ dataset, onClick }) {
 
   const setSamordna = (samordna) => {
     // checking if we have coordination information. If null it is not samordna
-    if (samordna) {
+    if (samordna==null) {
+      return ["#E8E6EF", "Ikke samordna"];
+    }
+    if (!samordna.underCoordination) {
       return ["#EBE4FF", "Samordna"];
+    }
+    else if (samordna.underCoordination) {
+      return ["#E8E6EF", "Pågående samordning"];
     }
     return ["#E8E6EF", "Ikke samordna"];
   };
