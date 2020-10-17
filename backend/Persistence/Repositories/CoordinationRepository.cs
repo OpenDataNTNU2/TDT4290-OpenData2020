@@ -122,6 +122,7 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Coordinations
                                     .Include(c => c.Datasets).ThenInclude(c => c.Publisher)
                                     .Include(c => c.Datasets).ThenInclude(c => c.Distributions)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Coordination)
                                     .Include(c => c.Publisher)
                                     .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Publisher)     
                                     .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Distributions) 
