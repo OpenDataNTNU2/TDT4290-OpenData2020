@@ -83,8 +83,8 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             {/* Tags og overskrift */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 {data.underCoordination ?
-                    <Chip label="Pågående samordning" size="medium" color="primary" style={{ width: "10vh" }} />
-                    : <Chip label="Samordnet" size="medium" color="primary" style={{ width: "10vh" }} />
+                    <Chip label="Pågående samordning" color="primary" style={{ width: "auto"}} />
+                    : <Chip label="Samordnet" color="primary" style={{ width: "auto"}} />
                 }
                 <h1 style={{ fontWeight: "normal" }}>{data.title}</h1>
             </Grid>
