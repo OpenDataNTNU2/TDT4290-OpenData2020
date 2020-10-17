@@ -37,6 +37,9 @@ export default function DatasetCard({ dataset, onClick, pathName="" }) {
 
   const setSamordna = (samordna) => {
     // checking if we have coordination information. If null it is not samordna
+    if (pathName==="/DetailedCoordination") {
+      return ["#FFFFFF", ""];
+    }
     if (samordna==null) {
       return ["#E8E6EF", "Ikke samordna"];
     }

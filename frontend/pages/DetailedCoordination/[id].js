@@ -109,7 +109,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                 <p>Følgende datasett er med i samordningen</p><br />
 
                 {coordinationData.datasets && Object.values(coordinationData.datasets).map(d => (
-                    d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
+                    d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} pathName="/DetailedCoordination" />
                 ))}
 
             </Grid>
@@ -167,7 +167,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                             applicationsToJoin && <div style={{ paddingBottom: "5%" }}>
                                 <p><b>Utgiver:</b> {application.dataset.publisher.name}</p>
                                 <p><b>Begrunnelse for forespørsel:</b> {application.reason}</p>
-                                <DatasetCard dataset={application.dataset} pathName="/DetailedCoordination" onClick={() => onClick('/DetailedDataset/', application.dataset.id)} />
+                                <DatasetCard dataset={application.dataset} onClick={() => onClick('/DetailedDataset/', application.dataset.id)} pathName="/DetailedCoordination" />
                                 <Button variant="contained" color="secondary">Avslå forespørsel</Button>
                                 <Button variant="contained" color="primary" onClick={() => approveApplication(application.dataset.id, application.id)}>Godta forespørsel</Button>
 
