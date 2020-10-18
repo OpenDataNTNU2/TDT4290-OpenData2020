@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 import Distribution from "../Forms/Distribution";
 import Input from "../Forms/Input";
 import RadioInput from "../Forms/RadioInput";
-import SelectInput from "../Forms/SelectInput";
+import SelectCategory from "../Forms/SelectCategory";
 import SelectTags from "../Forms/SelectTags";
 
 import GetApi from "../ApiCalls/GetApi";
@@ -172,15 +172,6 @@ export default function CreateDataset(props) {
         setSelectedCategory("");
     };
 
-    const getNarrowerCategories = (categories) => {
-        let result = [];
-        categories.map(cat => {
-            result.push(cat)
-            result.push.apply(result, getNarrowerCategories(cat.narrower))
-        });
-        return result;
-    }
-
     return (
         <Grid
             container
@@ -253,10 +244,10 @@ export default function CreateDataset(props) {
                 multiline={true}
             />
             <br />
-            <SelectInput
+            <SelectCategory
                 id="category"
                 mainLabel="Kategori"
-                value={getNarrowerCategories(categories)}
+                value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
                 label={["Option 1", "Option 2", "Option 3"]}
