@@ -63,47 +63,47 @@ export default function FilterCategory(props) {
     // if that is true, it runs this function again, but with the narrower list instead. 
 
     const items = (cats) => cats.map((category) => (
-        
+
         props.isDataset ? category.datasetsCount > 0 &&
-        <div>
-            {
-            category.narrower.length === 0 ?
-                <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
-                : <div>
-                    <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
-                    {!shownSubItems[category.id] ?
-                        <ExpandMoreIcon key={"More" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
-                        : <ExpandLessIcon key={"Less" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
-                    }
+            <div>
+                {
+                    category.narrower.length === 0 ?
+                        <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
+                        : <div>
+                            <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
+                            {!shownSubItems[category.id] ?
+                                <ExpandMoreIcon key={"More" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
+                                : <ExpandLessIcon key={"Less" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
+                            }
 
-                    <div style={{ marginLeft: "2vh" }} hidden={!shownSubItems[category.id]} id={category.id} >
-                        {items(category.narrower)}
-                    </div>
+                            <div style={{ marginLeft: "2vh" }} hidden={!shownSubItems[category.id]} id={category.id} >
+                                {items(category.narrower)}
+                            </div>
 
-                </div>
-            }
-        </div> : category.coordinationsCount > 0 &&
-        <div>
-        {
-        category.narrower.length === 0 ?
-            <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
-            : <div>
-                <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
-                {!shownSubItems[category.id] ?
-                    <ExpandMoreIcon key={"More" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
-                    : <ExpandLessIcon key={"Less" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
+                        </div>
                 }
+            </div> : category.coordinationsCount > 0 &&
+            <div>
+                {
+                    category.narrower.length === 0 ?
+                        <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
+                        : <div>
+                            <CheckboxInput key={category.id} handleChange={handleChange} id={category.id} name={category.name + " (" + (props.isDataset ? category.datasetsCount : category.coordinationsCount) + ")"} />
+                            {!shownSubItems[category.id] ?
+                                <ExpandMoreIcon key={"More" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
+                                : <ExpandLessIcon key={"Less" + toString(category.id)} style={{ cursor: 'pointer' }} fontSize="small" onClick={() => toggleShownSubItems(category.id)} />
+                            }
 
-                <div style={{ marginLeft: "2vh" }} hidden={!shownSubItems[category.id]} id={category.id} >
-                    {items(category.narrower)}
-                </div>
+                            <div style={{ marginLeft: "2vh" }} hidden={!shownSubItems[category.id]} id={category.id} >
+                                {items(category.narrower)}
+                            </div>
 
+                        </div>
+                }
             </div>
-        }
-        </div>
     ))
-    
-    
+
+
 
     return (
         <div>

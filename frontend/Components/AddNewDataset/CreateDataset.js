@@ -6,6 +6,9 @@ import {
     Divider,
     Snackbar,
     TextField,
+    InputLabel,
+    Select,
+    MenuItem
 } from "@material-ui/core";
 import Alert from "@material-ui/lab/Alert";
 
@@ -51,6 +54,12 @@ export default function CreateDataset(props) {
 
     // show / not show snackbar with successfull submit message
     const [open, setOpen] = useState(false);
+
+    // variables/states for sending request to join coordination
+    const [wantToRequestCoordination, setWantToRequestCoordination] = useState("1")
+    const [joinCoordinationReason, setJoinCoordinationReason] = useState("")
+    const [coordinations, setCoordinations] = useState([])
+    const [selectedCoordination, setSelectedCoordination] = useState("")
 
     // data sent to PostApi when posting new dataset
     const data = {
@@ -108,6 +117,10 @@ export default function CreateDataset(props) {
                 alert("failed to post dataset");
             }
         }
+        if (published === "1" && accessLevel === "1") {
+            submitApplicationToJoinCoordination(dataId)
+        }
+
         if (distribution === 0) {
             setOpen(true);
             clearStates();
@@ -129,13 +142,31 @@ export default function CreateDataset(props) {
     const handleChange = async () => {
         PostApi("https://localhost:5001/api/datasets", data, addDistributions);
         addTags();
+
     };
 
-    // every time prevLoggedIn changes / aka the page refreshes, it fetches tags and categories
+    // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
     useEffect(() => {
         GetApi("https://localhost:5001/api/tags", setTags);
         GetApi("https://localhost:5001/api/categories", setCategories);
+        GetApi("https://localhost:5001/api/coordinations", setCoordinations);
     }, [props.prevLoggedIn]);
+
+    const submitApplicationToJoinCoordination = (id) => {
+        let d = {
+            "reason": joinCoordinationReason,
+            "coordinationId": selectedCoordination,
+            "datasetId": id
+        }
+        PostApi('https://localhost:5001/api/applications', d, successfullySentApplication)
+    }
+
+    const successfullySentApplication = (id) => {
+        console.log("application sent to: https://localhost:5001/api/applications")
+        setSelectedCoordination("")
+        setJoinCoordinationReason("")
+    }
+
 
     // updates the distribution states when adding more distributions
     const addNewMoreDistributions = () => {
@@ -263,6 +294,56 @@ export default function CreateDataset(props) {
                 setNewTags={setNewTags}
             />
             <br />
+            {published === "1" && accessLevel === "1" ?
+                <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+                    <FormLabel component="legend">Forespørsel om å bli med i samordning</FormLabel>
+                    <RadioInput
+                        id="joinCoordination"
+                        mainValue={wantToRequestCoordination}
+                        handleChange={setWantToRequestCoordination}
+                        value={["1", "2"]}
+                        label={[
+                            "Ikke bli med i samordning", "Bli med i en samordning"
+                        ]}
+                        color={["normal", "normal"]}
+                    />
+                </FormControl>
+                : null}
+            {/* Send forespørsel om å bli med i samordningen */}
+
+
+
+            {wantToRequestCoordination === "2" && published === "1" && accessLevel === "1" ?
+                <FormControl variant="outlined" style={{ width: "50vh" }}>
+                    <InputLabel id="requestToJoinCoordinationLabel">Velg samordning</InputLabel>
+                    <Select
+                        labelId="requestToJoinCoordinationLabelID"
+                        label="Velg dataset"
+                        id="requestToJoinCoordinationID"
+                        value={selectedCoordination}
+                        onChange={(event) => setSelectedCoordination(event.target.value)}
+                    >
+
+                        {coordinations.items && Object.values(coordinations.items).map((coordination) => (
+                            coordination.publisher.id !== parseInt(props.prevPublisherId) ? <MenuItem value={coordination.id} key={coordination.id}>{coordination.title} - {coordination.publisher.name}</MenuItem> : null
+                        ))}
+
+
+                    </Select>
+                </FormControl>
+                : null}<br />
+
+
+            {wantToRequestCoordination === "2" && published === "1" && accessLevel === "1" ?
+                <Input
+                    id="joinCoordinationId"
+                    multiline={true}
+                    label="Begrunnelse for forespørsel"
+                    value={joinCoordinationReason}
+                    handleChange={setJoinCoordinationReason}
+                />
+                : null}<br />
+
             {published === "1" && distribution === 0 ? (
                 <Button
                     variant="contained"
@@ -277,7 +358,7 @@ export default function CreateDataset(props) {
                     <br />
                     <h1 style={{ fontWeight: "normal", textAlign: "center" }}>
                         Legg til distribusjon
-            </h1>
+                    </h1>
                     {Array.from(Array(distribution), (e, i) => {
                         return (
                             <div key={"dist" + i.toString()}>
@@ -317,7 +398,7 @@ export default function CreateDataset(props) {
             <br />
             <Button variant="contained" color="primary" onClick={handleChange}>
                 Send inn
-        </Button>
+            </Button>
             <br />
             <Snackbar
                 open={open}
