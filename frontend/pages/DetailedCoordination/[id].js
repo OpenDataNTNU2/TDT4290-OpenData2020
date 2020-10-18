@@ -1,4 +1,4 @@
-import { Paper, Grid, Snackbar, Divider, Chip, Select, FormControl, InputLabel, MenuItem, Button } from '@material-ui/core';
+import { Paper, Grid, Snackbar, Divider, Chip, Select, FormControl, InputLabel, MenuItem, Button, Link } from '@material-ui/core';
 import { useEffect, useState } from "react";
 import { useRouter } from 'next/router'
 
@@ -37,7 +37,10 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             GetApi('https://localhost:5001/api/datasets?PublisherIds=' + JSON.parse(prevPublisherId), setDatasets)
         }
 
+
     }, [data])
+
+
 
     const submitApplicationToJoinCoordination = (id) => {
         let d = {
@@ -83,10 +86,11 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             {/* Tags og overskrift */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 {data.underCoordination ?
-                    <Chip label="Pågående samordning" color="primary" style={{ width: "auto"}} />
-                    : <Chip label="Samordnet" color="primary" style={{ width: "auto"}} />
+                    <Chip label="Pågående samordning" style={{ width: "auto" }} />
+                    : <Chip label="Samordnet" color="primary" style={{ width: "auto" }} />
                 }
                 <h1 style={{ fontWeight: "normal" }}>{data.title}</h1>
+                {data.underCoordination ? <p><b>Status: </b><i>{data.statusDescription}</i></p> : null}
             </Grid>
 
 
@@ -97,7 +101,19 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                 <p><b>Beskrivelse: </b>{data.description}</p>
                 <p><b>Utgiver av samordning: </b>{data.publisher.name}</p>
                 <p><b>Deltakere i samordningen: </b>{coordinationData.datasets.map((dataset) => dataset && (dataset.publisher.name) + ", ")}</p>
-                <br /><p>Legg til mer info i samordningen og display det her...</p>
+                <br /><p><b>Link til data:</b></p>
+
+                {coordinationData.datasets.map((dataset) => (
+                    <ul style={{ listStyleType: "none" }}>
+                        <p><strong>{dataset.publisher.name}</strong>:</p>
+                        {dataset.distributions[0] ?
+                            <ul>
+                                {dataset.distributions.map((distribution) => (<li><Link target="_blank" rel="noopener" href={'http://' + distribution.uri}><i>{distribution.uri}</i></Link></li>))}</ul>
+
+                            : <p><strong>{dataset.publisher.name}</strong> : <i>mangler uri</i></p>
+                        }
+                    </ul>
+                ))}
 
             </Grid>
 

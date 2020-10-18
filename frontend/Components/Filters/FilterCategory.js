@@ -62,8 +62,7 @@ export default function FilterCategory(props) {
     // then checks if an element in the list have elements in the narrower field
     // if that is true, it runs this function again, but with the narrower list instead. 
 
-    const items = (cats) => cats.map((category) => (
-        
+    const items = (cats) => cats.map((category) => (       
         (props.isDataset ? category.datasetsCount : category.coordinationsCount) > 0 &&
         <div>
             {
@@ -84,8 +83,8 @@ export default function FilterCategory(props) {
             }
         </div>
     ))
-    
-    
+
+
 
     return (
         <div>
