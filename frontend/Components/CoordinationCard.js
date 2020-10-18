@@ -16,11 +16,11 @@ export default function CoordinationCard(props) {
         return '#FFBFC3'
     }
 
-    const setSamordnaColor = (samordna) => {
-        if (samordna === "Samordna") {
+    const setSamordnaColor = (underCoordination) => {
+        if (!underCoordination) {
             return '#aba4eb'
         }
-        return '#E8E6EF'
+        return '#cccccc'
     }
 
 
@@ -34,27 +34,21 @@ export default function CoordinationCard(props) {
                         <p>{cutString(props.coordination.description)}</p>
                     </Grid>
                     <Grid item xs={2} style={{ margin: '1em' }}>
-                        <Paper elevation={0}
-                            style={{
-                                backgroundColor: setPublishedColor("Published"),
-                                textAlign: 'center',
-                                padding: '3%',
-                                marginBottom: '3%'
-                            }}>
-                            Placeholder
-                        </Paper>
+
                         <Paper elevation={0}
                             style={
                                 {//setSamordnaColor skal ikke hardkodes, venter på backend-verdi
-                                    backgroundColor: setSamordnaColor("Samordna"),
+                                    backgroundColor: setSamordnaColor(props.coordination.underCoordination),
                                     textAlign: 'center',
                                     padding: '3%'
                                 }}>
-                            Samordna
-                            </Paper>
+                            {props.coordination.underCoordination ? "Under samordning" : "Samordnet"}
+                        </Paper>
                     </Grid>
                     <Grid container direction="row">
-                        <p><strong>Deltagende kommuner:</strong>{props.coordination.datasets.map((dataset) => (dataset.publisher.name))}</p>
+                        <p><strong>Deltagende kommuner:</strong>{props.coordination.datasets.length !== 0 ?
+                            props.coordination.datasets.map((dataset) => (dataset.publisher.name + ", "))
+                            : <i> Ingen deltagende kommuner</i>}</p>
                     </Grid>
                 </Grid>
             </Paper>
