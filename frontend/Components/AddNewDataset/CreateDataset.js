@@ -172,6 +172,15 @@ export default function CreateDataset(props) {
         setSelectedCategory("");
     };
 
+    const getNarrowerCategories = (categories) => {
+        let result = [];
+        categories.map(cat => {
+            result.push(cat)
+            result.push.apply(result, getNarrowerCategories(cat.narrower))
+        });
+        return result;
+    }
+
     return (
         <Grid
             container
@@ -246,8 +255,8 @@ export default function CreateDataset(props) {
             <br />
             <SelectInput
                 id="category"
-                mainLabel="Kategori: Not relevant yet"
-                value={categories}
+                mainLabel="Kategori"
+                value={getNarrowerCategories(categories)}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
                 label={["Option 1", "Option 2", "Option 3"]}
