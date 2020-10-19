@@ -133,8 +133,7 @@ export default function CreateDataset(props) {
     newTags.map((tag) =>
       PostApi(
         "https://localhost:5001/api/tags",
-        { name: tag.name },
-        postDistributions
+        { name: tag.name }
       )
     );
   };
@@ -144,9 +143,9 @@ export default function CreateDataset(props) {
   const handleChange = async () => {
     console.log("data: " + data);
     console.log(data);
+    addTags();
     PostApi("https://localhost:5001/api/datasets", data, addDistributions);
 
-    addTags();
   };
 
   // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
