@@ -8,6 +8,8 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import CheckboxInput from '../Forms/CheckboxInput'
 
+import styles from "../../styles/Filters.module.css";
+
 
 // NB: de ulike filter funksjonene er veldig like atm, dette blir kanskje endret, mtp at vi skal ha under kategorier og slikt
 // så ikke slå de sammen. Vi tar heller en vurdering på det senere.
@@ -106,10 +108,10 @@ export default function FilterCategory(props) {
 
 
     return (
-        <div>
+        <div className={styles.filterContainer}  >
             <FormControl>
-                <FormLabel>Kategori</FormLabel>
-                <FormGroup >
+                <h4 className={styles.filterTitle} >Kategori</h4>
+                <FormGroup className={styles.checkboxesContainer} >
                     <br />
 
                     {items(categories.slice(0, showItems))}

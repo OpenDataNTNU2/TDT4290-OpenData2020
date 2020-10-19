@@ -6,6 +6,8 @@ import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import GetApi from '../ApiCalls/GetApi'
 
+import styles from "../../styles/Filters.module.css";
+
 export default function FilterPublisher(props) {
 
     const [addedFilters, setAddedFilters] = useState([])
@@ -52,10 +54,10 @@ export default function FilterPublisher(props) {
 
 
     return (
-        <div>
+        <div className={styles.filterContainer} >
             <FormControl>
-                <FormLabel>Kommune</FormLabel>
-                <FormGroup >
+            <h4 className={styles.filterTitle} >Kommune</h4>
+                <FormGroup className={styles.checkboxesContainer} >
                     <br />
                     {items}
                     {showItems === 5

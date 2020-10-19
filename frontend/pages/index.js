@@ -110,15 +110,9 @@ export default function Home() {
         justify='space-evenly'
       >
         <Grid item xs={2} >
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
             <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} isDataset={url.includes("dataset")} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
-          </Paper>
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")}/>
-          </Paper>
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterTag />
-          </Paper>
         </Grid>
         <Grid
           item
