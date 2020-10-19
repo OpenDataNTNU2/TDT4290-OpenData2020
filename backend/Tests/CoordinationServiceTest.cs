@@ -37,7 +37,9 @@ namespace Tests
                 Id = 103,
                 Title = "Samordning av museumsdata",
                 Description = "Dette er en samordning av data rundt museumer i kommunene: Bodø og Trondheim",
-                PublisherId = 100
+                PublisherId = 100,
+                CategoryId = 100,
+                UnderCoordination = false
             };
         }
         [TearDown]
@@ -57,6 +59,66 @@ namespace Tests
 
             Res = await CS.FindByIdAsync(5);
             Assert.IsFalse(Res.Success, "Object is returned for an ID that should not exist");
+        }
+
+        [Test]
+        public async Task TestSave()
+        {
+            Res = await CS.FindByIdAsync(ExampleV.Id);
+            Assert.IsFalse(Res.Success, "Object ID is found before the object is saved");
+
+            Res = await CS.SaveAsync(ExampleV);
+            Assert.IsTrue(Res.Success, "Error when trying to save a valid object");
+
+            Res = await CS.FindByIdAsync(ExampleV.Id);
+            Assert.IsTrue(Res.Success, "Object was not found after being saved");
+            Assert.AreEqual(ExampleV, Res.Resource, "Object returned on our examples ID is the wrong object");
+
+            Res = await CS.FindByIdAsync(5);
+            Assert.IsFalse(Res.Success, "Object is returned for an ID that should not exist");
+
+            Coordination exampleI = new Coordination
+            {
+                Id = 1,
+                Title = "Kjør",
+                PublisherId = 100
+            };
+
+            Res = await CS.FindByIdAsync(exampleI.Id);
+            Assert.IsFalse(Res.Success, "Object ID is found before the object is saved");
+
+            Res = await CS.SaveAsync(exampleI);
+            Assert.IsFalse(Res.Success, "Object was saved even though it should not be");
+
+            Res = await CS.FindByIdAsync(exampleI.Id);
+            Assert.IsFalse(Res.Success, "Object is returned for an ID that should not exist");
+        }
+
+        #pragma warning restore CS1998
+
+        private
+            (
+                int Id,
+                string Title,
+                string Description,
+                int PublisherId,
+                bool UnderCoordination,
+                string StatusDescription,
+                int CategoryId,
+                string TagsIds
+            )
+            CoordinationSnapshot(Coordination c)
+        {
+            return (
+                   c.Id,
+                   c.Title,
+                   c.Description,
+                   c.PublisherId,
+                   c.UnderCoordination,
+                   c.StatusDescription,
+                   c.CategoryId,
+                   c.TagsIds
+                   );
         }
     }
 }
