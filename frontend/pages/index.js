@@ -45,8 +45,8 @@ export default function Home() {
 
   const [loader, setLoader] = useState('Loading...')
 
-
   const getDatasets = async (p = page, c = false, s = searchUrl) => {
+    if (s !== searchUrl) setSearchUrl(s)
     if (changedFilter) setPage(1)
     if (!hasMore && c) { p = 1; setPage(1); setHasMore(true) }
     try {
@@ -85,6 +85,7 @@ export default function Home() {
     if ((page) * 10 > totalItems && totalItems !== 1 && hasMore) {
       setHasMore(false)
     }
+
     console.log(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items)
   }
 
@@ -111,10 +112,10 @@ export default function Home() {
       >
         <Grid item xs={2} >
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
+            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} isDataset={url.includes("dataset")} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
-            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} dataset={url.includes("dataset")}/>
+            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")} />
           </Paper>
           <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
             <FilterTag />

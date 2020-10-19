@@ -20,8 +20,6 @@ namespace OpenData.API.Resources
         public int PublicationStatus { get; set; }
         public Nullable<DateTime> DatePlannedPublished {get; set; }
         [Range(1, 3)]
-        public int DetailedPublicationStatus { get; set; }
-        [Range(1, 3)]
         public int AccessLevel { get; set; }
         public string TagsIds { get; set; }
         [Required]
