@@ -6,8 +6,9 @@ import GetApi from '../ApiCalls/GetApi'
 import PutApi from '../ApiCalls/PutApi';
 import PatchApi from '../ApiCalls/PatchApi';
 
-import SelectInput from '../Forms/SelectInput'
 import Input from '../Forms/Input'
+import SelectCategory from "../Forms/SelectCategory";
+import SelectTags from "../Forms/SelectTags";
 
 import { useState, useEffect } from 'react'
 import RadioInput from '../Forms/RadioInput';
@@ -39,6 +40,15 @@ export default function CreateCoordination(props) {
     // dataset to add to coordination
     const [selectedDataset, setSelectedDataset] = useState("")
 
+    // variables/states for categories
+    const [categories, setCategories] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("");
+
+    // variables/states for tags
+    const [tags, setTags] = useState([]);
+    const [selectedTags, setSelectedTags] = useState("");
+    const [newTags, setNewTags] = useState([]);
+
 
     const handleChange = () => {
 
@@ -46,8 +56,8 @@ export default function CreateCoordination(props) {
             "title": title,
             "description": description,
             "publisherId": props.publisherId,
-            "categoryId": 100,
-            "tagsIds": "100",
+            "categoryId": selectedCategory,
+            "tagsIds": selectedTags,
             "statusDescription": coordinationStatus === "true" ? statusDescription : "",
             "underCoordination": coordinationStatus === "false" ? false : true
         }
@@ -57,6 +67,7 @@ export default function CreateCoordination(props) {
         else {
             setOpenFailedFeedback(true)
         }
+        addTags();
     }
 
     // resetter alle feltene etter en submit, sender også inn coordination til det valgte datasettet hvis datasetOption = "1"
@@ -81,9 +92,20 @@ export default function CreateCoordination(props) {
         setSelectedDataset("")
     }
 
+    const addTags = () => {
+        newTags.map((tag) =>
+            PostApi(
+                "https://localhost:5001/api/tags",
+                { name: tag.name },
+            )
+        );
+    };
+
     // this should be fetched when clicking the radiobutton for choose existing
     useEffect(() => {
         GetApi('https://localhost:5001/api/datasets?PublisherIds=' + props.publisherId, setDatasets)
+        GetApi('https://localhost:5001/api/categories', setCategories)
+        GetApi("https://localhost:5001/api/tags", setTags);
     }, [props])
 
     return (
@@ -171,8 +193,24 @@ export default function CreateCoordination(props) {
                     </FormControl>
                 </div>
                 : null
-            }
-            <br />
+            }<br />
+            <SelectCategory 
+                id="category"
+                mainLabel="Kategori"
+                value={categories}
+                setSelectedCategory={setSelectedCategory}
+                selected={selectedCategory}
+            /><br/>
+            <SelectTags
+                mainLabel="Tags"
+                tags={tags}
+                setTags={setTags}
+                onChange={setSelectedTags}
+                selectedTags={selectedTags}
+                newTags={newTags}
+                setNewTags={setNewTags}
+            />
+            <br/>
             <Button variant="contained" color="primary" onClick={handleChange}>Opprett</Button>
 
             <Snackbar open={openFailedFeedback} autoHideDuration={5000} onClose={() => setOpenFailedFeedback(false)}>
