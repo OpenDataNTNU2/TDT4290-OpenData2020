@@ -1,7 +1,5 @@
 import { TextField, makeStyles } from "@material-ui/core";
 
-import PostApi from "../ApiCalls/PostApi";
-
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
 
 const filter = createFilterOptions();
@@ -20,27 +18,41 @@ const SelectTags = (props) => {
   const classes = useStyles();
 
   const handleSubmit = (newTag) => {
-    if (!props.tags[newTag.newTagId] || !props.newTags[newTag.newTagName]) {
+    console.log(newTag);
+    if (
+      // this check does not work
+      !props.newTags.includes(newTag.newTagId) ||
+      !props.newTags.includes(newTag.newTagName)
+    ) {
       props.setNewTags([
         ...props.newTags,
         { id: newTag.newTagId, name: newTag.newTagName },
       ]);
-      props.setTags([
-        ...props.tags,
-        { id: newTag.newTagId, name: newTag.newTagName },
-      ]);
+    } else {
+      console.log("Duplikat id eller navn");
     }
   };
 
   const removeNewTag = (idList) => {
+    let removedId = 0;
     props.newTags.map((tagObject) => {
       if (!idList.includes(tagObject.id) || !idList) {
         props.setNewTags(
           props.newTags.filter((tag) => tag.id !== tagObject.id)
         );
-        props.setTags(props.tags.filter((tag) => tag.id !== tagObject.id));
+        removedId = tagObject.id;
       }
     });
+    // method to update the ids of the not removed tags but it doesnt really work:()
+    /* if (
+      removedId !== 0 &&
+      removedId < props.newTags[props.newTags?.length - 1]?.id
+    ) {
+      props.newTags.map((tagObject) => {
+        if (tagObject.id > removedId) {
+          tagObject.id -= 1;
+        }
+      });  }*/
   };
 
   const handleChange = (value) => {
@@ -73,10 +85,13 @@ const SelectTags = (props) => {
         filterOptions={(options, params) => {
           const filtered = filter(options, params);
 
+          let tid =
+            props.tags[props.tags.length - 1].id + props.newTags.length + 1;
+
           if (params.inputValue !== "") {
             filtered.push({
               inputValue: params.inputValue,
-              id: props.tags[props.tags.length - 1].id + 1,
+              id: tid,
               name: `Legg til "${params.inputValue}" som en ny tag`,
             });
           }
