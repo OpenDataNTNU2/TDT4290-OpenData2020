@@ -94,6 +94,30 @@ namespace Tests
             Assert.IsFalse(Res.Success, "Object is returned for an ID that should not exist");
         }
 
+        [Test]
+        public async Task TestUpdate()
+        {
+            Res = await CS.FindByIdAsync(5);
+            Assert.IsFalse(Res.Success);
+
+            Res = await CS.UpdateAsync(5, ExampleV);
+            Assert.IsFalse(Res.Success, "Success on updating on an ID that should not exist");
+
+            Res = await CS.FindByIdAsync(100);
+            Assert.IsTrue(Res.Success);
+            Coordination exampleA = Res.Resource; // Should use clone()
+            var exampleAImg = CoordinationSnapshot(exampleA); // CoordinationSnapshot is not a good function, and should be replaced by clone and equals in Coordination
+
+            Res = await CS.UpdateAsync(100, ExampleV);
+            Assert.IsTrue(Res.Success, "Failed to update an existing ID with a new valid state.");
+
+            Coordination exampleB = Res.Resource;
+            var exampleBImg = CoordinationSnapshot(exampleB);
+
+            Assert.AreNotEqual(exampleAImg.Title, exampleB.Title, "Title before update is equal to title after update.");
+            Assert.AreEqual(ExampleV.Title, exampleB.Title, "Updated title is not equal to inputted title.");
+        }
+        
         #pragma warning restore CS1998
 
         private
