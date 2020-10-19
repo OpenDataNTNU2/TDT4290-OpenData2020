@@ -1,4 +1,5 @@
 import { Grid, Paper, Box } from '@material-ui/core/';
+import styles from "../styles/CoordinationCard.module.css"
 
 export default function CoordinationCard(props) {
 
@@ -9,41 +10,25 @@ export default function CoordinationCard(props) {
         return string
     }
 
-    const setPublishedColor = (publisert) => {
-        if (publisert === "Published") {
-            return '#D6FFD2'
-        }
-        return '#FFBFC3'
+    
+    const getChips = () => {
+        const coordinationStatus = props.coordination.underCoordination;
+        return (
+            <div className={styles.chipsContainer}>
+                {coordinationStatus.underCoordination ? <div className={styles.chip} style={{backgroundColor: "#B99EE5"}} >Under samordning</div> : <div className={styles.chip} style={{backgroundColor: "#874BE9"}}>Samordnet</div> }
+            </div>
+        )
     }
 
-    const setSamordnaColor = (underCoordination) => {
-        if (!underCoordination) {
-            return '#aba4eb'
-        }
-        return '#cccccc'
-    }
-
-
+    //   props.coordination.underCoordination
     return (
-        <div key={props.id * 2} onClick={props.onClick} >
-            <Paper variant='outlined' style={{ backgroundColor: "#dedcf7", padding: '1%', marginBottom: '2%', cursor: "pointer" }}>
+        <div key={props.id * 2} className={styles.cardContainer} onClick={props.onClick} >
+            {getChips()}
                 <Grid container wrap='wrap'>
                     <Grid item xs={9}>
-                        <h3>{props.coordination.title}</h3>
-                        <p><b>Utgiver: </b>{props.coordination.publisher.name}</p>
-                        <p>{cutString(props.coordination.description)}</p>
-                    </Grid>
-                    <Grid item xs={2} style={{ margin: '1em' }}>
-
-                        <Paper elevation={0}
-                            style={
-                                {//setSamordnaColor skal ikke hardkodes, venter på backend-verdi
-                                    backgroundColor: setSamordnaColor(props.coordination.underCoordination),
-                                    textAlign: 'center',
-                                    padding: '3%'
-                                }}>
-                            {props.coordination.underCoordination ? "Under samordning" : "Samordnet"}
-                        </Paper>
+                        <h3 className={styles.title}>{props.coordination.title}</h3>
+                        <p className={styles.publisher} >Utgiver: {props.coordination.publisher.name}</p>
+                        <p className={styles.desc}>{cutString(props.coordination.description)}</p>
                     </Grid>
                     <Grid container direction="row">
                         <p><strong>Deltagende kommuner:</strong>{props.coordination.datasets.length !== 0 ?
@@ -51,7 +36,6 @@ export default function CoordinationCard(props) {
                             : <i> Ingen deltagende kommuner</i>}</p>
                     </Grid>
                 </Grid>
-            </Paper>
         </div>
     )
 }
