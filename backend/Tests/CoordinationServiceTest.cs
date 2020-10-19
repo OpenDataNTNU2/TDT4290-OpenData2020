@@ -45,5 +45,18 @@ namespace Tests
         {
             //Context.Dispose();
         }
+
+        [Test]
+        public async Task TestFindById()
+        {
+            Res = await CS.FindByIdAsync(100); //Assumed correct from AddTestData
+            Assert.IsTrue(Res.Success, "Object is not returned for correct test data ID");
+
+            Res = await CS.FindByIdAsync(-100);
+            Assert.IsFalse(Res.Success, "Object is returned for a negative ID");
+
+            Res = await CS.FindByIdAsync(5);
+            Assert.IsFalse(Res.Success, "Object is returned for an ID that should not exist");
+        }
     }
 }
