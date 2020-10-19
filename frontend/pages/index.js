@@ -119,12 +119,11 @@ export default function Home() {
           xs={8}
         >
 
-          <Grid container direction="row">
-
+          <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}} >
             <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
 
             {/* Midlertidig select bar, bør opprette et form */}
-            <FormControl variant="outlined" style={{ width: "20vh", marginLeft: "3vh" }}>
+            <FormControl variant="outlined" style={{ width: "200px"}}>
               <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
               <Select
                 labelId="chooseWhatToView"
@@ -137,8 +136,7 @@ export default function Home() {
                 <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
               </Select>
             </FormControl>
-
-          </Grid>
+          </div>
           <InfiniteScroll
             dataLength={page * 10}
             next={() => setPage(page + 1)}

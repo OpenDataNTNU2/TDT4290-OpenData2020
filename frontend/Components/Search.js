@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '6px 15px',
         display: 'flex',
         alignItems: 'center',
-        width: '400px',
+        minWidth: '400px',
         margin: '0px 15px 25px 0px'
     },
     input: {

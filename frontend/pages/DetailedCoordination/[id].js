@@ -14,6 +14,8 @@ import PostApi from '../../Components/ApiCalls/PostApi';
 import PatchApi from '../../Components/ApiCalls/PatchApi'
 import DeleteApi from '../../Components/ApiCalls/DeleteApi'
 
+import styles from "../../styles/Detailed.module.css"
+
 export default function DetailedCoordination({ data, uri, prevPublisherId }) {
     const router = useRouter();
     const [coordinationData, setCoordinationData] = useState(data)
@@ -77,6 +79,14 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
     const onClick = (path, id) => { router.push(path + id) }
 
+    const getChips = () => {
+        return (
+          <div className={styles.chipsContainer} >
+            <div className={styles.chip} style={{backgroundColor: "#874BE9"}} >Samordnet</div>
+          </div>
+        )
+      }
+
     return (
         <Grid
             container
@@ -85,20 +95,18 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
         >
             {/* Tags og overskrift */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
-                {data.underCoordination ?
-                    <Chip label="Pågående samordning" style={{ width: "auto" }} />
-                    : <Chip label="Samordnet" color="primary" style={{ width: "auto" }} />
-                }
-                <h1 style={{ fontWeight: "normal" }}>{data.title}</h1>
+                {getChips()}
+                <h1 className={styles.title}>{data.title}</h1>
                 {data.underCoordination ? <p><b>Status: </b><i>{data.statusDescription}</i></p> : null}
             </Grid>
 
 
-            <Divider variant="fullWidth" style={{ border: "1px solid grey" }} /><br />
+            <Divider variant="fullWidth" /><br />
 
             {/* Informasjon om samordningen */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 <p><b>Beskrivelse: </b>{data.description}</p>
+                <br/>
                 <p><b>Utgiver av samordning: </b>{data.publisher.name}</p>
                 <p><b>Deltakere i samordningen: </b>{coordinationData.datasets.map((dataset) => dataset && (dataset.publisher.name) + ", ")}</p>
                 <br /><p><b>Link til data:</b></p>
@@ -117,7 +125,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
             </Grid>
 
-            <Divider variant="fullWidth" style={{ border: "1px solid grey" }} /><br />
+            <Divider variant="fullWidth" /><br />
 
             {/* Datasettene som er med i samordningen */}
             <Grid style={{ padding: "3% 0 3% 0" }}>
@@ -130,7 +138,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
 
             </Grid>
 
-            <Divider variant="fullWidth" style={{ border: "1px solid grey" }} /><br />
+            <Divider variant="fullWidth"/><br />
 
             {/* Send forespørsel om å bli med i samordningen */}
             {JSON.parse(prevPublisherId) === null || parseInt(JSON.parse(prevPublisherId)) === -1 || parseInt(prevPublisherId) === data.publisher.id ?
