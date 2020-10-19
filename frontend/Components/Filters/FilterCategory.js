@@ -108,7 +108,7 @@ export default function FilterCategory(props) {
 
 
     return (
-        <div className={styles.filterContainer}  >
+        <div className={styles.filterContainer}>
             <FormControl>
                 <h4 className={styles.filterTitle} >Kategori</h4>
                 <FormGroup className={styles.checkboxesContainer} >
