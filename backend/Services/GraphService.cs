@@ -51,7 +51,9 @@ namespace OpenData.API.Services
                 Description = attributes.GetValueOrDefault("description", ""), 
                 PublicationStatus = attributes.ContainsKey("distribution") ? EPublicationStatus.published : EPublicationStatus.notPublished,
                 PublisherId = publisher.Id, 
-                CategoryId = categoryId 
+                CategoryId = categoryId,
+                DatePublished = getDateOrNow(attributes.GetValueOrDefault("issued", "")),  
+                DateLastUpdated = getDateOrNow(attributes.GetValueOrDefault("modified", "")),  
             };
 
             // Add the dataset to the database
@@ -61,6 +63,14 @@ namespace OpenData.API.Services
             AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
             await AddDistribution(g, dataset.Id);
             return dataset;
+        }
+
+        private DateTime getDateOrNow(String stringDate)
+        {
+            if (String.IsNullOrEmpty(stringDate)){
+                return DateTime.Now;
+            }
+            return DateTime.Parse(stringDate.Substring(0,stringDate.IndexOf("^")));
         }
 
         // Add a distribution in a graph to the database

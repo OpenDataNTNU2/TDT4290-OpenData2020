@@ -71,7 +71,8 @@ namespace OpenData.API.Services
                 {
                     return new DatasetResponse(check.error);
                 }
-
+                dataset.DatePublished = DateTime.Now;
+                dataset.DateLastUpdated = DateTime.Now;
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
 
@@ -104,6 +105,7 @@ namespace OpenData.API.Services
                 existingDataset.Title = dataset.Title; 
                 existingDataset.Identifier = dataset.Identifier; 
                 existingDataset.Description = dataset.Description; 
+                existingDataset.DateLastUpdated = DateTime.Now;
                 existingDataset.PublisherId = dataset.PublisherId; 
                 existingDataset.PublicationStatus = dataset.PublicationStatus; 
                 existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
