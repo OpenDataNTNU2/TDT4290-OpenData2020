@@ -91,10 +91,10 @@ export default function CreateDataset(props) {
     const setPublishedStatus = (value) => {
         setPublished(value);
         if (value === "1") setStartDate("2020-10-12");
-        else if (value === "2") setAccessLevel("0");
+        else if (value === "2") setAccessLevel("2");
         else {
             setStartDate("2020-10-12");
-            setAccessLevel("0");
+            setAccessLevel("2");
         }
     };
 
@@ -140,7 +140,10 @@ export default function CreateDataset(props) {
     // posts data into the api with datasets
     // and if successfull runs addDistributions
     const handleChange = async () => {
+        console.log("data: " + data)
+        console.log(data)
         PostApi("https://localhost:5001/api/datasets", data, addDistributions);
+
         addTags();
 
     };
