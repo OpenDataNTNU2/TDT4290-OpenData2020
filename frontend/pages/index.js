@@ -106,7 +106,7 @@ export default function Home() {
     <div className='datakatalog'>
       <Grid
         container
-        style={{ padding: '3%' }}
+        style={{ padding: '3%', marginTop: "50px" }}
         justify='space-evenly'
       >
         <Grid item xs={2} >

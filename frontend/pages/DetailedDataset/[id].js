@@ -96,7 +96,7 @@ export default function DetailedDataset({data, uri}){
         <Grid
         container
         direction="column"
-        style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
+        style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%', backgroundColor: "white" }}>
           
           {getChips()}
 
