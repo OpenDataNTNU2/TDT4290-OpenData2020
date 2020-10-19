@@ -14,7 +14,6 @@ namespace OpenData.API.Resources
         public IList<DistributionResource> Distributions { get; set; } = new List<DistributionResource>();
         public string PublicationStatus { get; set; }
         public Nullable<DateTime> DatePlannedPublished {get; set; }
-        public string DetailedPublicationStatus { get; set; }
         public string AccessLevel { get; set; }
         public IList<DatasetTagsResource> DatasetTags { get; set; } = new List<DatasetTagsResource>();
         public CategoryResource Category { get; set; }

@@ -38,14 +38,15 @@ export default function FilterPublisher(props) {
 
         let pub = []
         for (let i = 0; i < res.length; i++) {
-            pub.push([res[i].name.split(" ")[0], res[i].id, false, i, res[i].datasets.length]);
+            length = props.isDataset ? res[i].datasets.length : res[i].coordinations.length
+            length > 0 ? pub.push([res[i].name.split(" ")[0], res[i].id, false, i, length]) : null
         }
         setPublishers(pub)
         if (res.length < 5) { setShowItems(res.length) }
     }, [props])
 
     const items = publishers.slice(0, showItems).map(pub =>
-        <FormControlLabel control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />}
+        <FormControlLabel key={pub[1]} control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />}
             label={pub[0] + " (" + pub[4] + ")"}
         />)
 

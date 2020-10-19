@@ -19,10 +19,12 @@ namespace OpenData.API.Persistence.Repositories
         public async Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query)
         {
             IQueryable<Coordination> queryable = _context.Coordinations
-                                    .Include(c => c.Datasets)
-                                        .ThenInclude(c => c.Publisher)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Publisher)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Distributions)
                                     .Include(d => d.Category)
                                     .Include(c => c.Publisher)
+                                    .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Publisher)     
+                                    .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Distributions)                                         
                                     .Include(c => c.CoordinationTags)
                                         .ThenInclude(c => c.Tags)
                                     .AsNoTracking();
@@ -118,8 +120,15 @@ namespace OpenData.API.Persistence.Repositories
         public async Task<Coordination> FindByIdAsync(int id)
         {
             return await _context.Coordinations
-                                    .Include(c => c.Datasets)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Publisher)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Distributions)
+                                    .Include(c => c.Datasets).ThenInclude(c => c.Coordination)
                                     .Include(c => c.Publisher)
+                                    .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Publisher)     
+                                    .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Distributions) 
+                                    .Include(d => d.Category)
+                                    .Include(c => c.CoordinationTags)
+                                        .ThenInclude(c => c.Tags)
                                     .FirstOrDefaultAsync(i => i.Id == id);
                                 
                                 
