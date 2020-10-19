@@ -143,8 +143,8 @@ export default function CreateDataset(props) {
         console.log("data: " + data)
         console.log(data)
         if (checkRequiredVariables()) {
-            PostApi("https://localhost:5001/api/datasets", data, addDistributions);
             addTags();
+            PostApi("https://localhost:5001/api/datasets", data, addDistributions);
         }
         else {
             setFeedbackRequired(true)
