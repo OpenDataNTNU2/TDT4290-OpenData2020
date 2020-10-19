@@ -1,8 +1,7 @@
 import { TextField, makeStyles } from "@material-ui/core";
 
-import PostApi from "../ApiCalls/PostApi";
-
 import { Autocomplete, createFilterOptions } from "@material-ui/lab";
+import { useContext, useEffect, useState } from "react";
 
 const filter = createFilterOptions();
 
@@ -19,16 +18,28 @@ const useStyles = makeStyles((theme) => ({
 const SelectTags = (props) => {
   const classes = useStyles();
 
+  const [lastId, setId] = useState(
+    props.tags.length > 0 ? props.tags[props.tags.length - 1].id : 0
+  );
+
+  useEffect(() => {
+    setId(props.tags.length > 0 ? props.tags[props.tags.length - 1].id : 0);
+  }, [props.tags]);
+
   const handleSubmit = (newTag) => {
-    if (!props.tags[newTag.newTagId] || !props.newTags[newTag.newTagName]) {
+    setId(lastId + 1);
+
+    if (
+      // this check does not work
+      !props.newTags.includes(newTag.newTagId) ||
+      !props.newTags.includes(newTag.newTagName)
+    ) {
       props.setNewTags([
         ...props.newTags,
         { id: newTag.newTagId, name: newTag.newTagName },
       ]);
-      props.setTags([
-        ...props.tags,
-        { id: newTag.newTagId, name: newTag.newTagName },
-      ]);
+    } else {
+      console.log("Duplikat id eller navn");
     }
   };
 
@@ -38,7 +49,6 @@ const SelectTags = (props) => {
         props.setNewTags(
           props.newTags.filter((tag) => tag.id !== tagObject.id)
         );
-        props.setTags(props.tags.filter((tag) => tag.id !== tagObject.id));
       }
     });
   };
@@ -76,7 +86,7 @@ const SelectTags = (props) => {
           if (params.inputValue !== "") {
             filtered.push({
               inputValue: params.inputValue,
-              id: props.tags[props.tags.length - 1].id + 1,
+              id: lastId + 1,
               name: `Legg til "${params.inputValue}" som en ny tag`,
             });
           }
