@@ -45,8 +45,8 @@ export default function CreateDataset(props) {
 
   // variables/states for tags
   const [tags, setTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState("");
   const [newTags, setNewTags] = useState([]);
+  const [selectedTags, setSelectedTags] = useState("");
 
   // variables/states for categories
   const [categories, setCategories] = useState([]);
