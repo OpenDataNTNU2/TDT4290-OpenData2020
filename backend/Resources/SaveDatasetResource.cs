@@ -14,6 +14,7 @@ namespace OpenData.API.Resources
         [MaxLength(60)]
         public string Title { get; set; }
         public string Description { get; set; }
+        public DateTime DateLastUpdated {get; set; }
         [Required]
         public int? PublisherId { get; set; }
         [Range(1, 3)]

@@ -7,7 +7,6 @@ namespace OpenData.API.Persistence.Contexts
     public class AppDbContext : DbContext
     {
         public DbSet<Dataset> Datasets { get; set; }
-
         public DbSet<User> Users { get; set; }
         public DbSet<Distribution> Distributions { get; set; }
         public DbSet<Publisher> Publishers { get; set; }
@@ -169,6 +168,7 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand",
                 Identifier = "/api/datasets/100",
                 Description = "Strender i Trondheim",
+                DateLastUpdated = System.DateTime.Parse("2019-07-04"),
                 PublicationStatus = EPublicationStatus.published,
                 AccessLevel = EAccessLevel.green,
                 PublisherId = 100,
@@ -181,6 +181,7 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand",
                 Identifier = "/api/datasets/101",
                 Description = "Strender i Bodø",
+                DateLastUpdated = System.DateTime.Parse("2020-11-24"),
                 PublicationStatus = EPublicationStatus.plannedPublished,
                 DatePlannedPublished = System.DateTime.Parse("2020-10-15"),
                 AccessLevel = EAccessLevel.yellow,

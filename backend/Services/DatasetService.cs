@@ -104,6 +104,7 @@ namespace OpenData.API.Services
                 existingDataset.Title = dataset.Title; 
                 existingDataset.Identifier = dataset.Identifier; 
                 existingDataset.Description = dataset.Description; 
+                existingDataset.DateLastUpdated = dataset.DateLastUpdated;
                 existingDataset.PublisherId = dataset.PublisherId; 
                 existingDataset.PublicationStatus = dataset.PublicationStatus; 
                 existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
