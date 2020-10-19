@@ -195,7 +195,7 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             <Grid>
                 <h1 style={{ fontWeight: "normal" }}>Søkeord</h1>
                 {coordinationData.coordinationTags.map((tag) => (
-                    <p>{tag.name}, </p>
+                    <p>{tag.tags.name}, </p>
                 ))}
                 {coordinationData.coordinationTags.length === 0 ? <p>Ingen søkeord lagt til</p> : null}
             </Grid>

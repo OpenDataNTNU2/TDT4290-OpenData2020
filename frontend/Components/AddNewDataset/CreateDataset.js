@@ -258,7 +258,7 @@ export default function CreateDataset(props) {
                     <RadioInput
                         id="accessLevel"
                         mainValue={accessLevel}
-                        handleChange={(event) => setAccessLevel(event.target.value)}
+                        handleChange={setAccessLevel}
                         value={["1", "2", "3"]}
                         label={[
                             "Offentlig",
