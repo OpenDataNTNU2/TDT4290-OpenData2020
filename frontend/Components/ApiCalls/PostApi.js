@@ -1,5 +1,5 @@
 const PostApi = async (url, data, func) => {
-    try{
+    try {
         fetch(url, {
             method: 'POST',
             headers: {
@@ -7,11 +7,12 @@ const PostApi = async (url, data, func) => {
             },
             body: JSON.stringify(data)
         })
-        .then(response => response.json())
-        .then(response => {try{func(response.id)}catch(_){console.log(_)}})
+            .then(response => response.json())
+            .then(response => { try { func(response.id) } catch (_) { console.log(_) } })
     }
-    catch(_){
+    catch (_) {
         console.log("failed to post to: " + url)
+        console.log(_)
     }
 }
 

@@ -1,8 +1,8 @@
-import { FormControl, TextField } from '@material-ui/core';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
 import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
+import React, {useState} from "react";
 
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
         padding: '6px 15px',
         display: 'flex',
         alignItems: 'center',
-        width: '400px',
+        minWidth: '400px',
         margin: '0px 15px 25px 0px',
         flexDirection: "row"
     },
@@ -28,22 +28,31 @@ const useStyles = makeStyles((theme) => ({
 
 
 export default function Search(props){
-
+    const [query, setQuery] = useState('')
+    const [searchQuery, setSearchQuery] = useState({});
     const classes = useStyles();
-    // en feil med denne akkurat nå, søker man etter Oslo, får den kun opp Osl, og tar man alt vekk vil O stå igjen.
-    // altså, den henger ett trykk etter hele tiden... skjønner ikke helt hvorfor :'( Tipper det er pga useState bruker litt lang tid
 
-    // _debounce (_ kommer fra import 'lodash') gjør slik at den kjører et søk til databasen fra props.getDatasets som befinner seg i index.js hvert 500 millisekund
-    // dette gjør at vi ikke trenger å trykke søk eller lignende, som er nice
-
-    // props.getDatasets(1, true); 1 = that the page in the fetch should be 1, true = that search has been changed
+    // denne funksjonen benytter seg av _debounce som starter en timer på 500 millisekunder når man begynner å søke, hvis søket endrer seg innen de 500 ms er ferdig,
+    // vil den starte de 500 ms på nytt. Hvis tiden er over 500 (tastatur idle i 500 eller mer), søker den på det som står skrevet.
     const onChange = ({ target: { value } }) => {
-        props.setSearchUrl(value)
-        const search = _.debounce(() => props.getDatasets(1, true, value), 500);
+        setQuery(value)
+
+        const search = _.debounce(sendQuery, 500);
+
+        setSearchQuery(prevSearch => {
+            if (prevSearch.cancel) {
+                prevSearch.cancel();
+            }
+            return search;
+        });
+
         search(value);
-      };
 
+    };
 
+    const sendQuery = async value => {
+        const cancelPrevQuery = await props.getDatasets(1, true, value)
+    }
 
     return(
         <div style={{ marginBottom: '2em'}}>
@@ -56,7 +65,7 @@ export default function Search(props){
                 size="medium" 
                 variant="outlined" 
                 fullWidth={true} 
-                value={props.searchUrl} 
+                value={query} 
                 onChange={onChange}
                 style={{backgroundColor: "white"}}
             />

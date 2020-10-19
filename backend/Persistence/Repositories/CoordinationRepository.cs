@@ -126,6 +126,9 @@ namespace OpenData.API.Persistence.Repositories
                                     .Include(c => c.Publisher)
                                     .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Publisher)     
                                     .Include(c => c.Applications).ThenInclude(c => c.Dataset).ThenInclude(c => c.Distributions) 
+                                    .Include(d => d.Category)
+                                    .Include(c => c.CoordinationTags)
+                                        .ThenInclude(c => c.Tags)
                                     .FirstOrDefaultAsync(i => i.Id == id);
                                 
                                 

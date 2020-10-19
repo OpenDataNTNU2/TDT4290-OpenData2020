@@ -18,7 +18,7 @@ import { useEffect, useState } from "react";
 import Distribution from "../Forms/Distribution";
 import Input from "../Forms/Input";
 import RadioInput from "../Forms/RadioInput";
-import SelectInput from "../Forms/SelectInput";
+import SelectCategory from "../Forms/SelectCategory";
 import SelectTags from "../Forms/SelectTags";
 
 import GetApi from "../ApiCalls/GetApi";
@@ -28,10 +28,10 @@ export default function CreateDataset(props) {
     // variables/states for "main data", will add more here
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [published, setPublished] = useState("0");
+    const [published, setPublished] = useState("1");
 
     // accesslevel
-    const [accessLevel, setAccessLevel] = useState("0");
+    const [accessLevel, setAccessLevel] = useState("1");
 
     const date = new Date();
 
@@ -54,6 +54,7 @@ export default function CreateDataset(props) {
 
     // show / not show snackbar with successfull submit message
     const [open, setOpen] = useState(false);
+    const [feedbackRequired, setFeedbackRequired] = useState(false)
 
     // variables/states for sending request to join coordination
     const [wantToRequestCoordination, setWantToRequestCoordination] = useState("1")
@@ -91,10 +92,9 @@ export default function CreateDataset(props) {
     const setPublishedStatus = (value) => {
         setPublished(value);
         if (value === "1") setStartDate("2020-10-12");
-        else if (value === "2") setAccessLevel("0");
+        else if (value === "2") { }
         else {
             setStartDate("2020-10-12");
-            setAccessLevel("0");
         }
     };
 
@@ -140,10 +140,29 @@ export default function CreateDataset(props) {
     // posts data into the api with datasets
     // and if successfull runs addDistributions
     const handleChange = async () => {
-        PostApi("https://localhost:5001/api/datasets", data, addDistributions);
-        addTags();
-
+        console.log("data: " + data)
+        console.log(data)
+        if (checkRequiredVariables()) {
+            addTags();
+            PostApi("https://localhost:5001/api/datasets", data, addDistributions);
+        }
+        else {
+            setFeedbackRequired(true)
+        }
     };
+
+    const checkRequiredVariables = () => {
+        if (title !== "" && description !== "" && selectedCategory !== "") {
+            if (wantToRequestCoordination === "2" && selectedCoordination !== "" && joinCoordinationReason !== "") {
+                return true
+            }
+            else if (wantToRequestCoordination !== "2") {
+                return true
+            }
+
+        }
+        return false
+    }
 
     // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
     useEffect(() => {
@@ -190,7 +209,6 @@ export default function CreateDataset(props) {
         setTitle("");
         setDescription("");
         setPublished("1");
-        setPublishedStatus("0");
 
         setDistTitle([""]);
         setDistUri([""]);
@@ -199,7 +217,7 @@ export default function CreateDataset(props) {
 
         setSelectedTags("");
         setNewTags([]);
-
+        setAccessLevel("1")
         setSelectedCategory("");
     };
 
@@ -213,7 +231,7 @@ export default function CreateDataset(props) {
         >
             <Input
                 id="title"
-                label="Tittel"
+                label="Tittel (*)"
                 value={title}
                 handleChange={setTitle}
                 multiline={false}
@@ -249,35 +267,35 @@ export default function CreateDataset(props) {
                     />
                 </FormControl>
             ) : null}
-            {published === "1" ? (
-                <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
-                    <FormLabel component="legend">Tilgangsnivå</FormLabel>
-                    <RadioInput
-                        id="accessLevel"
-                        mainValue={accessLevel}
-                        handleChange={setAccessLevel}
-                        value={["1", "2", "3"]}
-                        label={[
-                            "Offentlig",
-                            "Begrenset offentlighet",
-                            "Unntatt offentlighet",
-                        ]}
-                        color={["green", "yellow", "red"]}
-                    />
-                </FormControl>
-            ) : null}{" "}
+
+            <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+                <FormLabel component="legend">Tilgangsnivå</FormLabel>
+                <RadioInput
+                    id="accessLevel"
+                    mainValue={accessLevel}
+                    handleChange={setAccessLevel}
+                    value={["1", "2", "3"]}
+                    label={[
+                        "Offentlig",
+                        "Begrenset offentlighet",
+                        "Unntatt offentlighet",
+                    ]}
+                    color={["green", "yellow", "red"]}
+                />
+            </FormControl>
+
             <br />
             <Input
                 id="description"
-                label="Beskrivelse"
+                label="Beskrivelse (*)"
                 value={description}
                 handleChange={setDescription}
                 multiline={true}
             />
             <br />
-            <SelectInput
+            <SelectCategory
                 id="category"
-                mainLabel="Kategori: Not relevant yet"
+                mainLabel="Kategori (*)"
                 value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
@@ -315,10 +333,10 @@ export default function CreateDataset(props) {
 
             {wantToRequestCoordination === "2" && published === "1" && accessLevel === "1" ?
                 <FormControl variant="outlined" style={{ width: "50vh" }}>
-                    <InputLabel id="requestToJoinCoordinationLabel">Velg samordning</InputLabel>
+                    <InputLabel id="requestToJoinCoordinationLabel">Velg samordning (*)</InputLabel>
                     <Select
                         labelId="requestToJoinCoordinationLabelID"
-                        label="Velg dataset"
+                        label="Velg samordning (*)"
                         id="requestToJoinCoordinationID"
                         value={selectedCoordination}
                         onChange={(event) => setSelectedCoordination(event.target.value)}
@@ -338,7 +356,7 @@ export default function CreateDataset(props) {
                 <Input
                     id="joinCoordinationId"
                     multiline={true}
-                    label="Begrunnelse for forespørsel"
+                    label="Begrunnelse for forespørsel (*)"
                     value={joinCoordinationReason}
                     handleChange={setJoinCoordinationReason}
                 />
@@ -407,6 +425,15 @@ export default function CreateDataset(props) {
             >
                 <Alert elevation={1} severity="success">
                     Datasett publisert
+          </Alert>
+            </Snackbar>
+            <Snackbar
+                open={feedbackRequired}
+                autoHideDuration={5000}
+                onClose={() => setFeedbackRequired(false)}
+            >
+                <Alert elevation={1} severity="error">
+                    Husk å fylle inn alle feltene som kreves (*)
           </Alert>
             </Snackbar>
         </Grid>

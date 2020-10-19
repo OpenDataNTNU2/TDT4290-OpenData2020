@@ -45,8 +45,8 @@ export default function Home() {
 
   const [loader, setLoader] = useState('Loading...')
 
-
   const getDatasets = async (p = page, c = false, s = searchUrl) => {
+    if (s !== searchUrl) setSearchUrl(s)
     if (changedFilter) setPage(1)
     if (!hasMore && c) { p = 1; setPage(1); setHasMore(true) }
     try {
@@ -85,6 +85,7 @@ export default function Home() {
     if ((page) * 10 > totalItems && totalItems !== 1 && hasMore) {
       setHasMore(false)
     }
+
     console.log(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items)
   }
 
@@ -156,7 +157,6 @@ export default function Home() {
             }
             {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
-
         </Grid>
       </Grid>
     </div>

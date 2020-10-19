@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import Alert from '@material-ui/lab/Alert';
 
-import {PageRender} from '../api/serverSideProps'
+import { PageRender } from '../api/serverSideProps'
 import PatchApi from '../../Components/ApiCalls/PatchApi'
 
 import styles from "../../styles/Detailed.module.css"
@@ -23,19 +23,19 @@ export default function DetailedDataset({data, uri}){
   var cardOrNoCard;
 
   const ifPublished = (pub) => {
-    if (pub === "Published"){
+    if (pub === "Published") {
       requestButton = null;
       publishedStatus = "Publisert";
-      if (data.distributions.length == 0){
+      if (data.distributions.length == 0) {
         cardOrNoCard = "Dette datasettet har ingen distribusjoner ennå.";
       }
-      else{
-        for(let i = 0; i < data.distributions.length; i++){
-        distributionCards.push(data.distributions[i]);
+      else {
+        for (let i = 0; i < data.distributions.length; i++) {
+          distributionCards.push(data.distributions[i]);
         }
-        cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />)});
+        cardOrNoCard = Object.values(distributionCards).map(dist => { return (<DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />) });
       }
-      }
+    }
     else {
       requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
       publishedStatus = "Ikke publisert";
@@ -120,6 +120,7 @@ export default function DetailedDataset({data, uri}){
             <span>Kategori: </span> {data.category.name}
             <br/>
             {data.coordination && <div><span className={styles.attributeTitle} >Samordningsstatus: </span> {data.coordination.underCoordination ? "Pågående samordning - " + data.coordination.statusDescription : "Samordnet"}</div>}
+            <p><b>Søkeord: </b>{data.datasetTags.map((tag) => (tag && tag.tags.name + ", "))} {data.datasetTags.length === 0 ? "Ingen søkeord lagt til" : null}</p>
           </p>
           <br/>
 
