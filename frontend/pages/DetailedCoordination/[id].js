@@ -7,6 +7,7 @@ import Alert from '@material-ui/lab/Alert';
 import { PageRender } from '../api/serverSideProps'
 import PutApi from '../../Components/ApiCalls/PutApi'
 
+import DistributionCard from '../DetailedDataset/DistributionCard';
 import DatasetCard from '../../Components/DatasetCard'
 import Input from '../../Components/Forms/Input';
 import GetApi from '../../Components/ApiCalls/GetApi';
@@ -100,21 +101,17 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
             <Grid style={{ padding: "3% 0 3% 0" }}>
                 <p><b>Beskrivelse: </b>{data.description}</p>
                 <p><b>Utgiver av samordning: </b>{data.publisher.name}</p>
-                <p><b>Deltakere i samordningen: </b>{coordinationData.datasets.map((dataset) => dataset && (dataset.publisher.name) + ", ")}</p>
-                <br /><p><b>Link til data:</b></p>
-
+                <p><b>Deltakere i samordningen: </b>{coordinationData.datasets.length === 0 ? <i>Ingen deltakere med i samordningen</i> : coordinationData.datasets.map((dataset) => dataset && (dataset.publisher.name) + ", ")}</p>
+                <br /><p><b>Distribusjonene i samordningen: </b>{coordinationData.datasets.length === 0 ? <i>Ingen dataset i samordningen</i> : null}</p>
                 {coordinationData.datasets.map((dataset) => (
-                    <ul style={{ listStyleType: "none" }}>
-                        <p><strong>{dataset.publisher.name}</strong>:</p>
-                        {dataset.distributions[0] ?
-                            <ul>
-                                {dataset.distributions.map((distribution) => (<li><Link target="_blank" rel="noopener" href={'http://' + distribution.uri}><i>{distribution.uri}</i></Link></li>))}</ul>
-
-                            : <p><strong>{dataset.publisher.name}</strong> : <i>mangler uri</i></p>
-                        }
-                    </ul>
+                    <div><p>{dataset.publisher.name} - {dataset.title}</p>
+                        {dataset.distributions.length !== 0 ? dataset.distributions.map((dist) => (
+                            <DistributionCard key={dist.id} id={dist.id} fileFormat={dist.fileFormat} uri={dist.uri} title={dist.title} />
+                        ))
+                            : <p><i>Ingen distribusjon i dette datasettet</i></p>}
+                        <br />
+                    </div>
                 ))}
-
             </Grid>
 
             <Divider variant="fullWidth" style={{ border: "1px solid grey" }} /><br />
@@ -192,6 +189,16 @@ export default function DetailedCoordination({ data, uri, prevPublisherId }) {
                         : <p>Ingen forespørsler</p>}
                 </Grid>
                 : null}
+
+            <Divider variant="fullWidth" style={{ border: "1px solid grey" }} /><br />
+
+            <Grid>
+                <h1 style={{ fontWeight: "normal" }}>Søkeord</h1>
+                {coordinationData.coordinationTags.map((tag) => (
+                    <p>{tag.tags.name}, </p>
+                ))}
+                {coordinationData.coordinationTags.length === 0 ? <p>Ingen søkeord lagt til</p> : null}
+            </Grid>
 
             <Snackbar open={openCreateApplicationFeedback} autoHideDuration={5000} onClose={() => setOpenCreateApplicationFeedback(false)}>
                 <Alert elevation={1} severity="success">Forespørsel sendt</Alert>

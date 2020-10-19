@@ -4,7 +4,7 @@ import Alert from '@material-ui/lab/Alert'
 import PostApi from '../ApiCalls/PostApi'
 import GetApi from '../ApiCalls/GetApi'
 
-import SelectInput from '../Forms/SelectInput'
+import SelectCategory from '../Forms/SelectCategory'
 import Input from '../Forms/Input'
 
 import { useState, useEffect } from 'react'
@@ -58,7 +58,7 @@ export default function CreateDataset(){
                 handleChange={setImportUrl}
                 multiline={false}
             /><br/>
-            <SelectInput 
+            <SelectCategory 
                 id="category"
                 mainLabel="Kategori"
                 value={categories}
