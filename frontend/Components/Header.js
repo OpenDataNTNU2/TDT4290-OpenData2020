@@ -4,6 +4,8 @@ import { useRouter } from 'next/router'
 import { useState } from "react";
 import { parseCookies } from '../pages/api/serverSideProps';
 
+import styles from "../styles/header.module.css";
+
 export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1"}) {
     const router = useRouter();
     const [value, setValue] = useState("/");
@@ -15,30 +17,22 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", 
     };
 
     return (
-        <div >
-            <Grid
-                container
-                alignItems="center"
-                style={{  backgroundColor:'#90C7EF' }}
-            >
-                <Grid item xs={9} >
-                    <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
-                        <Tab label={<h3 style={{ fontWeight: "normal" }}>Datakatalog</h3>} value="/" />
-                        
-                        {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Mine datasett</h3>} value="/MyDatasets" />}
-                        {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Legg til nytt datasett</h3>} value="/AddNewDataset" />}
-                        
-                    </Tabs>
-                </Grid>
-                {JSON.parse(prevLoggedIn) ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
-                <Grid item xs={1}>
-                    {JSON.parse(prevLoggedIn) ? 
-                        <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg ut</Button>
-                        : <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg inn</Button>
-                    }
-                </Grid>
-                
-            </Grid>
+        <div className={styles.header} >
+            <div className={styles.tabContainer} >
+                <Tabs value={value} onChange={handleChange} centered >
+                    <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
+                    
+                    {JSON.parse(prevPublisherId) <= 99 ? null : <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />}
+                    {JSON.parse(prevPublisherId) <= 99 ? null : <Tab disableFocusRipple disableRipple label="Legg til nytt datasett" value="/AddNewDataset" />}
+                    
+                </Tabs>
+            </div>
+            <div className={styles.loginContainer} >
+            {/* {JSON.parse(prevLoggedIn) ? <p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p> : null } */}
+                <div className={styles.logInButton} onClick={() => router.push("/Login")} >
+                    LOGG {JSON.parse(prevLoggedIn) ? "UT" : "INN"}
+                </div>
+            </div>
         </div>
     )
 }
