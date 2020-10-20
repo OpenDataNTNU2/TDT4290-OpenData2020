@@ -58,8 +58,6 @@ export default function DatasetCard({ dataset, onClick, pathName = "" }) {
         {dataset.accessLevel === "Red" ? <div className={styles.chip} style={{backgroundColor: "#DA6464"}} >Unntatt offentlighet</div> : null}
 
         {dataset.coordination && <div className={styles.chip} style={{backgroundColor: setSamordna(dataset.coordination)[0]}}>{setSamordna(dataset.coordination)[1]}</div>}
-        {/* TODO: Add tags for under coordination */}
-        {/* {dataset.coordination.underCoordination ? <div className={styles.chip} style={{backgroundColor: "#B99EE5"}} >Under samordning</div> : <div className={styles.chip} style={{backgroundColor: "#83749B"}}>Ikke samordnet</div> }       */}
       </div>
     )
   }
