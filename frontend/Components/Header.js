@@ -1,59 +1,54 @@
-import Paper from '@material-ui/core/Paper'
-import Tabs from '@material-ui/core/Tabs'
-import Tab from '@material-ui/core/Tab'
-import Button from '@material-ui/core/Button'
-import Grid from '@material-ui/core/Grid'
+import { Tabs, Tab, Button, Grid, Chip } from '@material-ui/core'
+
+import FaceIcon from '@material-ui/icons/Face';
+import DoneIcon from '@material-ui/icons/Done';
 
 import { useRouter } from 'next/router'
 import { useState } from "react";
+import { parseCookies } from '../pages/api/serverSideProps';
 
-import Cookie from "js-cookie";
-import { parseCookies } from '../utils/parseCookies'
+import styles from "../styles/header.module.css";
 
-export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
+export default function Header({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1" }) {
     const router = useRouter();
     const [value, setValue] = useState("/");
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
         router.push(newValue);
-        console.log(prevLoggedIn)
+
     };
 
     return (
-        <div >
-            <Grid
-                container
-                alignItems="center"
-                style={{  backgroundColor:'#90C7EF' }}
-            >
-                <Grid item xs={9} >
-                    <Tabs value={value} onChange={handleChange} indicatorColor="primary" textColor="primary" centered >
-                        <Tab label={<h3 style={{ fontWeight: "normal" }}>Home</h3>} value="/" />
-                        <Tab label={<h3 style={{ fontWeight: "normal" }}>Datakatalog</h3>} value="/" />
-                        
-                        {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Mine datasett</h3>} value="/MyDatasets" />}
-                        {JSON.parse(prevPublisherId) <= 99 ? null : <Tab label={<h3 style={{ fontWeight: "normal" }}>Legg til nytt datasett</h3>} value="/AddNewDataset" />}
-                        
-                    </Tabs>
-                </Grid>
-                {prevLoggedIn ? <Grid item xs={2}><p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p></Grid> : null }
-                <Grid item xs={1}>
-                    {prevLoggedIn ? 
-                        <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg ut</Button>
-                        : <Button variant="outlined" color="primary" onClick={() => router.push("/Login")}>Logg inn</Button>
-                    }
-                </Grid>
-                
-            </Grid>
+        <div className={styles.header} >
+            <div className={styles.tabContainer} >
+                <Tabs value={value} onChange={handleChange} centered >
+                    <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
+
+                    {JSON.parse(prevPublisherId) <= 99 ? null : <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />}
+                    {JSON.parse(prevPublisherId) <= 99 ? null : <Tab disableFocusRipple disableRipple label="Legg til nytt datasett" value="/AddNewDataset" />}
+
+                </Tabs>
+            </div>
+            <div className={styles.loginContainer} >
+                {prevLoggedUsername && JSON.parse(prevLoggedUsername) !== "" && <Chip
+                    icon={<FaceIcon />}
+                    label={JSON.parse(prevLoggedUsername)}
+                    color="primary"
+                />}
+                {/* {JSON.parse(prevLoggedIn) ? <p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p> : null } */}
+                <div className={styles.logInButton} onClick={() => router.push("/Login")} >
+                    LOGG {JSON.parse(prevLoggedIn) ? "UT" : "INN"}
+                </div>
+            </div>
         </div>
     )
 }
 
-Header.getInitialProps = ({req}) => {
+Header.getInitialProps = ({ req }) => {
     const cookies = parseCookies(req);
 
-    return{
+    return {
         prevLoggedIn: cookies.prevLoggedIn,
         prevLoggedUsername: cookies.prevLoggedUsername,
         prevPublisherId: cookies.prevPublisherId,

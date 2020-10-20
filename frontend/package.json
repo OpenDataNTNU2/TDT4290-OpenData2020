@@ -5,16 +5,27 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "test": "jest"
   },
   "dependencies": {
     "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.56",
     "cookie": "^0.4.1",
     "gatsby-plugin-material-ui": "^2.1.10",
     "js-cookie": "^2.2.1",
+    "lodash.debounce": "^4.0.8",
     "next": "9.5.3",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-dom": "16.13.1",
+    "react-infinite-scroll-component": "^5.1.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-transform-runtime": "^7.12.1",
+    "@babel/preset-env": "^7.12.1",
+    "@babel/preset-react": "^7.12.1",
+    "babel-jest": "^26.5.2",
+    "jest": "^26.5.3"
   }
 }

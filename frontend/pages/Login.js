@@ -1,18 +1,18 @@
 import { Grid, TextField, Button, Snackbar } from '@material-ui/core'
 import Alert from '@material-ui/lab/Alert'
-import Router from 'next/Router';
+import Router from 'next/router';
 import Cookie from "js-cookie";
-import { parseCookies } from '../utils/parseCookies';
+import { parseCookies } from './api/serverSideProps';
 import { useState, useEffect } from "react";
 
 
-export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", prevPublisherId = "-1", prevUserId = "-1" }) {
+export default function Login({ prevLoggedIn = false, prevLoggedUsername = false, prevPublisherId = "-1", prevUserId = "-1" }) {
 
     // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
     // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
 
     const [loggedIn, setLoggedIn] = useState(() => JSON.parse(prevLoggedIn))
-    const [loggedUsername, setLoggedUsername] = useState(() => (prevLoggedUsername));
+    const [loggedUsername, setLoggedUsername] = useState(() => JSON.parse(prevLoggedUsername));
     const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId))
     const [userId, setUserId] = useState(() => JSON.parse(prevUserId))
 
@@ -23,7 +23,7 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
 
     const [notEligUsername, setNotEligUsername] = useState(false)
 
-
+    // updates cookies
     useEffect(() => {
         Cookie.set("prevLoggedIn", JSON.stringify(loggedIn))
         Cookie.set("prevLoggedUsername", JSON.stringify(loggedUsername))
@@ -31,6 +31,10 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
         Cookie.set("prevUserId", JSON.stringify(userId))
     }, [loggedIn, loggedUsername, publisherId, userId])
 
+    // refresh website when loggedIn changes, aka user logs in or out
+    useEffect(() => {
+        Router.push("/Login")
+    }, [loggedIn])
 
     // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut. 
     const handleLoginClick = async () => {
@@ -42,7 +46,7 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
                     setLoggedIn(true);
                     setOpen(true);
                     setNotEligUsername(false);
-                    Router.push("/Login")
+                    
                 }
             }
             else setNotEligUsername(true);
@@ -75,11 +79,13 @@ export default function Login({ prevLoggedIn = false, prevLoggedUsername = "", p
     // resetter alle statsene når bruker trykker på logg ut
     const handleLogoutClick = () => {
         setLoggedUsername("");
-        setUsername("");
-        setPublisherId(-1)
-        setOpen(false);
+        setUserId("-1")
+        setPublisherId("-1")
         setLoggedIn(false);
-        Router.push("/Login")
+        setUsername("");
+        setOpen(false);
+        
+        
     }
 
     // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.

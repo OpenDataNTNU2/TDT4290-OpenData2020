@@ -7,6 +7,11 @@ using OpenData.API.Domain.Models.Queries;
 using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
+using OpenData.API;
+using System;
+using Microsoft.AspNetCore.JsonPatch;
+using OpenData.API.Domain.Repositories;
+
 
 namespace OpenData.API.Controllers
 {
@@ -17,11 +22,15 @@ namespace OpenData.API.Controllers
     {
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
+        private readonly IRdfService _rdfService;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DatasetsController(IDatasetService datasetService, IMapper mapper)
+        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper, IUnitOfWork unitOfWork)
         {
+            _rdfService = rdfService;
             _datasetService = datasetService;
             _mapper = mapper;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -67,13 +76,35 @@ namespace OpenData.API.Controllers
         {
             var dataset = _mapper.Map<SaveDatasetResource, Dataset>(resource);
             var result = await _datasetService.SaveAsync(dataset);
-
+            
             if (!result.Success)
             {
                 return BadRequest(new ErrorResource(result.Message));
             }
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
+            return Ok(datasetResource);
+        }
+
+        [HttpPost("import")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostImportAsync(string url, int categoryId)
+        {   
+            Dataset datatset = await _rdfService.import(url, categoryId);
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            return Ok(datasetResource);
+        }
+
+        [HttpPost("populate")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostPopulate(int numberOfDatasets)
+        {   
+            Dataset datatset = await _rdfService.populate(numberOfDatasets);
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
             return Ok(datasetResource);
         }
 
@@ -98,6 +129,30 @@ namespace OpenData.API.Controllers
 
             var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
             return Ok(datasetResource);
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(DatasetResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<Dataset> patch)
+        {
+            if (patch != null)
+            {
+                var datasetResponse = await _datasetService.FindByIdAsync(id);
+                Dataset dataset = datasetResponse.Resource;
+                patch.ApplyTo(dataset, ModelState);
+
+                await _unitOfWork.CompleteAsync();
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+
+                var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
+                return Ok(datasetResource);
+            }
+            return BadRequest(ModelState);
         }
 
         /// <summary>
