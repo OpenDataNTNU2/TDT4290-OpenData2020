@@ -36,13 +36,13 @@ export default function DatasetCard({ dataset, onClick, pathName = "" }) {
             return ["#FFFFFF", ""];
         }
         if (samordna == null) {
-            return ["#bfbfbf", "Ikke samordna"];
+            return ["#83749B", "Ikke samordna"];
         }
         if (!samordna.underCoordination) {
-            return ["#ccd6ff", "Samordna"];
+            return ["#874BE9", "Samordna"];
         }
         else if (samordna.underCoordination) {
-            return ["#e6e9ff", "Pågående samordning"];
+            return ["#675c78", "Pågående samordning"];
         }
     };
 
@@ -57,9 +57,7 @@ export default function DatasetCard({ dataset, onClick, pathName = "" }) {
         {dataset.accessLevel === "Yellow" ? <div className={styles.chip} style={{backgroundColor: "#D4B546"}} >Begrenset offentlighet</div> : null}
         {dataset.accessLevel === "Red" ? <div className={styles.chip} style={{backgroundColor: "#DA6464"}} >Unntatt offentlighet</div> : null}
 
-        {dataset.coordination ? <div className={styles.chip} style={{backgroundColor: "#874BE9"}} >Samordnet</div> : <div className={styles.chip} style={{backgroundColor: "#83749B"}}>Ikke samordnet</div> }
-        {/* TODO: Add tags for under coordination */}
-        {/* {dataset.coordination.underCoordination ? <div className={styles.chip} style={{backgroundColor: "#B99EE5"}} >Under samordning</div> : <div className={styles.chip} style={{backgroundColor: "#83749B"}}>Ikke samordnet</div> }       */}
+        {dataset.coordination && <div className={styles.chip} style={{backgroundColor: setSamordna(dataset.coordination)[0]}}>{setSamordna(dataset.coordination)[1]}</div>}
       </div>
     )
   }
