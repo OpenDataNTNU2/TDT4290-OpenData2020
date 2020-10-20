@@ -39,7 +39,7 @@ export default function CreateDataset(props) {
     const dd = fixingDate.getDate() < 10 ? `0${fixingDate.getDate()}` : fixingDate.getDate();
     let mm = fixingDate.getMonth() < 10 ? `0${fixingDate.getMonth()}` : fixingDate.getMonth();
     // month is from 0-11 in javascript but 1-12 in html:)
-    mm = parseInt(mm, 10) + 1;
+    mm = parseInt(mm) + 1;
     const yyyy = fixingDate.getFullYear();
     return `${yyyy}-${mm}-${dd}`;
   }

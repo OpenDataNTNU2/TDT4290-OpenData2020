@@ -10,7 +10,7 @@ import PatchApi from '../../Components/ApiCalls/PatchApi';
 import styles from '../../styles/Detailed.module.css';
 
 export default function DetailedDataset({ data, uri }) {
-  const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter, 10));
+  const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
@@ -41,7 +41,7 @@ export default function DetailedDataset({ data, uri }) {
   // puts data into the api with datasets
   const handleChange = async () => {
     // setInterestCounter brukes ikke i praksis, oppdaterer manuelt når jeg sender data i put.
-    setInterestCounter(parseInt(interestCounter, 10) + 1);
+    setInterestCounter(parseInt(interestCounter) + 1);
     setDisabled(!disabled);
     setOpen(true);
     updateData();
