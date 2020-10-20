@@ -54,6 +54,7 @@ namespace OpenData.API.Services
                 CategoryId = categoryId,
                 DatePublished = getDateOrNow(attributes.GetValueOrDefault("issued", "")),  
                 DateLastUpdated = getDateOrNow(attributes.GetValueOrDefault("modified", "")),  
+                AccessLevel = EAccessLevel.green,  
             };
 
             // Add the dataset to the database
