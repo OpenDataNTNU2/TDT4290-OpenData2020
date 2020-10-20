@@ -107,31 +107,24 @@ export default function Home() {
     <div className='datakatalog'>
       <Grid
         container
-        style={{ padding: '3%' }}
+        style={{ padding: '3%', marginTop: "50px" }}
         justify='space-evenly'
       >
         <Grid item xs={2} >
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%' }}>
             <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} isDataset={url.includes("dataset")} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
-          </Paper>
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
-            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")} />
-          </Paper>
-          <Paper variant='outlined' style={{ backgroundColor: '#E1F3FF', padding: '7%', marginTop: "7%" }}>
+            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")}/>
             <FilterTag />
-          </Paper>
         </Grid>
         <Grid
           item
           xs={8}
         >
 
-          <Grid container direction="row">
-
+          <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}} >
             <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
 
             {/* Midlertidig select bar, bør opprette et form */}
-            <FormControl variant="outlined" style={{ width: "20vh", marginLeft: "3vh" }}>
+            <FormControl variant="outlined" style={{ width: "200px"}}>
               <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
               <Select
                 labelId="chooseWhatToView"
@@ -144,8 +137,7 @@ export default function Home() {
                 <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
               </Select>
             </FormControl>
-
-          </Grid>
+          </div>
           <InfiniteScroll
             dataLength={page * 10}
             next={() => setPage(page + 1)}
@@ -165,7 +157,6 @@ export default function Home() {
             }
             {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
-
         </Grid>
       </Grid>
     </div>

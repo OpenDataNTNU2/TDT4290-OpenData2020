@@ -1,11 +1,12 @@
 import React from 'react';
-import { Grid, Button } from '@material-ui/core';
+import { Grid, Button, Divider } from '@material-ui/core';
 
 
 const RequestButtonComp = (props) => {
 
-    return (  
-        <Grid>
+    return ( 
+        <div style={{margin: "25px 0"}} >
+            <Divider variant="fullWidth" /><br />
             <p><i>Er du interessert i dette datasettet?</i></p>
             <Button 
             variant="contained" 
@@ -14,7 +15,7 @@ const RequestButtonComp = (props) => {
             onClick={props.handleChange}>
                 Etterspør datasett
             </Button>
-        </Grid>
+        </div> 
     )
 }
 

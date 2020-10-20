@@ -1,5 +1,6 @@
 import React from "react";
 import { Grid, Paper, Box } from "@material-ui/core/";
+import styles from "../styles/DatasetCard.module.css"
 
 export default function DatasetCard({ dataset, onClick, pathName = "" }) {
     // Just example text to try long description
@@ -28,12 +29,6 @@ export default function DatasetCard({ dataset, onClick, pathName = "" }) {
         return string;
     };
 
-    const setPublished = (publisert) => {
-        if (publisert === "Published") {
-            return ["#ccd6ff", "Publisert"];
-        }
-        return ["#bfbfbf", "Ikke publisert"];
-    };
 
     const setSamordna = (samordna) => {
         // checking if we have coordination information. If null it is not samordna
@@ -51,84 +46,54 @@ export default function DatasetCard({ dataset, onClick, pathName = "" }) {
         }
     };
 
-    const setAccess = (access) => {
-        switch (access) {
-            case 'Green': return ["#D6FFD2", "Offentlig"]
-            case 'Yellow': return ["#fff891", "Begrenset offentlighet"]
-            case 'Red': return ["#FFBFC3", "Unntatt offentlighet"]
-        }
-        return ["#8e918c", "Ukjent tilgang"]
-    };
-
-
+  const getChips = () => {
     return (
-        <div onClick={onClick} key={dataset.id * 2}>
-            <Paper
-                variant="outlined"
-                style={{ padding: "1%", marginBottom: "2%", cursor: "pointer" }}
-            >
-                <Grid container alignItems="flex-end" wrap="wrap">
-                    <Grid item xs={9}>
-                        <h3>{dataset.title}</h3>
-                        <h5>{dataset.publisher.name}</h5>
-                        <p>{cutString(dataset.description)}</p>
-                    </Grid>
-                    <Grid item xs={2} style={{ margin: "1em" }}>
-                        <Paper
-                            elevation={0}
-                            style={{
-                                backgroundColor: setPublished(dataset.publicationStatus)[0],
-                                textAlign: "center",
-                                padding: "3%",
-                                marginBottom: "3%",
-                            }}
-                        >
-                            {setPublished(dataset.publicationStatus)[1]}
-                        </Paper>
-                        <Paper
-                            elevation={0}
-                            style={{
-                                backgroundColor: setSamordna(dataset.coordination)[0],
-                                textAlign: "center",
-                                padding: "3%",
-                                marginBottom: "3%",
-                            }}
-                        >
-                            {setSamordna(dataset.coordination)[1]}
-                        </Paper>
-                        <Paper
-                            elevation={0}
-                            style={{
-                                backgroundColor: setAccess(dataset.accessLevel)[0],
-                                textAlign: "center",
-                                padding: "3%",
-                                marginBottom: "3%",
-                            }}
-                        >
-                            {setAccess(dataset.accessLevel)[1]}
-                        </Paper>
-                    </Grid>
+      <div className={styles.chipsContainer} >
+        {dataset.publicationStatus === "Published" ? <div className={styles.chip} style={{backgroundColor: "#076DB1"}} >Publisert</div> : null}
+        {dataset.publicationStatus === "Planned published" ? <div className={styles.chip} style={{backgroundColor: "#5C94B9"}} >Planlagt publisert</div> : null}
+        {dataset.publicationStatus === "Not published" ? <div className={styles.chip} style={{backgroundColor: "#9EB8C9"}} >Ikke publisert</div> : null}
 
-                    <Grid container direction="row">
-                        {Object.values(dataset.distributions).map((dist) => (
-                            <Box
-                                key={dist.id * 7}
-                                border={1}
-                                borderRadius="borderRadius"
-                                borderColor="grey.500"
-                                padding="0.5%"
-                                marginRight={1}
-                            >
-                                {dist.fileFormat.toUpperCase()}
-                            </Box>
-                        ))}
-                    </Grid>
-                    <Grid container alignItems="center">
-                        {ifPublished(dataset.publicationStatus)}
-                        <p>{reqCounter}</p>
-                    </Grid>
-                </Grid>
-            </Paper>
-        </div>
-    );
+        {dataset.accessLevel === "Green" ? <div className={styles.chip} style={{backgroundColor: "#46D454"}}>Offentlig</div> : null}
+        {dataset.accessLevel === "Yellow" ? <div className={styles.chip} style={{backgroundColor: "#D4B546"}} >Begrenset offentlighet</div> : null}
+        {dataset.accessLevel === "Red" ? <div className={styles.chip} style={{backgroundColor: "#DA6464"}} >Unntatt offentlighet</div> : null}
+
+        {dataset.coordination ? <div className={styles.chip} style={{backgroundColor: "#874BE9"}} >Samordnet</div> : <div className={styles.chip} style={{backgroundColor: "#83749B"}}>Ikke samordnet</div> }
+        {/* TODO: Add tags for under coordination */}
+        {/* {dataset.coordination.underCoordination ? <div className={styles.chip} style={{backgroundColor: "#B99EE5"}} >Under samordning</div> : <div className={styles.chip} style={{backgroundColor: "#83749B"}}>Ikke samordnet</div> }       */}
+      </div>
+    )
+  }
+
+  return (
+    <div onClick={onClick} key={dataset.id * 2} className={styles.datasetContainer} >
+      {getChips()}
+        <Grid container alignItems="flex-end" wrap="wrap">
+          <Grid item xs={9} >
+            <h3 className={styles.title}>{dataset.title}</h3>
+            <p className={styles.publisher} >{dataset.publisher.name}</p>
+            <p className={styles.desc}>{cutString(dataset.description)}</p>
+
+          <Grid container direction="row">
+            {Object.values(dataset.distributions).map((dist) => (
+              <Box
+                key={dist.id * 7}
+                border={1}
+                borderRadius="borderRadius"
+                borderColor="grey.500"
+                padding="0.5%"
+                marginRight={1}
+              >
+                {dist.fileFormat.toUpperCase()}
+              </Box>
+            ))}
+          </Grid>
+          {pathName==="/MyDatasets" && 
+          <Grid container alignItems="center">
+            {ifPublished(dataset.publicationStatus)}
+            <p>{reqCounter}</p>
+          </Grid>}
+        </Grid>
+      </Grid>
+    </div>
+  );
 }
