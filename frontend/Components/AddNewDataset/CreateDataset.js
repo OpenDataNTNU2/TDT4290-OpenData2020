@@ -8,80 +8,80 @@ import {
     TextField,
     InputLabel,
     Select,
-    MenuItem
-} from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
+    MenuItem,
+} from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 // import forms
-import Distribution from "../Forms/Distribution";
-import Input from "../Forms/Input";
-import RadioInput from "../Forms/RadioInput";
-import SelectCategory from "../Forms/SelectCategory";
-import SelectTags from "../Forms/SelectTags";
+import Distribution from '../Forms/Distribution';
+import Input from '../Forms/Input';
+import RadioInput from '../Forms/RadioInput';
+import SelectCategory from '../Forms/SelectCategory';
+import SelectTags from '../Forms/SelectTags';
 
-import GetApi from "../ApiCalls/GetApi";
-import PostApi from "../ApiCalls/PostApi";
+import GetApi from '../ApiCalls/GetApi';
+import PostApi from '../ApiCalls/PostApi';
 
 export default function CreateDataset(props) {
     // variables/states for "main data", will add more here
-    const [title, setTitle] = useState("");
-    const [description, setDescription] = useState("");
-    const [published, setPublished] = useState("1");
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [published, setPublished] = useState('1');
 
     // accesslevel
-    const [accessLevel, setAccessLevel] = useState("1");
+    const [accessLevel, setAccessLevel] = useState('1');
 
     const date = new Date();
+
+    function fixDate(fixingDate) {
+        const dd = fixingDate.getDate() < 10 ? `0${fixingDate.getDate()}` : fixingDate.getDate();
+        let mm = fixingDate.getMonth() < 10 ? `0${fixingDate.getMonth()}` : fixingDate.getMonth();
+        // month is from 0-11 in javascript but 1-12 in html:)
+        mm = parseInt(mm, 10) + 1;
+        const yyyy = fixingDate.getFullYear();
+        return `${yyyy}-${mm}-${dd}`;
+    }
 
     const [startDate, setStartDate] = useState(fixDate(date));
 
     // variables/states for the distribution
     const [distribution, setDistribution] = useState(0);
-    const [distTitle, setDistTitle] = useState([""]);
-    const [distUri, setDistUri] = useState([""]);
-    const [distFileFormat, setDistFileFormat] = useState(["1"]);
+    const [distTitle, setDistTitle] = useState(['']);
+    const [distUri, setDistUri] = useState(['']);
+    const [distFileFormat, setDistFileFormat] = useState(['1']);
 
     // variables/states for tags
     const [tags, setTags] = useState([]);
-    const [selectedTags, setSelectedTags] = useState("");
+    const [selectedTags, setSelectedTags] = useState('');
     const [newTags, setNewTags] = useState([]);
 
     // variables/states for categories
     const [categories, setCategories] = useState([]);
-    const [selectedCategory, setSelectedCategory] = useState("");
+    const [selectedCategory, setSelectedCategory] = useState('');
 
     // show / not show snackbar with successfull submit message
     const [open, setOpen] = useState(false);
-    const [feedbackRequired, setFeedbackRequired] = useState(false)
+    const [feedbackRequired, setFeedbackRequired] = useState(false);
 
     // variables/states for sending request to join coordination
-    const [wantToRequestCoordination, setWantToRequestCoordination] = useState("1")
-    const [joinCoordinationReason, setJoinCoordinationReason] = useState("")
-    const [coordinations, setCoordinations] = useState([])
-    const [selectedCoordination, setSelectedCoordination] = useState("")
+    const [wantToRequestCoordination, setWantToRequestCoordination] = useState('1');
+    const [joinCoordinationReason, setJoinCoordinationReason] = useState('');
+    const [coordinations, setCoordinations] = useState([]);
+    const [selectedCoordination, setSelectedCoordination] = useState('');
 
     // data sent to PostApi when posting new dataset
     const data = {
-        identifier: "denne bør settes i backend",
-        title: title,
-        description: description,
+        identifier: 'denne bør settes i backend',
+        title,
+        description,
         publisherId: props.prevPublisherId,
         publicationStatus: parseInt(published),
         accessLevel: parseInt(accessLevel),
         categoryId: selectedCategory,
         tagsIds: selectedTags,
     };
-
-    function fixDate(date) {
-        let dd = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
-        let mm = date.getMonth() < 10 ? "0" + date.getMonth() : date.getMonth();
-        // month is from 0-11 in javascript but 1-12 in html:)
-        mm = parseInt(mm) + 1;
-        let yyyy = date.getFullYear();
-        return yyyy + "-" + mm + "-" + dd;
-    }
 
     // this is run inside of PostApi in distribution, clear states after added distributions
     const postDistributions = () => {
@@ -91,16 +91,17 @@ export default function CreateDataset(props) {
 
     const setPublishedStatus = (value) => {
         setPublished(value);
-        if (value === "1") setStartDate("2020-10-12");
-        else if (value === "2") { }
-        else {
-            setStartDate("2020-10-12");
+        if (value === '1') setStartDate('2020-10-12');
+        else if (value === '2') {
+            return null;
+        } else {
+            setStartDate('2020-10-12');
         }
     };
 
     // this is run inside of PostApi for datasets, adds distributions
     const addDistributions = (dataId) => {
-        for (let i = 0; i < distribution; i++) {
+        for (let i = 0; i < distribution; i += 1) {
             const data2 = {
                 title: distTitle[i],
                 uri: distUri[i],
@@ -108,17 +109,13 @@ export default function CreateDataset(props) {
                 datasetId: dataId,
             };
             try {
-                PostApi(
-                    "https://localhost:5001/api/distributions",
-                    data2,
-                    postDistributions
-                );
+                PostApi('https://localhost:5001/api/distributions', data2, postDistributions);
             } catch (_) {
-                alert("failed to post dataset");
+                alert('failed to post dataset');
             }
         }
-        if (published === "1" && accessLevel === "1") {
-            submitApplicationToJoinCoordination(dataId)
+        if (published === '1' && accessLevel === '1') {
+            submitApplicationToJoinCoordination(dataId);
         }
 
         if (distribution === 0) {
@@ -128,70 +125,61 @@ export default function CreateDataset(props) {
     };
 
     const addTags = () => {
-        newTags.map((tag) =>
-            PostApi(
-                "https://localhost:5001/api/tags",
-                { name: tag.name },
-                postDistributions
-            )
-        );
+        newTags.map((tag) => PostApi('https://localhost:5001/api/tags', { name: tag.name }, postDistributions));
     };
 
     // posts data into the api with datasets
     // and if successfull runs addDistributions
     const handleChange = async () => {
-        console.log("data: " + data)
-        console.log(data)
+        console.log(`data: ${data}`);
+        console.log(data);
         if (checkRequiredVariables()) {
-            PostApi("https://localhost:5001/api/datasets", data, addDistributions);
+            PostApi('https://localhost:5001/api/datasets', data, addDistributions);
             addTags();
-        }
-        else {
-            setFeedbackRequired(true)
+        } else {
+            setFeedbackRequired(true);
         }
     };
 
-    const checkRequiredVariables = () => {
-        if (title !== "" && description !== "" && selectedCategory !== "") {
-            if (wantToRequestCoordination === "2" && selectedCoordination !== "" && joinCoordinationReason !== "") {
-                return true
+    function checkRequiredVariables() {
+        if (title !== '' && description !== '' && selectedCategory !== '') {
+            if (wantToRequestCoordination === '2' && selectedCoordination !== '' && joinCoordinationReason !== '') {
+                return true;
             }
-            else if (wantToRequestCoordination !== "2") {
-                return true
+            if (wantToRequestCoordination !== '2') {
+                return true;
             }
-
         }
-        return false
+        return false;
     }
 
     // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
     useEffect(() => {
-        GetApi("https://localhost:5001/api/tags", setTags);
-        GetApi("https://localhost:5001/api/categories", setCategories);
-        GetApi("https://localhost:5001/api/coordinations", setCoordinations);
+        GetApi('https://localhost:5001/api/tags', setTags);
+        GetApi('https://localhost:5001/api/categories', setCategories);
+        GetApi('https://localhost:5001/api/coordinations', setCoordinations);
     }, [props.prevLoggedIn]);
 
-    const submitApplicationToJoinCoordination = (id) => {
-        let d = {
-            "reason": joinCoordinationReason,
-            "coordinationId": selectedCoordination,
-            "datasetId": id
-        }
-        PostApi('https://localhost:5001/api/applications', d, successfullySentApplication)
+    function submitApplicationToJoinCoordination(id) {
+        const d = {
+            reason: joinCoordinationReason,
+            coordinationId: selectedCoordination,
+            datasetId: id,
+        };
+        PostApi('https://localhost:5001/api/applications', d, successfullySentApplication);
     }
 
-    const successfullySentApplication = (id) => {
-        console.log("application sent to: https://localhost:5001/api/applications")
-        setSelectedCoordination("")
-        setJoinCoordinationReason("")
+    function successfullySentApplication() {
+        console.log('application sent to: https://localhost:5001/api/applications');
+        setSelectedCoordination('');
+        setJoinCoordinationReason('');
     }
-
 
     // updates the distribution states when adding more distributions
     const addNewMoreDistributions = () => {
         setDistribution(distribution + 1);
-        setDistTitle([...distTitle, ""]);
-        setDistUri([...distUri, ""]);
+        setDistTitle([...distTitle, '']);
+        setDistUri([...distUri, '']);
         setDistFileFormat([...distFileFormat, 1]);
     };
 
@@ -205,21 +193,21 @@ export default function CreateDataset(props) {
 
     // resets all the states, this is executed after successfully submitting a dataset
     // it is no restrictions for input fields missing etc, so in theory, it is successfull no matter what now..
-    const clearStates = () => {
-        setTitle("");
-        setDescription("");
-        setPublished("1");
+    function clearStates() {
+        setTitle('');
+        setDescription('');
+        setPublished('1');
 
-        setDistTitle([""]);
-        setDistUri([""]);
+        setDistTitle(['']);
+        setDistUri(['']);
         setDistFileFormat([0]);
         setDistribution(0);
 
-        setSelectedTags("");
+        setSelectedTags('');
         setNewTags([]);
-        setAccessLevel("1")
-        setSelectedCategory("");
-    };
+        setAccessLevel('1');
+        setSelectedCategory('');
+    }
 
     return (
         <Grid
@@ -227,32 +215,26 @@ export default function CreateDataset(props) {
             spacing={1}
             direction="column"
             alignItems="center"
-            style={{ minHeight: "70vh", minWidth: "60vh", marginTop: "5vh" }}
+            style={{ minHeight: '70vh', minWidth: '60vh', marginTop: '5vh' }}
         >
-            <Input
-                id="title"
-                label="Tittel (*)"
-                value={title}
-                handleChange={setTitle}
-                multiline={false}
-            />
+            <Input id="title" label="Tittel (*)" value={title} handleChange={setTitle} multiline={false} />
             <br />
             {/* Denne er basert på kundemail */}
-            <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+            <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
                 <FormLabel component="legend">Status for publisering</FormLabel>
                 <RadioInput
                     id="publishStatus"
                     mainValue={published}
                     handleChange={setPublishedStatus}
-                    value={["1", "2", "3"]}
-                    label={["Publisert", "Publisering planlagt", "Ikke publisert"]}
-                    color={["normal", "normal", "normal"]}
+                    value={['1', '2', '3']}
+                    label={['Publisert', 'Publisering planlagt', 'Ikke publisert']}
+                    color={['normal', 'normal', 'normal']}
                 />
             </FormControl>
             <br />
             {/* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis status er "publisering planlagt" */}
-            {published === "2" ? (
-                <FormControl variant="outlined" style={{ width: "50vh" }}>
+            {published === '2' ? (
+                <FormControl variant="outlined" style={{ width: '50vh' }}>
                     <TextField
                         variant="outlined"
                         size="medium"
@@ -268,19 +250,15 @@ export default function CreateDataset(props) {
                 </FormControl>
             ) : null}
 
-            <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+            <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
                 <FormLabel component="legend">Tilgangsnivå</FormLabel>
                 <RadioInput
                     id="accessLevel"
                     mainValue={accessLevel}
                     handleChange={setAccessLevel}
-                    value={["1", "2", "3"]}
-                    label={[
-                        "Offentlig",
-                        "Begrenset offentlighet",
-                        "Unntatt offentlighet",
-                    ]}
-                    color={["green", "yellow", "red"]}
+                    value={['1', '2', '3']}
+                    label={['Offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+                    color={['green', 'yellow', 'red']}
                 />
             </FormControl>
 
@@ -290,7 +268,7 @@ export default function CreateDataset(props) {
                 label="Beskrivelse (*)"
                 value={description}
                 handleChange={setDescription}
-                multiline={true}
+                multiline
             />
             <br />
             <SelectCategory
@@ -299,7 +277,7 @@ export default function CreateDataset(props) {
                 value={categories}
                 setSelectedCategory={setSelectedCategory}
                 selected={selectedCategory}
-                label={["Option 1", "Option 2", "Option 3"]}
+                label={['Option 1', 'Option 2', 'Option 3']}
             />
             <br />
             <SelectTags
@@ -312,27 +290,23 @@ export default function CreateDataset(props) {
                 setNewTags={setNewTags}
             />
             <br />
-            {published === "1" && accessLevel === "1" ?
-                <FormControl component="fieldset" style={{ minWidth: "50vh" }}>
+            {published === '1' && accessLevel === '1' ? (
+                <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
                     <FormLabel component="legend">Forespørsel om å bli med i samordning</FormLabel>
                     <RadioInput
                         id="joinCoordination"
                         mainValue={wantToRequestCoordination}
                         handleChange={setWantToRequestCoordination}
-                        value={["1", "2"]}
-                        label={[
-                            "Ikke bli med i samordning", "Bli med i en samordning"
-                        ]}
-                        color={["normal", "normal"]}
+                        value={['1', '2']}
+                        label={['Ikke bli med i samordning', 'Bli med i en samordning']}
+                        color={['normal', 'normal']}
                     />
                 </FormControl>
-                : null}
+            ) : null}
             {/* Send forespørsel om å bli med i samordningen */}
 
-
-
-            {wantToRequestCoordination === "2" && published === "1" && accessLevel === "1" ?
-                <FormControl variant="outlined" style={{ width: "50vh" }}>
+            {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
+                <FormControl variant="outlined" style={{ width: '50vh' }}>
                     <InputLabel id="requestToJoinCoordinationLabel">Velg samordning (*)</InputLabel>
                     <Select
                         labelId="requestToJoinCoordinationLabelID"
@@ -341,45 +315,42 @@ export default function CreateDataset(props) {
                         value={selectedCoordination}
                         onChange={(event) => setSelectedCoordination(event.target.value)}
                     >
-
-                        {coordinations.items && Object.values(coordinations.items).map((coordination) => (
-                            coordination.publisher.id !== parseInt(props.prevPublisherId) ? <MenuItem value={coordination.id} key={coordination.id}>{coordination.title} - {coordination.publisher.name}</MenuItem> : null
-                        ))}
-
-
+                        {coordinations.items &&
+                            Object.values(coordinations.items).map((coordination) =>
+                                coordination.publisher.id !== parseInt(props.prevPublisherId) ? (
+                                    <MenuItem value={coordination.id} key={coordination.id}>
+                                        {coordination.title} -{coordination.publisher.name}
+                                    </MenuItem>
+                                ) : null
+                            )}
                     </Select>
                 </FormControl>
-                : null}<br />
+            ) : null}
+            <br />
 
-
-            {wantToRequestCoordination === "2" && published === "1" && accessLevel === "1" ?
+            {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
                 <Input
                     id="joinCoordinationId"
-                    multiline={true}
+                    multiline
                     label="Begrunnelse for forespørsel (*)"
                     value={joinCoordinationReason}
                     handleChange={setJoinCoordinationReason}
                 />
-                : null}<br />
+            ) : null}
+            <br />
 
-            {published === "1" && distribution === 0 ? (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={() => setDistribution(1)}
-                >
+            {published === '1' && distribution === 0 ? (
+                <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>
                     Legg til distribusjon
                 </Button>
             ) : null}
             {distribution === 0 ? null : (
                 <Grid>
                     <br />
-                    <h1 style={{ fontWeight: "normal", textAlign: "center" }}>
-                        Legg til distribusjon
-                    </h1>
+                    <h1 style={{ fontWeight: 'normal', textAlign: 'center' }}>Legg til distribusjon</h1>
                     {Array.from(Array(distribution), (e, i) => {
                         return (
-                            <div key={"dist" + i.toString()}>
+                            <div key={`dist${i.toString()}`}>
                                 <Divider variant="middle" />
                                 <Distribution
                                     title={distTitle}
@@ -395,22 +366,14 @@ export default function CreateDataset(props) {
                     })}
                 </Grid>
             )}
-            {distribution !== 0 && published === "1" ? (
+            {distribution !== 0 && published === '1' ? (
                 <div>
-                    <Button
-                        variant="contained"
-                        color="secondary"
-                        onClick={removeDistribution}
-                    >
+                    <Button variant="contained" color="secondary" onClick={removeDistribution}>
                         Fjern
-            </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        onClick={addNewMoreDistributions}
-                    >
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>
                         Legg til
-            </Button>
+                    </Button>
                 </div>
             ) : null}
             <br />
@@ -418,23 +381,15 @@ export default function CreateDataset(props) {
                 Send inn
             </Button>
             <br />
-            <Snackbar
-                open={open}
-                autoHideDuration={5000}
-                onClose={() => setOpen(false)}
-            >
+            <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
                 <Alert elevation={1} severity="success">
                     Datasett publisert
-          </Alert>
+                </Alert>
             </Snackbar>
-            <Snackbar
-                open={feedbackRequired}
-                autoHideDuration={5000}
-                onClose={() => setFeedbackRequired(false)}
-            >
+            <Snackbar open={feedbackRequired} autoHideDuration={5000} onClose={() => setFeedbackRequired(false)}>
                 <Alert elevation={1} severity="error">
                     Husk å fylle inn alle feltene som kreves (*)
-          </Alert>
+                </Alert>
             </Snackbar>
         </Grid>
     );

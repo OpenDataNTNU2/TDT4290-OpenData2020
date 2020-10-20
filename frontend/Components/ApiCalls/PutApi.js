@@ -1,20 +1,19 @@
 // Uvisst om denne fungerer per nå, men noe på plass
 
 const PutApi = async (url, data) => {
-    try{
+    try {
         fetch(url, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify(data),
         })
-        .then(response => response.json())
-        .then(response => console.log(response))
+            .then((response) => response.json())
+            .then((response) => console.log(response));
+    } catch (_) {
+        console.log(`failed to put to: ${url}`);
     }
-    catch(_){
-        console.log("failed to put to: " + url)
-    }
-}
+};
 
-export default PutApi
+export default PutApi;

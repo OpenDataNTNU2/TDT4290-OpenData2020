@@ -1,16 +1,15 @@
-
-
 const GetApi = async (url, setResponse) => {
-    try{
+    try {
         fetch(url, {
-            method: 'GET',    
+            method: 'GET',
         })
-        .then(response => response.json())
-        .then(response => { setResponse(response) })
+            .then((response) => response.json())
+            .then((response) => {
+                setResponse(response);
+            });
+    } catch (_) {
+        console.log(`failed to fetch from: ${url}`);
     }
-    catch(_){
-        console.log("failed to fetch from: " + url)
-    }
-}
+};
 
 export default GetApi;

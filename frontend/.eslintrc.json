@@ -1,0 +1,38 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "amd": true,
+        "node": true,
+        "es2020": true,
+        "jest/globals": true
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:jest/recommended",
+        "plugin:prettier/recommended" // Must be last element so prettier config overrides other formatting rules
+    ],
+    "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": true
+        },
+        "ecmaVersion": 2020,
+        "sourceType": "module"
+    },
+    "rules": {
+        "prettier/prettier": ["error", {}, { "usePrettierrc": true }], // Use our .prettierrc file as source
+        "react/destructuring-assignment": "off",
+        "react/react-in-jsx-scope": "off",
+        "react/jsx-filename-extension": "off",
+        "react/prop-types": "off",
+        "no-nested-ternary": "off", //should be set to warn tho
+        "radix": "off",
+        "no-use-before-define": ["error", { "functions": false }]
+    }
+}
