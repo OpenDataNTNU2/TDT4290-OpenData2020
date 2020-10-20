@@ -1,19 +1,19 @@
 .filterContainer {
-    padding: 33px;
-    background-color: white;
-    border: 2px solid #e0e0e0;
-    border-radius: 8px;
-    margin-bottom: 35px;
+  padding: 33px;
+  background-color: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  margin-bottom: 35px;
 }
 
 .filterTitle {
-    font-style: normal;
-    font-weight: 500;
-    font-size: 20px;
-    line-height: 28px;
-    margin: 0;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 28px;
+  margin: 0;
 }
 
 .checkboxesContainer {
-    margin-left: 10px;
+  margin-left: 10px;
 }

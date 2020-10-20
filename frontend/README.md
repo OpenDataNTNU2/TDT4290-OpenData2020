@@ -45,23 +45,23 @@ Use `expect(promise).resolves.` for promises / things that dont resolve right aw
 
 Common text is description of content in folder.
 
--   **.next**
-    -   Not important, contains the next.js files which comes with npm install after creating the next app
--   **\_\_tests\_\_**
-    -   Contains Jest unit tests (and possibly snapshots) for our code
--   **Components**
-    -   **Forms**
-        -   Input field components that we create go here
-    -   Normal components we create go here, e.g. Header
--   **node_modules**
-    -   Contains packages from the dependencies, auto generated, gitignored
--   **pages**
-    -   **api**
-        -   Not important yet, since we are using .NET for backend and api handling
-    -   This is where all out pages is located, this allows us to use next features like dynamic routing and SSR
--   **public**
-    -   Not important
--   **styles**
-    -   Not important, might delete since we are using material ui
--   **utils**
-    -   This will handle global state for logged in users
+- **.next**
+  - Not important, contains the next.js files which comes with npm install after creating the next app
+- **\_\_tests\_\_**
+  - Contains Jest unit tests (and possibly snapshots) for our code
+- **Components**
+  - **Forms**
+    - Input field components that we create go here
+  - Normal components we create go here, e.g. Header
+- **node_modules**
+  - Contains packages from the dependencies, auto generated, gitignored
+- **pages**
+  - **api**
+    - Not important yet, since we are using .NET for backend and api handling
+  - This is where all out pages is located, this allows us to use next features like dynamic routing and SSR
+- **public**
+  - Not important
+- **styles**
+  - Not important, might delete since we are using material ui
+- **utils**
+  - This will handle global state for logged in users
