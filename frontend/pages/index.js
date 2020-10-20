@@ -111,20 +111,20 @@ export default function Home() {
         justify='space-evenly'
       >
         <Grid item xs={2} >
-            <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} isDataset={url.includes("dataset")} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
-            <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")}/>
-            <FilterTag />
+          <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} isDataset={url.includes("dataset")} setPage={setPage} changed={changedFilter} setChanged={setChangedFilter} />
+          <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} isDataset={url.includes("dataset")} />
+          <FilterTag />
         </Grid>
         <Grid
           item
           xs={8}
         >
 
-          <div style={{display: "flex", flexDirection: "row", justifyContent: "space-between"}} >
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }} >
             <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
 
             {/* Midlertidig select bar, bør opprette et form */}
-            <FormControl variant="outlined" style={{ width: "200px"}}>
+            <FormControl variant="outlined" style={{ width: "200px" }}>
               <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
               <Select
                 labelId="chooseWhatToView"
