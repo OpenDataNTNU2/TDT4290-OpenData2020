@@ -8,6 +8,5 @@ namespace OpenData.API.Domain.Models
         public int Id { get; set; }
         public string Name { get; set; }
         public ICollection<DatasetTags> DatasetTags { get; set; } 
-        public ICollection<CoordinationTags> CoordinationTags { get; set; } 
     }
 }

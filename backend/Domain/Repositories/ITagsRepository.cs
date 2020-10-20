@@ -11,7 +11,5 @@ namespace OpenData.API.Domain.Repositories
         Task<Tags> FindByIdAsync(int id);
         void Update(Tags tags);
         void Remove(Tags tags);
-        void Remove(CoordinationTags tags);
-        void Remove(DatasetTags tags);
     }
 }

@@ -10,31 +10,6 @@ dotnet run
 Then go to ```https://localhost:5001/swagger/index.html``` to look for the api documentation. 
 In order to use the post, put and delete you have to use something like [Postman](https://www.postman.com/downloads/).
 
-## To test the backend
-
-```
-cd backend
-dotnet test
-```
-
-Alternatively, install the "NUnit 3 Test Adapter" extension in visual studio.
-Then you can run tests via the Test Explorer. (You can find it under view in the top menu bar)
-
-## Writing tests
-Use "DatasetServiceTests.cs" as a guide for how to set up a tests file.  
-Make a new class in the Tests folder/Tests project (at the bottom of the Solution explorer).  
-
-Make sure to write [TestFixture] above the class declaration.  
-Tests are functions declared under [Test], the return type for tests is called Task.  
-A function declared under [SetUp] will run before every single test.  
-A function delcared under [TearDown] will run after every single test.  
-[OneTimeSetUp] and [OneTimeTearDown] will run once before and after all tests.  
-OneTimeSetUp -> SetUp -> Test1 -> TearDown -> SetUp -> Test2 -> TearDown -> OneTimeTearDown  
-
-Use the Assert package to write tests. Assert.IsTrue([variable or expression], [Error message if it is false]) and IsFalse are most useful. Assert.AreEqual([a], [b], [message]) and AreNotEqual can also be useful, but it requires that the classes have a well defined equals method.  
-
-The TestDatabase class can be used to set up a lighter database for testing.  
-It comes with a function for adding test data (Strender i Bodø og Trondheim), this test data is stored in AppDbContext at the moment, make sure to move it to the TestDatabase once you no longer need it in AppDbContext.
 
 ## Backend structure
 __Bold__ is folders.
@@ -70,17 +45,8 @@ Entity type: Dataset, Publisher etc..
   * Resource files for each entity type, where e.g DatasetResource.cs is the response sent to frontend and the SaveDatasetResource is what is sent in before the dataset is created.
 * __Services__
   * Service files for each entiity type with different methods for CRUD. If there is some processing to be done it is done here, before it calls the appropriate repository methods.
-* __Tests__
-  * NUnit test files to detect problems with the basic functionality of important classes
 * Program.cs - Contains the main method for the application.
 * StartUp.cs - Add configurations and services to the program. _Also where to map from an interface to the class using it_.
 
 ## An example path for saving a Dataset.
-A dataset request is sent to the backend, containing a `SaveDatasetResource`.  
-It is routed to the correct controller, `DatasetsController`, because sent on the endpoint `/api/datasets`.  
-Because it is sendt using the HTTP verb `POST` it goes to the method `PostAsync`.  
-Here it gets mapped from the `SaveDatasetResource` to the `Dataset` model using the mapper file `ResourceToModelProfile`.  
-Then it is sent to the corresponding `DatasetService`' method `SaveAsync` there is not any processing for this action so it is sent to the `DatasetRepository`' method `AddAsync` which adds it to the database context `AppDbContext`.  
-The `UnitOfWork`' method `CompleteAsync` makes sure there is no conflict in the database if more than one action is executed simultaneously.  
-The `DatasetService` then returns a `DatasetResponse` with the dataset that was added to the database, now containing a id.  
-Then the `DatasetsController` validates the result, maps from `Dataset` to `DatasetResource` with the `ModelToResourceProfile` and sends the response to the frontend with code `201`. 
+A dataset request is sent to the backend, containing a `SaveDatasetResource`. It is routed to the correct controller, `DatasetsController`, because sent on the endpoint `/api/datasets`. Because it is sendt using the HTTP verb `POST` it goes to the method `PostAsync`. Here it gets mapped from the `SaveDatasetResource` to the `Dataset` model using the mapper file `ResourceToModelProfile`. Then it is sent to the corresponding `DatasetService`' method `SaveAsync` there is not any processing for this action so it is sent to the `DatasetRepository`' method `AddAsync` which adds it to the database context `AppDbContext`. The `UnitOfWork`' method `CompleteAsync` makes sure there is no conflict in the database if more than one action is executed simultaneously. The `DatasetService` then returns a `DatasetResponse` with the dataset that was added to the database, now containing a id. Then the `DatasetsController` validates the result, maps from `Dataset` to `DatasetResource` with the `ModelToResourceProfile` and sends the response to the frontend with code `201`. 

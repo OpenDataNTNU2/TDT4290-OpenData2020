@@ -12,11 +12,6 @@ using OpenData.API.Extensions;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Formatters;
-using Microsoft.Extensions.Options;
-using System.Linq;
 
 namespace OpenData.API
 {
@@ -65,8 +60,6 @@ namespace OpenData.API
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<ITagsRepository, TagsRepository>();
             services.AddScoped<ICategoryRepository, CategoryRepository>();
-            services.AddScoped<ICoordinationRepository, CoordinationRepository>();
-            services.AddScoped<IApplicationRepository, ApplicationRepository>();
 
             services.AddScoped<IDatasetService, DatasetService>();
             services.AddScoped<IDistributionService, DistributionService>();
@@ -74,23 +67,12 @@ namespace OpenData.API
             services.AddScoped<IPublisherService, PublisherService>();
             services.AddScoped<ITagsService, TagsService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<ICoordinationService, CoordinationService>();
-            services.AddScoped<IApplicationService, ApplicationService>();
-
-            services.AddScoped<IGraphService, GraphService>();
-            services.AddScoped<IRdfService, RdfService>();
-
 
             services.AddAutoMapper(typeof(Startup));
 
             services.AddControllers().AddNewtonsoftJson(options =>
                 options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore
             );
-
-            services.AddControllersWithViews(options =>
-            {
-                options.InputFormatters.Insert(0, GetJsonPatchInputFormatter());
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -113,21 +95,5 @@ namespace OpenData.API
                 endpoints.MapControllers();
             });
         }
-        private static NewtonsoftJsonPatchInputFormatter GetJsonPatchInputFormatter()
-        {
-            var builder = new ServiceCollection()
-                .AddLogging()
-                .AddMvc()
-                .AddNewtonsoftJson()
-                .Services.BuildServiceProvider();
-
-            return builder
-                .GetRequiredService<IOptions<MvcOptions>>()
-                .Value
-                .InputFormatters
-                .OfType<NewtonsoftJsonPatchInputFormatter>()
-                .First();
-        }
-
     }
 }

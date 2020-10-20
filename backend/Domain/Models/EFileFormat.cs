@@ -12,11 +12,5 @@ namespace OpenData.API.Domain.Models
         
         [Description("annet")]
         annet = 3,
-        
-        [Description("pdf")]
-        pdf = 4,
-
-        [Description("csv")]
-        csv = 5,
     }
 }

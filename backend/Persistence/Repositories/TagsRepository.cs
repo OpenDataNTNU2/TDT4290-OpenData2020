@@ -34,12 +34,5 @@ namespace OpenData.API.Persistence.Repositories
         public void Remove(Tags tags){
             _context.Tags.Remove(tags);
         }
-
-        public void Remove(CoordinationTags tags){
-            _context.CoordinationTags.Remove(tags);
-        }
-        public void Remove(DatasetTags tags){
-            _context.DatasetTags.Remove(tags);
-        }
     }
 }

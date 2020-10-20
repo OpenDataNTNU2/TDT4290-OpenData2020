@@ -7,10 +7,7 @@ namespace OpenData.API.Domain.Models
         [Description("Published")]
         published = 1,
 
-        [Description("Planned published")]
-        plannedPublished = 2,
-
         [Description("Not published")]
-        notPublished = 3,
+        notPublished = 2,
     }
 }
