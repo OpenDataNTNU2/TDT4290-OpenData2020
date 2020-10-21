@@ -60,6 +60,35 @@ namespace OpenData.API.Persistence.Repositories
             }
 
 
+            // Filter on Access Level
+            if (!String.IsNullOrEmpty(query.AccessLevels))
+            {
+                // Parses the list of Access levels from string to list of EAccessLevels
+                List<EAccessLevel> accessLevels = new List<EAccessLevel>();
+                foreach (string accessLevel in query.AccessLevels.Split(','))
+                {
+                    if (accessLevel == null || accessLevel == "") continue;
+                    Enum.TryParse(accessLevel.Trim(), out EAccessLevel aLevel);
+                    accessLevels.Add(aLevel);
+                }
+                queryable = queryable.Where(d => accessLevels.Contains(d.AccessLevel));
+            }
+
+            // Filter on Publication status
+            if (!String.IsNullOrEmpty(query.PublicationStatuses))
+            {
+                // Parses the list of Publications statuses from string to list of EPublicationStatus
+                List<EPublicationStatus> pubStatuses = new List<EPublicationStatus>();
+                foreach (string pubStatus in query.PublicationStatuses.Split(','))
+                {
+                    if (pubStatus == null || pubStatus == "") continue;
+                    Enum.TryParse(pubStatus.Trim(), out EPublicationStatus status);
+                    pubStatuses.Add(status);
+                }
+                queryable = queryable.Where(d => pubStatuses.Contains(d.PublicationStatus));
+            }
+
+
             // Checks if the search string is in the title, description, publisher name, and tags of the dataset
             if (!String.IsNullOrEmpty(query.Search))
             {
