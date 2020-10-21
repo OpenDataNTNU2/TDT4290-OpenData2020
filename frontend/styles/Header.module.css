@@ -41,3 +41,7 @@
   background-color: white;
   color: black;
 }
+
+.notificationBell {
+  cursor: pointer;
+}

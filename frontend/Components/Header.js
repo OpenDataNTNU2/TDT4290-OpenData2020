@@ -1,12 +1,14 @@
 import { Tabs, Tab, Chip } from '@material-ui/core';
 
-import FaceIcon from '@material-ui/icons/Face';
+import { Face, Notifications, NotificationsActive } from '@material-ui/icons';
+
 
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { parseCookies } from '../pages/api/serverSideProps';
 
 import styles from '../styles/Header.module.css';
+import NotificationCard from './NotificationCard';
 
 export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', prevPublisherId = '-1' }) {
   const router = useRouter();
@@ -16,6 +18,10 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
     setValue(newValue);
     router.push(newValue);
   };
+
+  const [toggleShowNotifications, setToggleShowNotifications] = useState(false)
+
+
 
   return (
     <div className={styles.header}>
@@ -32,13 +38,16 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
       </div>
       <div className={styles.loginContainer}>
         {prevLoggedUsername && JSON.parse(prevLoggedUsername) !== '' && (
-          <Chip icon={<FaceIcon />} label={JSON.parse(prevLoggedUsername)} color="primary" />
+          <Chip icon={<Face />} label={JSON.parse(prevLoggedUsername)} color="primary" />
         )}
-        {/* {JSON.parse(prevLoggedIn) ? <p>Logget inn som: {JSON.parse(prevLoggedUsername)}</p> : null } */}
+        {/* Notifications */}
+        {JSON.parse(prevLoggedIn) ? <Notifications className={styles.notificationBell} color={toggleShowNotifications ? "action" : "inherit"} fontSize="large" onClick={() => setToggleShowNotifications(!toggleShowNotifications)} /> : null}
+
         <div className={styles.logInButton} onClick={() => router.push('/Login')}>
           LOGG {JSON.parse(prevLoggedIn) ? 'UT' : 'INN'}
         </div>
       </div>
+      {toggleShowNotifications ? <NotificationCard /> : null}
     </div>
   );
 }
