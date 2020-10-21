@@ -82,7 +82,7 @@ namespace OpenData.API.Controllers
             return Ok(userResource);
         }
 
-        [HttpPost("subscribe")]
+        [HttpPost("subscribe/{id}")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostPopulate(int id, int datasetId)
