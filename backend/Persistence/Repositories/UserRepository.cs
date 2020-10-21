@@ -15,6 +15,7 @@ namespace OpenData.API.Persistence.Repositories
         {
             return await _context.Users
                                 .AsNoTracking()
+                                .Include(u => u.Subscriptions)
                                 .ToListAsync();
 
             // AsNoTracking tells EF Core it doesn't need to track changes on listed entities. Disabling entity

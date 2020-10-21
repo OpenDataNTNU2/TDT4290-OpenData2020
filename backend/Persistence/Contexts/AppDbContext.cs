@@ -16,6 +16,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Coordination> Coordinations { get; set; }
         public DbSet<CoordinationTags> CoordinationTags { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -114,6 +115,18 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Application>().Property(p => p.Reason).IsRequired();
             builder.Entity<Application>().Property(p => p.DatasetId).IsRequired();
             builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
+
+            builder.Entity<Subscription>().ToTable("Subscriptions");
+            builder.Entity<Subscription>()
+                .HasKey(s => new { s.DatasetId, s.UserId });
+            builder.Entity<Subscription>()
+                .HasOne(s => s.Dataset)
+                .WithMany(d => d.Subscriptions)
+                .HasForeignKey(s => s.DatasetId);
+            builder.Entity<Subscription>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Subscriptions)
+                .HasForeignKey(s => s.UserId);
         }
 
         public void AddTestData()
@@ -265,6 +278,18 @@ namespace OpenData.API.Persistence.Contexts
                 CategoryId = 101
             };
             AddRange(bicycleCoordination, beachCoordination);
+
+            Subscription sub1 = new Subscription
+            {
+                DatasetId = 100,
+                UserId = 100
+            };
+            Subscription sub2 = new Subscription
+            {
+                DatasetId = 101,
+                UserId = 100
+            };
+            AddRange(sub1, sub2);
 
             SaveChanges();
         }
