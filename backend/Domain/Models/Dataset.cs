@@ -25,6 +25,7 @@ namespace OpenData.API.Domain.Models
         public Coordination Coordination { get; set; }
         public int InterestCounter { get; set;}
         public IList<Application> Applications { get; set; } = new List<Application>();
+        public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
 
     }
 }
