@@ -12,5 +12,6 @@ namespace OpenData.API.Domain.Repositories
         Task<User> FindByUsernameAsync(string username);
         void Update(User user);
         void Remove(User user);
+        Task AddSubscriptionAsync(int id, int datasetId);
     }
 }
