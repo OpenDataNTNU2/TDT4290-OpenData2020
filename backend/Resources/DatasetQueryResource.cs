@@ -6,5 +6,6 @@ namespace OpenData.API.Resources
         public string PublisherIds { get; set; }
         public string CategoryIds { get; set; }
         public string AccessLevels {get; set; }
+        public string PublicationStatuses {get; set; }
     }
 }
