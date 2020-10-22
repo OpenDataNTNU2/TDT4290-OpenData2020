@@ -110,7 +110,7 @@ namespace OpenData.API.Services
         {
             try
             {
-                var user = await _userRepository.FindByIdAsync(subscription.UserId);
+                var user = await _userRepository.FindByIdAsync((int)subscription.UserId);
 
                 if (user == null)
                     return new UserResponse("User not found.");
