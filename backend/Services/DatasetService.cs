@@ -121,14 +121,7 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
-                foreach(Subscription subscription in existingDataset.Subscriptions)
-                {
-                    int userId = subscription.UserId;
-                    Console.WriteLine(userId);
-                    string msg = "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.";
-                    await _datasetRepository.AddNotificationAsync(userId, existingDataset.Id, msg);
-                }
-                await _unitOfWork.CompleteAsync();
+                await AddNotificationsAsync(existingDataset, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
 
                 return new DatasetResponse(existingDataset);
             }
@@ -158,6 +151,18 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when deleting the dataset: {ex.Message}");
             }
+        }
+
+
+        public async Task AddNotificationsAsync(Dataset dataset, string msg)
+        {
+            foreach(Subscription subscription in dataset.Subscriptions)
+            {
+                int userId = subscription.UserId;
+                Console.WriteLine(userId);
+                await _datasetRepository.AddNotificationAsync(userId, dataset.Id, msg);
+            }
+            await _unitOfWork.CompleteAsync();
         }
 
         private async Task<(Boolean success,String error)> idChecks(Dataset dataset)

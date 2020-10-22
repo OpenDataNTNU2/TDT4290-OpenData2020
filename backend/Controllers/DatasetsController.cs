@@ -149,6 +149,8 @@ namespace OpenData.API.Controllers
                     return BadRequest(ModelState);
                 }
 
+                await _datasetService.AddNotificationsAsync(dataset, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+
                 var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
                 return Ok(datasetResource);
             }
