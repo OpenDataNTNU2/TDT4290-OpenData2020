@@ -3,7 +3,7 @@ using System;
 
 namespace OpenData.API.Domain.Models
 {
-    public class Dataset
+    public class Dataset : ICatalogueItem
     {
         public int Id { get; set; }
         public string Identifier { get; set; }

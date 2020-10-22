@@ -21,6 +21,7 @@ namespace OpenData.API.Persistence.Repositories
                             .Include(d => d.Category)
                             .Include(d => d.Distributions)
                             .Include(d => d.Coordination)
+                            .Include(d => d.Subscriptions)
                             .Include(d => d.DatasetTags)
                                 .ThenInclude(d => d.Tags)
                             .AsNoTracking();
@@ -153,9 +154,11 @@ namespace OpenData.API.Persistence.Repositories
         {
             return await _context.Datasets
                                 .Include(d => d.Publisher)
+                                    .ThenInclude(d => d.Users)
                                 .Include(d => d.Category)
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Coordination)
+                                .Include(d => d.Subscriptions)
                                 .Include(d => d.DatasetTags)
                                     .ThenInclude(d => d.Tags)
                                 .FirstOrDefaultAsync(i => i.Id == id);
@@ -169,6 +172,11 @@ namespace OpenData.API.Persistence.Repositories
         public void Remove(Dataset dataset)
         {
             _context.Datasets.Remove(dataset);
+        }
+
+        public async Task AddNotificationAsync(Notification notification)
+        {
+            await _context.Notifications.AddAsync(notification);
         }
     }
 }

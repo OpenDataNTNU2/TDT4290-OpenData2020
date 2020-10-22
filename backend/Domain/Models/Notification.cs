@@ -1,17 +1,19 @@
 using System.Collections.Generic;
+using System;
 
 namespace OpenData.API.Domain.Models
 {
-    public class Subscription
+    public class Notification
     {
+
         public int Id { get; set; }
         public int? UserId { get; set; }
         public User User { get; set; }
         public int? DatasetId { get; set; }
-        public Dataset Dataset { get; set; }
         public int? CoordinationId { get; set; }
-        public Coordination Coordination { get; set; }
-        public string Url { get; set; }
-        public string UseCaseDescription { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime TimeOfCreation { get; set; }
+        
     }
 }

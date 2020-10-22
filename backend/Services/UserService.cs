@@ -37,6 +37,15 @@ namespace OpenData.API.Services
             return users;
         }
 
+        public async Task<UserResponse> FindByUsernameAsync(string username)
+        {
+            var existingUser = await _userRepository.FindByUsernameAsync(username);
+            if (existingUser == null)
+                return new UserResponse("User not found.");
+
+            return new UserResponse(existingUser);
+        }
+
         public async Task<UserResponse> SaveAsync(User user)
         {
             try
@@ -53,7 +62,6 @@ namespace OpenData.API.Services
             }
         }
         
-        // test_oslo_kommune
         public async Task<UserResponse> UpdateAsync(string username, User user)
         {
             var existingUser = await _userRepository.FindByUsernameAsync(username);
@@ -98,16 +106,16 @@ namespace OpenData.API.Services
             }
         }
 
-        public async Task<UserResponse> SubscribeAsync(int id, int datasetId)
+        public async Task<UserResponse> SubscribeAsync(Subscription subscription)
         {
             try
             {
-                var user = await _userRepository.FindByIdAsync(id);
+                var user = await _userRepository.FindByIdAsync((int)subscription.UserId);
 
                 if (user == null)
                     return new UserResponse("User not found.");
                 
-                await _userRepository.AddSubscriptionAsync(id, datasetId);
+                await _userRepository.AddSubscriptionAsync(subscription);
                 await _unitOfWork.CompleteAsync();
 
                 return new UserResponse(user);

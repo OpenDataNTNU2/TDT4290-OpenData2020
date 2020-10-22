@@ -138,18 +138,14 @@ namespace OpenData.API.Controllers
         {
             if (patch != null)
             {
-                var datasetResponse = await _datasetService.FindByIdAsync(id);
-                Dataset dataset = datasetResponse.Resource;
-                patch.ApplyTo(dataset, ModelState);
-
-                await _unitOfWork.CompleteAsync();
+                var datasetResponse = await _datasetService.UpdateAsync(id, patch);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-
-                var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
+                
+                var datasetResource = _mapper.Map<Dataset, DatasetResource>(datasetResponse.Resource);
                 return Ok(datasetResource);
             }
             return BadRequest(ModelState);
