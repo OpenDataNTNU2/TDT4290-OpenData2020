@@ -16,6 +16,7 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Applications
                                     .Include(a => a.Coordination)
                                     .Include(a => a.Dataset)
+                                    .Include(a => a.Publisher)
                                     .ToListAsync();
         }
 
@@ -29,6 +30,7 @@ namespace OpenData.API.Persistence.Repositories
             return await _context.Applications
                                     .Include(a => a.Coordination)
                                     .Include(a => a.Dataset)
+                                    .Include(a => a.Publisher)
                                     .FirstOrDefaultAsync(i => i.Id == id);
         }
 

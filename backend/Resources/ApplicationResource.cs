@@ -9,5 +9,6 @@ namespace OpenData.API.Resources
         public string Reason { get; set; }
         public CoordinationResource Coordination { get; set; }
         public DatasetResource Dataset { get; set; }
+        public PublisherResource Publisher { get; set; }
     }
 }
