@@ -14,15 +14,18 @@ export async function PageRender(page, context) {
 
   let propsData = { props: { data, uri } };
 
-  if (page === 'CoordinationID') {
+  if (page === 'CoordinationID' || page === 'ID') {
     propsData = {
       props: {
         data,
         uri,
         prevPublisherId: cookies.prevPublisherId,
+        prevUserId: cookies.prevUserId,
       },
     };
   }
+
+
 
   if (JSON.stringify(cookies) !== '{}') {
     propsData = {

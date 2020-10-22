@@ -3,13 +3,16 @@ import { useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
 import DistributionCard from './DistributionCard';
+import SubscribeComp from './SubscribeComp';
 
 import { PageRender } from '../api/serverSideProps';
 import PatchApi from '../../Components/ApiCalls/PatchApi';
 
 import styles from '../../styles/Detailed.module.css';
+import GetApi from '../../Components/ApiCalls/GetApi';
+import PostApi from '../../Components/ApiCalls/PostApi';
 
-export default function DetailedDataset({ data, uri }) {
+export default function DetailedDataset({ data, uri, prevUserId }) {
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
   // show/hide snackbar with successfull put message
@@ -19,6 +22,10 @@ export default function DetailedDataset({ data, uri }) {
   let publishedStatus;
   const distributionCards = [];
   let cardOrNoCard;
+
+  // variable set to false if user already are subscribed, and/or when user subscribes
+  const [subscribed, setSubscribed] = useState(false)
+
 
   const updateData = async () => {
     // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
@@ -116,13 +123,31 @@ export default function DetailedDataset({ data, uri }) {
             Samordnet
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-            Ikke samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+              Ikke samordnet
+            </div>
+          )}
       </div>
     );
   };
+
+  const canSubscribe = () => {
+    // let [subscriptions, setSubscriptions] = useState([])
+    // GetApi('https://localhost:5001/api/users/' + prevUserId, setSubscriptions)
+    // for loop checking if this dataset is being subscribed to
+    return true
+  }
+
+  const subscribe = () => {
+    // gjør en sjekk her
+
+    PostApi('https://localhost:5001/api/users/subscribe/' + prevUserId, { datasetId: data.id }, successfullySubscribed)
+
+  }
+
+  const successfullySubscribed = () => {
+    console.log("Subscribed!")
+  }
 
   console.log(data);
   ifPublished(data.publicationStatus);
@@ -189,6 +214,14 @@ export default function DetailedDataset({ data, uri }) {
           {ifPublished(data.publicationStatus)}
           {requestButton}
         </span>
+
+        {!subscribed ?
+          <span>
+            <SubscribeComp onClick={() => subscribe()} />
+          </span>
+          : null}
+
+
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
           <Alert elevation={1} severity="info">
             Interesse for datasett registrert

@@ -19,7 +19,7 @@ export default function NotificationCard(props) {
     const dummyNotifications = [
         {
             id: 1,
-            title: "Notification 1",
+            title: "Notification 1 - Oslo kommune",
             change: "This is what changed in the dataset",
             timeOfChange: "DD.MM.YYYY"
         },
