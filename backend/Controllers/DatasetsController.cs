@@ -138,22 +138,14 @@ namespace OpenData.API.Controllers
         {
             if (patch != null)
             {
-                var datasetResponse = await _datasetService.FindByIdAsync(id);
-                Dataset dataset = datasetResponse.Resource;
-                patch.ApplyTo(dataset, ModelState);
-
-                await _unitOfWork.CompleteAsync();
+                var datasetResponse = await _datasetService.UpdateAsync(id, patch);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-
-                Console.WriteLine(patch.ToString());
-                await _datasetService.AddUserNotificationsAsync(dataset, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
-                await _datasetService.AddPublisherNotificationsAsync(dataset, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
-
-                var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
+                
+                var datasetResource = _mapper.Map<Dataset, DatasetResource>(datasetResponse.Resource);
                 return Ok(datasetResource);
             }
             return BadRequest(ModelState);

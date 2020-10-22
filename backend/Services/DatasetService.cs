@@ -8,6 +8,7 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace OpenData.API.Services
 {
@@ -131,6 +132,22 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when updating the dataset: {ex.Message}");
             }
+        }
+
+        public async Task<DatasetResponse> UpdateAsync(int id, JsonPatchDocument<Dataset> patch)
+        {
+            var dataset = await _datasetRepository.FindByIdAsync(id);
+
+            patch.ApplyTo(dataset);
+            await _unitOfWork.CompleteAsync();
+
+            if(patch.Operations[0].path.Equals("/coordinationId"))
+            {
+                await AddUserNotificationsAsync(dataset, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                await AddPublisherNotificationsAsync(dataset, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
+            }
+            
+            return new DatasetResponse(dataset);
         }
 
         public async Task<DatasetResponse> DeleteAsync(int id)
