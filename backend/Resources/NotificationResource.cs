@@ -1,3 +1,4 @@
+using System;
 namespace OpenData.API.Resources
 {
 
@@ -5,6 +6,8 @@ namespace OpenData.API.Resources
     {
         public int Id { get; set; }
         public int DatasetId { get; set; }
-        public string Content { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime TimeOfCreation { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
 using OpenData.API.Domain.Models;
+using System;
 
 namespace OpenData.API.Persistence.Contexts
 {
@@ -306,14 +307,17 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 100,
                 DatasetId = 100,
                 UserId = 100,
-                Content = "Datasett med id 100 har blitt oppdatert."
+                Title = "Strand - Trondheim kommune",
+                Description = "Datasett 'Strand' har blitt oppdatert.",
+                TimeOfCreation = DateTime.Now
             };
             Notification not2 = new Notification
             {
                 Id = 101,
                 DatasetId = 101,
-                UserId = 100,
-                Content = "Datasett med id 101 har blitt oppdatert."
+                Title = "Sykkel - Bodø kommune",
+                Description = "Datasett 'Sykkel' har blitt oppdatert.",
+                TimeOfCreation = DateTime.Now
             };
             AddRange(not1, not2);
 

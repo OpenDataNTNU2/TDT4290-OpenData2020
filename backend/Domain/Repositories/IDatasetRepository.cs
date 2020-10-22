@@ -12,6 +12,6 @@ namespace OpenData.API.Domain.Repositories
         Task<Dataset> FindByIdAsync(int id);
         void Update(Dataset dataset);
         void Remove(Dataset dataset);
-        Task AddNotificationAsync(int id, int datasetId, string content);
+        Task AddNotificationAsync(Notification notification);
     }
 }

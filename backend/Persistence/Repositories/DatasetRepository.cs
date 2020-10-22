@@ -174,9 +174,8 @@ namespace OpenData.API.Persistence.Repositories
             _context.Datasets.Remove(dataset);
         }
 
-        public async Task AddNotificationAsync(int userId, int datasetId, string content)
+        public async Task AddNotificationAsync(Notification notification)
         {
-            Notification notification = new Notification {UserId = userId, DatasetId = datasetId, Content = content};
             await _context.Notifications.AddAsync(notification);
         }
     }
