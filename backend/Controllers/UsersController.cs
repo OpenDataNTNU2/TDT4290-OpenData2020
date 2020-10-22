@@ -85,7 +85,7 @@ namespace OpenData.API.Controllers
         [HttpPost("subscribe/{id}")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> PostPopulate(int id, int datasetId)
+        public async Task<IActionResult> PostSubscribe(int id, int datasetId)
         {   
             var result = await _userService.SubscribeAsync(id, datasetId);
 

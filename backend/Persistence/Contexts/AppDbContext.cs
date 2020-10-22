@@ -17,6 +17,7 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<CoordinationTags> CoordinationTags { get; set; }
         public DbSet<Application> Applications { get; set; }
         public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -36,6 +37,9 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<User>().HasKey(p => p.Id);
             builder.Entity<User>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<User>().Property(p => p.Username).IsRequired();
+            builder.Entity<User>().HasMany(p => p.Subscriptions).WithOne(p => p.User).HasForeignKey(p => p.UserId);
+            builder.Entity<User>().HasMany(p => p.Notifications).WithOne(p => p.User).HasForeignKey(p => p.UserId);
+
 
             builder.Entity<Category>().ToTable("Categories");
             builder.Entity<Category>().HasKey(p => p.Id);
@@ -51,10 +55,9 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Dataset>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Dataset>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Dataset>().HasMany(p => p.Distributions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
-            builder.Entity<Dataset>()
-            .HasMany(p => p.Applications)
-            .WithOne(p => p.Dataset)
-            .HasForeignKey(p => p.DatasetId);
+            builder.Entity<Dataset>().HasMany(p => p.Applications).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
+            builder.Entity<Dataset>().HasMany(p => p.Subscriptions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
+
 
             builder.Entity<Distribution>().ToTable("Distributions");
             builder.Entity<Distribution>().HasKey(p => p.Id);
@@ -127,6 +130,12 @@ namespace OpenData.API.Persistence.Contexts
                 .HasOne(s => s.User)
                 .WithMany(u => u.Subscriptions)
                 .HasForeignKey(s => s.UserId);
+
+            builder.Entity<Notification>().ToTable("Notification");
+            builder.Entity<Notification>().HasKey(p => p.Id);
+            builder.Entity<Notification>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Notification>().Property(p => p.UserId).IsRequired();
+            builder.Entity<Notification>().HasOne(dt => dt.User).WithMany(d => d.Notifications).HasForeignKey(dt => dt.UserId);
         }
 
         public void AddTestData()
@@ -287,9 +296,25 @@ namespace OpenData.API.Persistence.Contexts
             Subscription sub2 = new Subscription
             {
                 DatasetId = 101,
-                UserId = 100
+                UserId = 101
             };
             AddRange(sub1, sub2);
+
+            Notification not1 = new Notification
+            {
+                Id = 100,
+                DatasetId = 100,
+                UserId = 100,
+                Content = "You have a new message."
+            };
+            Notification not2 = new Notification
+            {
+                Id = 101,
+                DatasetId = 101,
+                UserId = 100,
+                Content = "You have a new update."
+            };
+            AddRange(not1, not2);
 
             SaveChanges();
         }

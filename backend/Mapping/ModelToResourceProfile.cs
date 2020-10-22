@@ -43,6 +43,7 @@ namespace OpenData.API.Mapping
             CreateMap<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>();
             CreateMap<Application, ApplicationResource>();
             CreateMap<Subscription, SubscriptionResource>();
+            CreateMap<Notification, NotificationResource>();
 
         }
 
