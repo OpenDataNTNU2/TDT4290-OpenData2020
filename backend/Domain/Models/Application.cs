@@ -10,5 +10,7 @@ namespace OpenData.API.Domain.Models
         public Dataset Dataset { get; set; }
         public int CoordinationId { get; set; }
         public Coordination Coordination { get; set; }
+        public int PublisherId { get; set; }
+        public Publisher Publisher { get; set; }
     }
 }
