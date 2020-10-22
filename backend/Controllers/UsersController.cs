@@ -82,12 +82,13 @@ namespace OpenData.API.Controllers
             return Ok(userResource);
         }
 
-        [HttpPost("subscribe/{id}")]
+        [HttpPost("subscribe")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
-        public async Task<IActionResult> PostPopulate(int id, int datasetId)
+        public async Task<IActionResult> PostPopulate([FromBody] SaveSubscriptionResource resource)
         {   
-            var result = await _userService.SubscribeAsync(id, datasetId);
+            var subscription = _mapper.Map<SaveSubscriptionResource, Subscription>(resource);
+            var result = await _userService.SubscribeAsync(subscription);
 
             if (!result.Success)
             {

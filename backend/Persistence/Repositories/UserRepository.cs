@@ -46,10 +46,9 @@ namespace OpenData.API.Persistence.Repositories
             _context.Users.Remove(user);
         }
 
-        public async Task AddSubscriptionAsync(int id, int datasetId)
+        public async Task AddSubscriptionAsync(Subscription subscription)
         {
-            Subscription sub = new Subscription {UserId = id, DatasetId = datasetId};
-            await _context.Subscriptions.AddAsync(sub);
+            await _context.Subscriptions.AddAsync(subscription);
         }
 
     }
