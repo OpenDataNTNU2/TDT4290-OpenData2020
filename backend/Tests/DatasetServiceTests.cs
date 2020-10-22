@@ -29,6 +29,7 @@ namespace Tests
             Context.AddTestData();
             DS = new DatasetService(
                 new DatasetRepository(Context),
+                new NotificationService(new NotificationRepository(Context), new UnitOfWork(Context)),
                 new PublisherRepository(Context),
                 new CategoryRepository(Context),
                 new CoordinationRepository(Context),

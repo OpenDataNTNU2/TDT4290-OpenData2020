@@ -21,8 +21,11 @@ namespace OpenData.API.Services
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
+        private readonly INotificationService _notificationService;
 
-        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+
+
+        public DatasetService(IDatasetRepository datasetRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
             _publisherRepository = publisherRepository;
@@ -30,6 +33,7 @@ namespace OpenData.API.Services
             _coordinationRepository = coordinationRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
             _cache = cache;
         }
 
@@ -122,8 +126,8 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
-                await AddUserNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
-                await AddPublisherNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
 
                 return new DatasetResponse(existingDataset);
             }
@@ -143,8 +147,8 @@ namespace OpenData.API.Services
 
             if(patch.Operations[0].path.Equals("/coordinationId"))
             {
-                await AddUserNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
-                await AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
+                await _notificationService.AddUserNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
             }
             
             return new DatasetResponse(dataset);
@@ -169,42 +173,6 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when deleting the dataset: {ex.Message}");
             }
-        }
-
-
-        public async Task AddUserNotificationsAsync(Dataset dataset, string title, string msg)
-        {
-            foreach(Subscription subscription in dataset.Subscriptions)
-            {
-                Notification notification = new Notification 
-                {
-                    UserId = subscription.UserId, 
-                    DatasetId = dataset.Id, 
-                    Title = title,
-                    Description = msg,
-                    TimeOfCreation = DateTime.Now,
-                };
-
-                await _datasetRepository.AddNotificationAsync(notification);
-            }
-            await _unitOfWork.CompleteAsync();
-        }
-
-        public async Task AddPublisherNotificationsAsync(Dataset dataset, string title, string msg)
-        {
-            foreach(User user in dataset.Publisher.Users)
-            {
-                Notification notification = new Notification 
-                {
-                    UserId = user.Id, 
-                    DatasetId = dataset.Id,
-                    Title = title,
-                    Description = msg,
-                    TimeOfCreation = DateTime.Now,
-                };
-                await _datasetRepository.AddNotificationAsync(notification);
-            }
-            await _unitOfWork.CompleteAsync();
         }
 
         private async Task<(Boolean success,String error)> idChecks(Dataset dataset)

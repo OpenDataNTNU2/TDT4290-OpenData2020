@@ -17,7 +17,5 @@ namespace OpenData.API.Domain.Services
         Task<DatasetResponse> UpdateAsync(int id, Dataset dataset);
         Task<DatasetResponse> UpdateAsync(int id, JsonPatchDocument<Dataset> patch);
         Task<DatasetResponse> DeleteAsync(int id);
-        Task AddUserNotificationsAsync(Dataset dataset, string title, string msg);
-        Task AddPublisherNotificationsAsync(Dataset dataset, string title, string msg);
     }
 }

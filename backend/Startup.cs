@@ -79,6 +79,8 @@ namespace OpenData.API
 
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IRdfService, RdfService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
 
             services.AddAutoMapper(typeof(Startup));

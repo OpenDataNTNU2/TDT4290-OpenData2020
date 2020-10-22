@@ -28,6 +28,7 @@ namespace Tests
             Context.AddTestData();
             CS = new CoordinationService(
                 new CoordinationRepository(Context),
+                new NotificationService(new NotificationRepository(Context), new UnitOfWork(Context)),
                 new PublisherRepository(Context),
                 new CategoryRepository(Context),
                 new TagsRepository(Context),
