@@ -98,6 +98,27 @@ namespace OpenData.API.Services
             }
         }
 
+        public async Task<UserResponse> SubscribeAsync(int id, int datasetId)
+        {
+            try
+            {
+                var user = await _userRepository.FindByIdAsync(id);
+
+                if (user == null)
+                    return new UserResponse("User not found.");
+                
+                await _userRepository.AddSubscriptionAsync(id, datasetId);
+                await _unitOfWork.CompleteAsync();
+
+                return new UserResponse(user);
+            }
+            catch (Exception ex)
+            {
+                // Do some logging stuff
+                return new UserResponse($"An error occurred when saving the user: {ex.Message}");
+            }
+        }
+
         public async Task<UserResponse> DeleteAsync(int id)
         {
             var existingUser = await _userRepository.FindByIdAsync(id);
