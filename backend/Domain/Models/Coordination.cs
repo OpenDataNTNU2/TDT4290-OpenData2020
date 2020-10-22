@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace OpenData.API.Domain.Models
 {
-    public class Coordination
+    public class Coordination : ICatalogueItem
     {
         public int Id { get; set; }
         public string Title { get; set;}
@@ -17,5 +17,6 @@ namespace OpenData.API.Domain.Models
         public string TagsIds { get; set; }
         public IList<CoordinationTags> CoordinationTags { get; set; } = new List<CoordinationTags>();
         public IList<Application> Applications { get; set; } = new List<Application>();
+        public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
     }
 }

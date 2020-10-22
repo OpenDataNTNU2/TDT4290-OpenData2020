@@ -8,6 +8,7 @@ namespace OpenData.API.Resources
     {
         public int UserId { get; set; }
         public int DatasetId { get; set; }
+        public int CoordinationId { get; set; }
         public string Url { get; set; }
         public string UseCaseDescription { get; set; }
     }

@@ -8,6 +8,7 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace OpenData.API.Services
 {
@@ -20,8 +21,11 @@ namespace OpenData.API.Services
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
+        private readonly INotificationService _notificationService;
 
-        public DatasetService(IDatasetRepository datasetRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+
+
+        public DatasetService(IDatasetRepository datasetRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _datasetRepository = datasetRepository;
             _publisherRepository = publisherRepository;
@@ -29,6 +33,7 @@ namespace OpenData.API.Services
             _coordinationRepository = coordinationRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
+            _notificationService = notificationService;
             _cache = cache;
         }
 
@@ -121,6 +126,9 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
+                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
+
                 return new DatasetResponse(existingDataset);
             }
             catch (Exception ex)
@@ -128,6 +136,22 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when updating the dataset: {ex.Message}");
             }
+        }
+
+        public async Task<DatasetResponse> UpdateAsync(int id, JsonPatchDocument<Dataset> patch)
+        {
+            var dataset = await _datasetRepository.FindByIdAsync(id);
+
+            patch.ApplyTo(dataset);
+            await _unitOfWork.CompleteAsync();
+
+            if(patch.Operations[0].path.Equals("/coordinationId"))
+            {
+                await _notificationService.AddUserNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
+            }
+            
+            return new DatasetResponse(dataset);
         }
 
         public async Task<DatasetResponse> DeleteAsync(int id)

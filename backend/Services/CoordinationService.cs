@@ -17,14 +17,16 @@ namespace OpenData.API.Services
         private readonly IPublisherRepository _publisherRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagsRepository _tagsRepository;
+        private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
 
-        public CoordinationService(ICoordinationRepository coordinationRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
+        public CoordinationService(ICoordinationRepository coordinationRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
         {
             _coordinationRepository = coordinationRepository;
             _publisherRepository = publisherRepository;
             _categoryRepository = categoryRepository;
             _tagsRepository = tagsRepository;
+            _notificationService = notificationService;
             _unitOfWork = unitOfWork;
         }
         public async Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query)
@@ -103,6 +105,8 @@ namespace OpenData.API.Services
                 _coordinationRepository.Update(existingCoordination);
                 await _unitOfWork.CompleteAsync();
 
+                await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
 
                 return new CoordinationResponse(existingCoordination);
             }

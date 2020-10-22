@@ -11,6 +11,7 @@ namespace OpenData.API.Domain.Services
          Task<UserResponse> SaveAsync(User user);
          Task<UserResponse> UpdateAsync(string id, User user);
          Task<UserResponse> DeleteAsync(int id);
+         Task<UserResponse> FindByUsernameAsync(string username);
          Task<UserResponse> SubscribeAsync(Subscription subscription);
     }
 }

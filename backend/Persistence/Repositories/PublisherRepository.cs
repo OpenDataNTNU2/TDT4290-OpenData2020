@@ -17,6 +17,7 @@ namespace OpenData.API.Persistence.Repositories
                                 .Include(d => d.Datasets)
                                     .ThenInclude(d => d.Distributions)
                                 .Include(d => d.Coordinations)
+                                .Include(d => d.Users)
                                 .AsNoTracking()
                                 .ToListAsync();
 
@@ -31,7 +32,12 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<Publisher> FindByIdAsync(int id)
         {
-            return await _context.Publishers.FindAsync(id);
+            return await _context.Publishers
+                                    .Include(d => d.Datasets)
+                                        .ThenInclude(d => d.Distributions)
+                                    .Include(d => d.Coordinations)
+                                    .Include(d => d.Users)
+                                    .SingleOrDefaultAsync(p => p.Id == id);
         }
 
         public void Update(Publisher publisher)
