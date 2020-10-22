@@ -32,6 +32,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
             builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
             builder.Entity<Publisher>().HasMany(p => p.Coordinations).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Users).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);

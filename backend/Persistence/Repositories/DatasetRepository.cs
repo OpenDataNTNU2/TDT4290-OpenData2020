@@ -154,6 +154,7 @@ namespace OpenData.API.Persistence.Repositories
         {
             return await _context.Datasets
                                 .Include(d => d.Publisher)
+                                    .ThenInclude(d => d.Users)
                                 .Include(d => d.Category)
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Coordination)

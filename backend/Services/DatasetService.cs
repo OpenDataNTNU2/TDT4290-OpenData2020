@@ -121,7 +121,8 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
-                await AddNotificationsAsync(existingDataset, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
+                await AddUserNotificationsAsync(existingDataset, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
+                await AddPublisherNotificationsAsync(existingDataset, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
 
                 return new DatasetResponse(existingDataset);
             }
@@ -154,13 +155,21 @@ namespace OpenData.API.Services
         }
 
 
-        public async Task AddNotificationsAsync(Dataset dataset, string msg)
+        public async Task AddUserNotificationsAsync(Dataset dataset, string msg)
         {
             foreach(Subscription subscription in dataset.Subscriptions)
             {
                 int userId = subscription.UserId;
-                Console.WriteLine(userId);
                 await _datasetRepository.AddNotificationAsync(userId, dataset.Id, msg);
+            }
+            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task AddPublisherNotificationsAsync(Dataset dataset, string msg)
+        {
+            foreach(User user in dataset.Publisher.Users)
+            {
+                await _datasetRepository.AddNotificationAsync(user.Id, dataset.Id, msg);
             }
             await _unitOfWork.CompleteAsync();
         }

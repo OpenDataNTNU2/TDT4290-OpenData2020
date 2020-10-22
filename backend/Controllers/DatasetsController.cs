@@ -149,7 +149,9 @@ namespace OpenData.API.Controllers
                     return BadRequest(ModelState);
                 }
 
-                await _datasetService.AddNotificationsAsync(dataset, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                Console.WriteLine(patch.ToString());
+                await _datasetService.AddUserNotificationsAsync(dataset, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                await _datasetService.AddPublisherNotificationsAsync(dataset, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
 
                 var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
                 return Ok(datasetResource);

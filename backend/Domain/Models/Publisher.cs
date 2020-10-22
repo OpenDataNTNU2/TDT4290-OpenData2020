@@ -8,6 +8,8 @@ namespace OpenData.API.Domain.Models
         public string Name { get; set; }
         public IList<Dataset> Datasets { get; set; } = new List<Dataset>();
         public IList<Coordination> Coordinations { get; set; } = new List<Coordination>();
+        public IList<User> Users { get; set; } = new List<User>();
+
 
     }
 }

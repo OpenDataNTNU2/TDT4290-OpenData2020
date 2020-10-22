@@ -13,6 +13,7 @@ namespace OpenData.API.Domain.Services
         Task<DatasetResponse> SaveAsync(Dataset dataset);
         Task<DatasetResponse> UpdateAsync(int id, Dataset dataset);
         Task<DatasetResponse> DeleteAsync(int id);
-        Task AddNotificationsAsync(Dataset dataset, string msg);
+        Task AddUserNotificationsAsync(Dataset dataset, string msg);
+        Task AddPublisherNotificationsAsync(Dataset dataset, string msg);
     }
 }
