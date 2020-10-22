@@ -11,7 +11,7 @@ const SubscribeComp = (props) => {
             <div style={{ margin: '25px 0' }}>
                 <Divider variant="fullWidth" />
                 <br />
-                <h2 style={{ fontWeight: 'normal' }}>Du abonnerer på dette datasettet</h2>
+                <h2 style={{ fontWeight: 'normal' }}>Du abonnerer på denne samordningen</h2>
 
             </div>
 
@@ -19,7 +19,7 @@ const SubscribeComp = (props) => {
                 <Divider variant="fullWidth" />
                 <br />
                 <h1 style={{ fontWeight: 'normal' }}>Abonner på endringer</h1>
-                <p>Abonner på endringer i datasettet, gjerne legg ved link og beskrivelse til hva du bruker datasettet til. Dette vil hjelpe oss å forstå nytteverdien til datasettet og kan være en inspirasjon til andre som også vil ta datasettet i bruk.</p>
+                <p>Abonner på endringer i samordningen, gjerne legg ved link og beskrivelse til hva du bruker datasettetene til. Dette vil hjelpe oss å forstå nytteverdien til samordningen og kan være en inspirasjon til andre som også vil ta datasettetene i bruk.</p>
                 <br />
                 <Input id="" multiline={false} label="Link til hva datasettet brukes til (valgfritt)" value={subsciptionUrl} handleChange={setSubscriptionUrl} />
                 <br /><br />

@@ -26,7 +26,6 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false)
 
-
   const updateData = async () => {
     // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
     // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
@@ -138,10 +137,20 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
     return true
   }
 
-  const subscribe = () => {
+  const subscribe = (url, desc) => {
     // gjør en sjekk her
 
-    PostApi('https://localhost:5001/api/users/subscribe/' + prevUserId, { datasetId: data.id }, successfullySubscribed)
+    let d = {
+      userId: prevUserId,
+      datasetId: data.id,
+    }
+    if (url !== "") {
+      d.url = url
+    }
+    if (desc !== "") {
+      d.useCaseDescription = desc
+    }
+    PostApi('https://localhost:5001/api/users/subscribe', d, successfullySubscribed)
 
   }
 
@@ -215,11 +224,14 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
           {requestButton}
         </span>
 
-        {!subscribed ?
-          <span>
-            <SubscribeComp onClick={() => subscribe()} />
-          </span>
-          : null}
+
+        <span>
+          <SubscribeComp
+            onClick={subscribe}
+            subscribed={subscribed}
+          />
+        </span>
+
 
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
