@@ -105,6 +105,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Coordination>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.UnderCoordination).HasDefaultValue(false);
+            builder.Entity<Coordination>().HasMany(p => p.Subscriptions).WithOne(p => p.Coordination).HasForeignKey(p => p.CoordinationId);
             builder.Entity<Coordination>()
             .HasMany(p => p.Datasets)
             .WithOne(p => p.Coordination)
@@ -122,8 +123,8 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
 
             builder.Entity<Subscription>().ToTable("Subscriptions");
-            builder.Entity<Subscription>()
-                .HasKey(s => new { s.DatasetId, s.UserId });
+            builder.Entity<Application>().HasKey(p => p.Id);
+            builder.Entity<Application>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Subscription>()
                 .HasOne(s => s.Dataset)
                 .WithMany(d => d.Subscriptions)
@@ -132,6 +133,11 @@ namespace OpenData.API.Persistence.Contexts
                 .HasOne(s => s.User)
                 .WithMany(u => u.Subscriptions)
                 .HasForeignKey(s => s.UserId);
+            builder.Entity<Subscription>()
+                .HasOne(s => s.Coordination)
+                .WithMany(u => u.Subscriptions)
+                .HasForeignKey(s => s.CoordinationId);
+            
 
             builder.Entity<Notification>().ToTable("Notification");
             builder.Entity<Notification>().HasKey(p => p.Id);
@@ -300,7 +306,12 @@ namespace OpenData.API.Persistence.Contexts
                 DatasetId = 101,
                 UserId = 101
             };
-            AddRange(sub1, sub2);
+            Subscription sub3 = new Subscription
+            {
+                CoordinationId = 101,
+                UserId = 101
+            };
+            AddRange(sub1, sub2, sub3);
 
             Notification not1 = new Notification
             {
