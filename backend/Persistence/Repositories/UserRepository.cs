@@ -55,8 +55,8 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task AddSubscriptionAsync(int id, int datasetId)
         {
-            Subscription sub = new Subscription {UserId = id, DatasetId = datasetId};
-            await _context.Subscriptions.AddAsync(sub);
+            Subscription subscription = new Subscription {UserId = id, DatasetId = datasetId};
+            await _context.Subscriptions.AddAsync(subscription);
         }
 
     }

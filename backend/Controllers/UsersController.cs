@@ -38,6 +38,21 @@ namespace OpenData.API.Controllers
         }
 
         /// <summary>
+        /// Find one user by id.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <returns>User found by username.</returns>
+        [HttpGet("{username}")]
+        [ProducesResponseType(typeof(UserResource), 200)]
+        public async Task<UserResource> FindByUsernameAsync(string username)
+        {
+            var user = await _userService.FindByUsernameAsync(username);
+            var resource = _mapper.Map<User, UserResource>(user.Resource);
+
+            return resource;
+        }
+
+        /// <summary>
         /// Saves a new user.
         /// </summary>
         /// <param name="resource">User data.</param>

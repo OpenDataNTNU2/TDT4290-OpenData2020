@@ -305,14 +305,14 @@ namespace OpenData.API.Persistence.Contexts
                 Id = 100,
                 DatasetId = 100,
                 UserId = 100,
-                Content = "You have a new message."
+                Content = "Datasett med id 100 har blitt oppdatert."
             };
             Notification not2 = new Notification
             {
                 Id = 101,
                 DatasetId = 101,
                 UserId = 100,
-                Content = "You have a new update."
+                Content = "Datasett med id 101 har blitt oppdatert."
             };
             AddRange(not1, not2);
 

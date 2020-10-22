@@ -121,6 +121,15 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(existingDataset);
                 await _unitOfWork.CompleteAsync();
 
+                foreach(Subscription subscription in existingDataset.Subscriptions)
+                {
+                    int userId = subscription.UserId;
+                    Console.WriteLine(userId);
+                    string msg = "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.";
+                    await _datasetRepository.AddNotificationAsync(userId, existingDataset.Id, msg);
+                }
+                await _unitOfWork.CompleteAsync();
+
                 return new DatasetResponse(existingDataset);
             }
             catch (Exception ex)
