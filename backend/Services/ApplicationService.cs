@@ -11,13 +11,11 @@ namespace OpenData.API.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IApplicationRepository _applicationRepository;
-        private readonly IDatasetRepository _datasetRepository;
         private readonly ICoordinationRepository _coordinationRepository;
         private readonly IUnitOfWork _unitOfWork;
-        public ApplicationService(IApplicationRepository ApplicationRepository, IUnitOfWork unitOfWork, IDatasetRepository DatasetRepository, ICoordinationRepository CoordinationRepository)
+        public ApplicationService(IApplicationRepository ApplicationRepository, IUnitOfWork unitOfWork, ICoordinationRepository CoordinationRepository)
         {
             _applicationRepository = ApplicationRepository;
-            _datasetRepository = DatasetRepository;
             _coordinationRepository = CoordinationRepository;
             _unitOfWork = unitOfWork;
         }
@@ -110,11 +108,7 @@ namespace OpenData.API.Services
         {
             var existingCoordination = await _coordinationRepository.FindByIdAsync(application.CoordinationId);
             if (existingCoordination == null)
-                return (false, "Invalid Application id.");
-
-            var existingDataset = await _datasetRepository.FindByIdAsync(application.DatasetId);
-            if (existingDataset == null)
-                return (false, "Invalid dataset id.");
+                return (false, "Invalid coordination id.");
 
             return (true, "Success");
         }
