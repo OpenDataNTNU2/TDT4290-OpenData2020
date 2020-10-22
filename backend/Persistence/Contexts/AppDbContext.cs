@@ -34,6 +34,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
             builder.Entity<Publisher>().HasMany(p => p.Coordinations).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
             builder.Entity<Publisher>().HasMany(p => p.Users).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Applications).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
@@ -119,7 +120,6 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Application>().HasKey(p => p.Id);
             builder.Entity<Application>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Application>().Property(p => p.Reason).IsRequired();
-            builder.Entity<Application>().Property(p => p.DatasetId).IsRequired();
             builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
 
             builder.Entity<Subscription>().ToTable("Subscriptions");
