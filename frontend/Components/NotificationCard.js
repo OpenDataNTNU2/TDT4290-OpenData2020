@@ -6,14 +6,6 @@ import GetApi from './ApiCalls/GetApi';
 
 export default function NotificationCard(props) {
 
-    const [notifications, setNotifications] = useState([])
-
-    /*
-    // fetch notifications here
-    useEffect(() => {
-        GetApi("URL", setNotifications)
-    }, [props])
-    */
 
     // vet ikke helt hva som bør være med her, men tenker kanskje noe slikt? ish.. ? :)
     const dummyNotifications = [
@@ -49,13 +41,14 @@ export default function NotificationCard(props) {
     return (
         <div className={styles.cardContainer}>
             <h2>Varsler</h2>
-            {dummyNotifications.map(notification => (
+            {props.notifications && props.notifications.length > 0 ? props.notifications.map(notification => (
                 <div className={styles.notification}>
                     <p><b>{notification.title}</b></p>
-                    <p>{notification.change}</p>
-                    <p>Endret: {notification.timeOfChange}</p>
+                    <p>{notification.description}</p>
+                    <p>Endret: {notification.timeOfCreation}</p>
                 </div>
-            ))}
+            ))
+                : <p>Ingen varsler</p>}
         </div>
     )
 }

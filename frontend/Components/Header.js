@@ -4,13 +4,14 @@ import { Face, Notifications, NotificationsActive } from '@material-ui/icons';
 
 
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { parseCookies } from '../pages/api/serverSideProps';
 
 import styles from '../styles/Header.module.css';
+import GetApi from './ApiCalls/GetApi';
 import NotificationCard from './NotificationCard';
 
-export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', prevPublisherId = '-1' }) {
+export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', prevPublisherId = '-1', prevUserId = '-1' }) {
   const router = useRouter();
   const [value, setValue] = useState('/');
 
@@ -20,6 +21,18 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
   };
 
   const [toggleShowNotifications, setToggleShowNotifications] = useState(false)
+  const [notifications, setNotifications] = useState([])
+
+  useEffect(() => {
+    if (prevLoggedIn === "false") setNotifications([])
+    if (JSON.parse(prevUserId) > 0) GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications)
+  }, [prevUserId, prevLoggedUsername, prevLoggedIn])
+
+  const getUserNotifications = (response) => {
+    if (response.notifications.length !== 0) {
+      setNotifications(response.notifications)
+    }
+  }
 
 
 
@@ -41,13 +54,29 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
           <Chip icon={<Face />} label={JSON.parse(prevLoggedUsername)} color="primary" />
         )}
         {/* Notifications */}
-        {JSON.parse(prevLoggedIn) ? <Notifications className={styles.notificationBell} color={toggleShowNotifications ? "action" : "inherit"} fontSize="large" onClick={() => setToggleShowNotifications(!toggleShowNotifications)} /> : null}
+        {prevLoggedUsername && JSON.parse(prevLoggedUsername) !== '' && JSON.parse(prevLoggedIn) ?
+          notifications.length > 0 ?
+            <NotificationsActive
+              className={styles.notificationBell}
+              color={toggleShowNotifications ? "action" : "secondary"}
+              fontSize="large"
+              onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
+            />
+            :
+            <Notifications
+              className={styles.notificationBell}
+              color={toggleShowNotifications ? "action" : "inherit"}
+              fontSize="large"
+              onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
+            />
+
+          : null}
 
         <div className={styles.logInButton} onClick={() => router.push('/Login')}>
           LOGG {JSON.parse(prevLoggedIn) ? 'UT' : 'INN'}
         </div>
       </div>
-      {toggleShowNotifications ? <NotificationCard /> : null}
+      {toggleShowNotifications ? <NotificationCard notifications={notifications} /> : null}
     </div>
   );
 }

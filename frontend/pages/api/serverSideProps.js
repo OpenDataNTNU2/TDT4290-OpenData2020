@@ -21,6 +21,7 @@ export async function PageRender(page, context) {
         uri,
         prevPublisherId: cookies.prevPublisherId,
         prevUserId: cookies.prevUserId,
+        prevLoggedUsername: cookies.prevLoggedUsername,
       },
     };
   }

@@ -17,7 +17,7 @@ import DeleteApi from '../../Components/ApiCalls/DeleteApi';
 
 import styles from '../../styles/Detailed.module.css';
 
-export default function DetailedCoordination({ data, prevPublisherId, prevUserId }) {
+export default function DetailedCoordination({ data, prevPublisherId, prevUserId, prevLoggedUsername }) {
   const router = useRouter();
   const [coordinationData, setCoordinationData] = useState(data);
 
@@ -37,13 +37,28 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false)
-
+  const [user, setUser] = useState([])
 
   useEffect(() => {
     if (parseInt(JSON.parse(prevPublisherId)) > 99 && parseInt(prevPublisherId) !== data.publisher.id) {
       GetApi(`https://localhost:5001/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
-  }, [data]);
+
+    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
+
+  }, [data, subscribed]);
+
+  const checkUserSubscription = (response) => {
+    for (let i = 0; i < response.subscriptions.length; i++) {
+      if (response.subscriptions[i].coordinationId === coordinationData.id) {
+        setSubscribed(true)
+        return;
+      }
+
+    }
+    setSubscribed(false)
+  }
+
 
   const submitApplicationToJoinCoordination = () => {
     const d = {
@@ -95,6 +110,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
   const successfullySubscribed = () => {
     console.log("Subscribed!")
+    setSubscribed(true)
   }
 
 
@@ -305,12 +321,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
         {coordinationData.coordinationTags.length === 0 ? <p>Ingen søkeord lagt til</p> : null}
       </Grid>
 
-      <Grid style={{ padding: '3% 0 3% 0' }}>
-        <SubscribeComp
-          onClick={subscribe}
-          subscribed={subscribed}
-        />
-      </Grid>
+      {parseInt(prevPublisherId) !== coordinationData.publisher.id &&
+        <Grid style={{ padding: '3% 0 3% 0' }}>
+          <SubscribeComp
+            onClick={subscribe}
+            subscribed={subscribed}
+          />
+        </Grid>}
 
       <Snackbar
         open={openCreateApplicationFeedback}

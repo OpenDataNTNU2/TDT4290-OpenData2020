@@ -1,5 +1,5 @@
 import { Grid, Snackbar, Divider } from '@material-ui/core';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
 import DistributionCard from './DistributionCard';
@@ -12,7 +12,7 @@ import styles from '../../styles/Detailed.module.css';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
-export default function DetailedDataset({ data, uri, prevUserId }) {
+export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
   // show/hide snackbar with successfull put message
@@ -130,12 +130,7 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
     );
   };
 
-  const canSubscribe = () => {
-    // let [subscriptions, setSubscriptions] = useState([])
-    // GetApi('https://localhost:5001/api/users/' + prevUserId, setSubscriptions)
-    // for loop checking if this dataset is being subscribed to
-    return true
-  }
+
 
   const subscribe = (url, desc) => {
     // gjør en sjekk her
@@ -156,6 +151,21 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
 
   const successfullySubscribed = () => {
     console.log("Subscribed!")
+    setSubscribed(true)
+  }
+
+  useEffect(() => {
+    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
+  }, [data, subscribed])
+
+  const checkUserSubscription = (response) => {
+    for (let i = 0; i < response.subscriptions.length; i++) {
+      if (response.subscriptions[i].datasetId === data.id) {
+        setSubscribed(true)
+        return;
+      }
+    }
+    setSubscribed(false)
   }
 
   console.log(data);
@@ -224,13 +234,14 @@ export default function DetailedDataset({ data, uri, prevUserId }) {
           {requestButton}
         </span>
 
-
-        <span>
-          <SubscribeComp
-            onClick={subscribe}
-            subscribed={subscribed}
-          />
-        </span>
+        {parseInt(prevPublisherId) !== data.publisher.id &&
+          <span>
+            <SubscribeComp
+              onClick={subscribe}
+              subscribed={subscribed}
+            />
+          </span>
+        }
 
 
 
