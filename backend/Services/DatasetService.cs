@@ -124,10 +124,10 @@ namespace OpenData.API.Services
                 await addTags(existingDataset);
 
                 _datasetRepository.Update(existingDataset);
-                await _unitOfWork.CompleteAsync();
 
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _unitOfWork.CompleteAsync();
 
                 return new DatasetResponse(existingDataset);
             }
@@ -143,13 +143,13 @@ namespace OpenData.API.Services
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
             patch.ApplyTo(dataset);
-            await _unitOfWork.CompleteAsync();
 
             if(patch.Operations[0].path.Equals("/coordinationId"))
             {
                 await _notificationService.AddUserNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
                 await _notificationService.AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
             }
+            await _unitOfWork.CompleteAsync();
             
             return new DatasetResponse(dataset);
         }
