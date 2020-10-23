@@ -1,4 +1,4 @@
-import { Grid, Snackbar, Divider } from '@material-ui/core';
+import { Grid, Snackbar, Divider, Button } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
@@ -12,11 +12,19 @@ import styles from '../../styles/Detailed.module.css';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
+import EditIcon from '@material-ui/icons/Edit';
+import Input from '../../Components/Forms/Input';
+
+import EditTextFieldComp from './EditTextFieldComp'
+import EditPublishedStatusComp from './EditPublishedStatusComp';
+
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
+
+  const [userAreOwner, setUserAreOwner] = useState(false)
 
   let requestButton;
   let publishedStatus;
@@ -156,6 +164,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
   useEffect(() => {
     GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
+    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true)
   }, [data, subscribed])
 
   const checkUserSubscription = (response) => {
@@ -168,8 +177,23 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(false)
   }
 
+
+  const updateDataset = (newValue, editPath) => {
+    const d = [
+      {
+        value: newValue,
+        path: editPath,
+        op: 'replace',
+      },
+    ];
+    PatchApi(`https://localhost:5001/api/datasets/${data.id}`, d)
+    console.log("patched dataset")
+  }
+
   console.log(data);
   ifPublished(data.publicationStatus);
+
+
 
   return (
     <div>
@@ -180,7 +204,16 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       >
         {getChips()}
 
-        <h1 className={styles.title}>{data.title}</h1>
+
+        <EditTextFieldComp
+          value={data.title}
+          styles={styles.title}
+          type="title"
+          canEdit={userAreOwner}
+          updateDataset={updateDataset}
+          path="/title"
+          multiline={false}
+        />
 
         {data.underCoordination ? (
           <p>
@@ -192,16 +225,29 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <Divider variant="fullWidth" />
         <br />
 
+        <EditTextFieldComp
+          value={data.description}
+          styles={styles.attributes}
+          type="span"
+          staticText="Beskrivelse: "
+          canEdit={userAreOwner}
+          updateDataset={updateDataset}
+          path="/description"
+          multiline={true}
+        />
+
+        <EditPublishedStatusComp
+          value={publishedStatus}
+          styles={styles.attributes}
+          canEdit={userAreOwner}
+          updateDataset={updateDataset}
+          path="/publicationStatus"
+        />
+
         <p className={styles.attributes}>
-          <span>Beskrivelse: </span>
-          {data.description}
-          <br />
-          <br />
+
           <span>Eier: </span>
           {data.publisher.name}
-          <br />
-          <span>Publiseringsstatus: </span>
-          {publishedStatus}
           <br />
           <span>Dato publisert: </span>
           25.06 2017
