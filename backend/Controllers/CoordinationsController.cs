@@ -8,6 +8,8 @@ using OpenData.API.Domain.Services;
 using OpenData.API.Resources;
 using Microsoft.AspNetCore.Cors;
 using OpenData.API.Extensions;
+using Microsoft.AspNetCore.JsonPatch;
+
 
 namespace OpenData.API.Controllers
 {
@@ -80,6 +82,26 @@ namespace OpenData.API.Controllers
 
             var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(result.Resource);
             return Ok(coordinationResource);
+        }
+
+        [HttpPatch("{id}")]
+        [ProducesResponseType(typeof(DatasetResource), 200)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PatchAsync(int id, [FromBody] JsonPatchDocument<Coordination> patch)
+        {
+            if (patch != null)
+            {
+                var coordinationResponse = await _coordinationService.UpdateAsync(id, patch);
+
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
+                
+                var coordinationResource = _mapper.Map<Coordination, CoordinationResource>(coordinationResponse.Resource);
+                return Ok(coordinationResource);
+            }
+            return BadRequest(ModelState);
         }
     }
 }

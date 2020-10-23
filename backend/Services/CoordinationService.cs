@@ -8,6 +8,8 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using Microsoft.AspNetCore.JsonPatch;
+
 
 namespace OpenData.API.Services
 {
@@ -115,6 +117,17 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new CoordinationResponse($"An error occurred when updating the coordination: {ex.Message}");
             }
+        }
+
+        public async Task<CoordinationResponse> UpdateAsync(int id, JsonPatchDocument<Coordination> patch)
+        {
+            var coordination = await _coordinationRepository.FindByIdAsync(id);
+
+            patch.ApplyTo(coordination);
+            await _unitOfWork.CompleteAsync();
+
+            
+            return new CoordinationResponse(coordination);
         }
 
         private async Task<(Boolean success,String error)> idChecks(Coordination coordination)
