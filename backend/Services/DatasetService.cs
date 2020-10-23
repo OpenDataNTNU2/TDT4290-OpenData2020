@@ -125,8 +125,8 @@ namespace OpenData.API.Services
 
                 _datasetRepository.Update(existingDataset);
 
-                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
-                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
 
                 return new DatasetResponse(existingDataset);
@@ -146,12 +146,12 @@ namespace OpenData.API.Services
 
             if(patch.Operations[0].path.Equals("/coordinationId"))
             {
-                await _notificationService.AddUserNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
-                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
+                await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har blitt med i en samordning.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt med i en samordning.");
             }
             else if(patch.Operations[0].path.Equals("/interestCounter"))
             {
-                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset.Title + " - " + dataset.Publisher.Name, "Noen har vist interesse for det upubliserte datasettet ditt '" + dataset.Title + "' som nå har " + dataset.InterestCounter + " interesserte.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Noen har vist interesse for det upubliserte datasettet ditt '" + dataset.Title + "' som nå har " + dataset.InterestCounter + " interesserte.");
             }
             await _unitOfWork.CompleteAsync();
             

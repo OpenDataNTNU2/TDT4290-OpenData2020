@@ -23,23 +23,31 @@ namespace OpenData.API.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg)
+        public async Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg)
         {
             foreach(Subscription subscription in catalogueItem.Subscriptions)
             {
-                await AddNotificationAsync(catalogueItem, (int)subscription.UserId, title, msg);
+                await AddNotificationAsync(target, (int)subscription.UserId, title, msg);
             }
         }
 
-        public async Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg)
+        public async Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg)
         {
             foreach(User user in catalogueItem.Publisher.Users)
             {
-                await AddNotificationAsync(catalogueItem, user.Id, title, msg);
+                await AddNotificationAsync(target, user.Id, title, msg);
             }
         }
 
-        private async Task AddNotificationAsync(ICatalogueItem catalogueItem, int userId, string title, string msg)
+        public async Task AddPublisherNotificationsAsync(Publisher publisher, ICatalogueItem target, string title, string msg)
+        {
+            foreach(User user in publisher.Users)
+            {
+                await AddNotificationAsync(target, user.Id, title, msg);
+            }
+        }
+
+        private async Task AddNotificationAsync(ICatalogueItem target, int userId, string title, string msg)
         {
             Notification notification = new Notification 
             {
@@ -48,13 +56,13 @@ namespace OpenData.API.Services
                 Description = msg,
                 TimeOfCreation = DateTime.Now,
             };
-            if (catalogueItem is Dataset)
+            if (target is Dataset)
             {
-                notification.DatasetId = catalogueItem.Id;
+                notification.DatasetId = target.Id;
             }
-            if (catalogueItem is Coordination)
+            if (target is Coordination)
             {
-                notification.CoordinationId = catalogueItem.Id;
+                notification.CoordinationId = target.Id;
             }
             
             await _notificationRepository.AddNotificationAsync(notification);

@@ -104,8 +104,8 @@ namespace OpenData.API.Services
 
                 _coordinationRepository.Update(existingCoordination);
 
-                await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
-                await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
+                await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
 
                 return new CoordinationResponse(existingCoordination);
