@@ -11,12 +11,18 @@ namespace OpenData.API.Services
     public class ApplicationService : IApplicationService
     {
         private readonly IApplicationRepository _applicationRepository;
+        private readonly IDatasetRepository _datasetRepository;
+        private readonly IPublisherRepository _publisherRepository;
         private readonly ICoordinationRepository _coordinationRepository;
+        private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
-        public ApplicationService(IApplicationRepository ApplicationRepository, IUnitOfWork unitOfWork, ICoordinationRepository CoordinationRepository)
+        public ApplicationService(IApplicationRepository ApplicationRepository, INotificationService notificationService, IPublisherRepository publisherRepository, IDatasetRepository datasetRepository, IUnitOfWork unitOfWork, ICoordinationRepository CoordinationRepository)
         {
             _applicationRepository = ApplicationRepository;
             _coordinationRepository = CoordinationRepository;
+            _publisherRepository = publisherRepository;
+            _datasetRepository = datasetRepository;
+            _notificationService = notificationService;
             _unitOfWork = unitOfWork;
         }
         public async Task<IEnumerable<Application>> ListAsync()
@@ -45,13 +51,32 @@ namespace OpenData.API.Services
         {
             try
             {
-                (Boolean success, String error) check = await idChecks(application);
-                if (!check.success)
+                var coordination = await _coordinationRepository.FindByIdAsync(application.CoordinationId);
+                if (coordination == null)
+                    return new ApplicationResponse("Coordination not found.");
+
+                if (application.DatasetId != null && application.DatasetId != 0)
                 {
-                    return new ApplicationResponse(check.error);
+                    var dataset = await _datasetRepository.FindByIdAsync((int)application.DatasetId);
+                    if (dataset == null)
+                        return new ApplicationResponse("Dataset not found.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, dataset, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet '" + dataset.Title + "' har spurt om å være med i din samordning.");
                 }
+                else if (application.PublisherId != null && application.PublisherId != 0)
+                {
+                    var publisher = await _publisherRepository.FindByIdAsync((int)application.PublisherId);
+                    if (publisher == null)
+                        return new ApplicationResponse("Publisher not found.");
+                    await _notificationService.AddPublisherNotificationsAsync(publisher, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En bruker ønsker at du publiserer et dataset i samordningen '" + coordination.Title + "'.");
+                }
+                else
+                {
+                    return new ApplicationResponse("No dataset or publisher was found.");
+                }
+
                 await _applicationRepository.AddAsync(application);
                 await _unitOfWork.CompleteAsync();
+
 
                 return new ApplicationResponse(application);
             }

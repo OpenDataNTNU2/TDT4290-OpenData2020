@@ -335,6 +335,15 @@ namespace OpenData.API.Persistence.Contexts
             };
             AddRange(not1, not2);
 
+            Application app = new Application
+            {
+                Id = 100,
+                DatasetId = 100,
+                CoordinationId = 100,
+                Reason = "Kan vi verme?"
+            };
+            AddRange(app);
+
             SaveChanges();
         }
     }
