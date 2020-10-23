@@ -55,19 +55,19 @@ namespace OpenData.API.Services
                 if (coordination == null)
                     return new ApplicationResponse("Coordination not found.");
 
-                if (application.DatasetId != 0)
+                if (application.DatasetId != null && application.DatasetId != 0)
                 {
-                    var dataset = await _datasetRepository.FindByIdAsync(application.DatasetId);
+                    var dataset = await _datasetRepository.FindByIdAsync((int)application.DatasetId);
                     if (dataset == null)
                         return new ApplicationResponse("Dataset not found.");
-                    await _notificationService.AddPublisherNotificationsAsync(coordination, dataset, coordination.Title + " - " + coordination.Publisher.Name, "Et dataset '" + dataset.Title + "' har spurt om å være med i din samordning.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, dataset, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet '" + dataset.Title + "' har spurt om å være med i din samordning.");
                 }
-                else if (application.PublisherId != 0)
+                else if (application.PublisherId != null && application.PublisherId != 0)
                 {
-                    var publisher = await _coordinationRepository.FindByIdAsync(application.PublisherId);
+                    var publisher = await _publisherRepository.FindByIdAsync((int)application.PublisherId);
                     if (publisher == null)
                         return new ApplicationResponse("Publisher not found.");
-                    await _notificationService.AddPublisherNotificationsAsync(publisher, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En bruker ønsker at du publiserer et dataset i denne samordningen.");
+                    await _notificationService.AddPublisherNotificationsAsync(publisher, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En bruker ønsker at du publiserer et dataset i samordningen '" + coordination.Title + "'.");
                 }
                 else
                 {
