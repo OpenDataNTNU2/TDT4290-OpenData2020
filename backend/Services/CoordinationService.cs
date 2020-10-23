@@ -126,6 +126,16 @@ namespace OpenData.API.Services
             patch.ApplyTo(coordination);
             await _unitOfWork.CompleteAsync();
 
+            if(patch.Operations[0].path.Equals("/title"))
+            {
+                await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet '" + coordination.Title + "' har endret tittel.");
+                await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet ditt '" + coordination.Title + "' har endret tittel.");
+            }
+            else if(patch.Operations[0].path.Equals("/description"))
+            {
+                await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet '" + coordination.Title + "' har endret beskrivelse.");
+                await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet ditt '" + coordination.Title + "' har endret beskrivelse.");
+            }
             
             return new CoordinationResponse(coordination);
         }
