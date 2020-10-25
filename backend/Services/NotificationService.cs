@@ -23,54 +23,49 @@ namespace OpenData.API.Services
             _unitOfWork = unitOfWork;
         }
 
-        public async Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg)
+        public async Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg)
         {
             foreach(Subscription subscription in catalogueItem.Subscriptions)
             {
-                Notification notification = new Notification 
-                {
-                    UserId = subscription.UserId, 
-                    Title = title,
-                    Description = msg,
-                    TimeOfCreation = DateTime.Now,
-                };
-                if (catalogueItem is Dataset)
-                {
-                    notification.DatasetId = catalogueItem.Id;
-                }
-                if (catalogueItem is Coordination)
-                {
-                    notification.CoordinationId = catalogueItem.Id;
-                }
-
-                await _notificationRepository.AddNotificationAsync(notification);
+                await AddNotificationAsync(target, (int)subscription.UserId, title, msg);
             }
-            await _unitOfWork.CompleteAsync();
         }
 
-        public async Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg)
+        public async Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg)
         {
             foreach(User user in catalogueItem.Publisher.Users)
             {
-                Notification notification = new Notification 
-                {
-                    UserId = user.Id, 
-                    Title = title,
-                    Description = msg,
-                    TimeOfCreation = DateTime.Now,
-                };
-                if (catalogueItem is Dataset)
-                {
-                    notification.DatasetId = catalogueItem.Id;
-                }
-                if (catalogueItem is Coordination)
-                {
-                    notification.CoordinationId = catalogueItem.Id;
-                }
-                
-                await _notificationRepository.AddNotificationAsync(notification);
+                await AddNotificationAsync(target, user.Id, title, msg);
             }
-            await _unitOfWork.CompleteAsync();
+        }
+
+        public async Task AddPublisherNotificationsAsync(Publisher publisher, ICatalogueItem target, string title, string msg)
+        {
+            foreach(User user in publisher.Users)
+            {
+                await AddNotificationAsync(target, user.Id, title, msg);
+            }
+        }
+
+        private async Task AddNotificationAsync(ICatalogueItem target, int userId, string title, string msg)
+        {
+            Notification notification = new Notification 
+            {
+                UserId = userId, 
+                Title = title,
+                Description = msg,
+                TimeOfCreation = DateTime.Now,
+            };
+            if (target is Dataset)
+            {
+                notification.DatasetId = target.Id;
+            }
+            if (target is Coordination)
+            {
+                notification.CoordinationId = target.Id;
+            }
+            
+            await _notificationRepository.AddNotificationAsync(notification);
         }
     }
 }
