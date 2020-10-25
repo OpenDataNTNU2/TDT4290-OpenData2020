@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Cors;
 using OpenData.API;
 using System;
 using Microsoft.AspNetCore.JsonPatch;
-using OpenData.API.Domain.Repositories;
 
 
 namespace OpenData.API.Controllers
@@ -23,14 +22,12 @@ namespace OpenData.API.Controllers
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
         private readonly IRdfService _rdfService;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper, IUnitOfWork unitOfWork)
+        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper)
         {
             _rdfService = rdfService;
             _datasetService = datasetService;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         /// <summary>

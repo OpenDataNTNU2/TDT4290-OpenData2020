@@ -14,5 +14,7 @@ namespace OpenData.API.Resources
         public CategoryResource Category { get; set; }
         public IList<CoordinationTagsResource> CoordinationTags { get; set; } = new List<CoordinationTagsResource>();
         public IList<ApplicationResource> Applications { get; set; } = new List<ApplicationResource>();
+        public IList<SubscriptionResource> Subscriptions { get; set; } = new List<SubscriptionResource>();
+        
     }
 }

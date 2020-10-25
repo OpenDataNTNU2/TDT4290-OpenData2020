@@ -11,7 +11,8 @@ namespace OpenData.API.Domain.Services
 {
     public interface INotificationService
     {
-        Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg);
-        Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, string title, string msg);
+        Task AddUserNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg);
+        Task AddPublisherNotificationsAsync(ICatalogueItem catalogueItem, ICatalogueItem target, string title, string msg);
+        Task AddPublisherNotificationsAsync(Publisher publisher, ICatalogueItem target, string title, string msg);
     }
 }

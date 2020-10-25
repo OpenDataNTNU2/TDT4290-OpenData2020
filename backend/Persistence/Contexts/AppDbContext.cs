@@ -123,8 +123,8 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
 
             builder.Entity<Subscription>().ToTable("Subscriptions");
-            builder.Entity<Application>().HasKey(p => p.Id);
-            builder.Entity<Application>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Subscription>().HasKey(p => p.Id);
+            builder.Entity<Subscription>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Subscription>()
                 .HasOne(s => s.Dataset)
                 .WithMany(d => d.Subscriptions)
@@ -137,7 +137,6 @@ namespace OpenData.API.Persistence.Contexts
                 .HasOne(s => s.Coordination)
                 .WithMany(u => u.Subscriptions)
                 .HasForeignKey(s => s.CoordinationId);
-            
 
             builder.Entity<Notification>().ToTable("Notification");
             builder.Entity<Notification>().HasKey(p => p.Id);
@@ -298,16 +297,19 @@ namespace OpenData.API.Persistence.Contexts
 
             Subscription sub1 = new Subscription
             {
+                Id = 100,
                 DatasetId = 100,
-                UserId = 100
+                UserId = 100,
             };
             Subscription sub2 = new Subscription
             {
+                Id = 101,
                 DatasetId = 101,
                 UserId = 101
             };
             Subscription sub3 = new Subscription
             {
+                Id = 102,
                 CoordinationId = 101,
                 UserId = 101
             };
@@ -326,11 +328,21 @@ namespace OpenData.API.Persistence.Contexts
             {
                 Id = 101,
                 DatasetId = 101,
+                UserId = 100,
                 Title = "Sykkel - Bodø kommune",
                 Description = "Datasett 'Sykkel' har blitt oppdatert.",
                 TimeOfCreation = DateTime.Now
             };
             AddRange(not1, not2);
+
+            Application app = new Application
+            {
+                Id = 100,
+                DatasetId = 100,
+                CoordinationId = 100,
+                Reason = "Kan vi verme?"
+            };
+            AddRange(app);
 
             SaveChanges();
         }
