@@ -5,6 +5,8 @@ import RequestButtonComp from './RequestButtonComp';
 import DistributionCard from './DistributionCard';
 import SubscribeComp from './SubscribeComp';
 
+import { useRouter } from 'next/router'
+
 import { PageRender } from '../api/serverSideProps';
 import PatchApi from '../../Components/ApiCalls/PatchApi';
 
@@ -17,6 +19,9 @@ import Input from '../../Components/Forms/Input';
 
 import EditTextFieldComp from './EditTextFieldComp'
 import EditPublishedStatusComp from './EditPublishedStatusComp';
+import EditCategoryComp from './EditCategoryComp'
+import AddDistributionsComp from './AddDistributionsComp'
+import AddTagsComp from './AddTagsComp'
 
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
@@ -79,6 +84,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
               fileFormat={dist.fileFormat}
               uri={dist.uri}
               title={dist.title}
+              canEdit={userAreOwner}
             />
           );
         });
@@ -244,6 +250,24 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           path="/publicationStatus"
         />
 
+        <EditCategoryComp
+          value={data.category.name}
+          styles={styles.attributes}
+          canEdit={userAreOwner}
+          categoryId={data.category.id}
+          updateDataset={updateDataset}
+          path="/categoryId"
+        />
+
+        <AddTagsComp
+          value={data.datasetTags}
+          styles={styles.attributes}
+          canEdit={userAreOwner}
+          updateDataset={updateDataset}
+          path="/tagsIds"
+
+        />
+
         <p className={styles.attributes}>
 
           <span>Eier: </span>
@@ -251,9 +275,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           <br />
           <span>Dato publisert: </span>
           25.06 2017
-          <br />
-          <span>Kategori: </span>
-          {data.category.name}
           <br />
           {data.coordination && (
             <div>
@@ -273,6 +294,15 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
         <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
         <span>{cardOrNoCard}</span>
+        <br />
+        <span>
+          <AddDistributionsComp
+            canEdit={userAreOwner}
+            dataId={data.id}
+            distributionCards={distributionCards}
+          />
+        </span>
+
 
         {/* Request dataset */}
         <span>

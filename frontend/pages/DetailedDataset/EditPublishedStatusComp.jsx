@@ -19,16 +19,8 @@ const EditPublishedStatusComp = (props) => {
             case '2': { setEditText('Ikke publisert') }
             case '3': { setEditText('Ikke publisert') }
         }
-
-        if (editText !== props.value) {
-            props.updateDataset(radioValue, props.path)
-            setEditBool(false)
-        }
-        else {
-            setEditBool(false)
-            console.log("ingen endring")
-        }
-
+        props.updateDataset(radioValue, props.path)
+        setEditBool(false)
     }
 
 
