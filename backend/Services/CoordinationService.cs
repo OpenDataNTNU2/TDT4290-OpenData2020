@@ -8,6 +8,8 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using Microsoft.AspNetCore.JsonPatch;
+
 
 namespace OpenData.API.Services
 {
@@ -115,6 +117,27 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new CoordinationResponse($"An error occurred when updating the coordination: {ex.Message}");
             }
+        }
+
+        public async Task<CoordinationResponse> UpdateAsync(int id, JsonPatchDocument<Coordination> patch)
+        {
+            var coordination = await _coordinationRepository.FindByIdAsync(id);
+
+            patch.ApplyTo(coordination);
+
+            if(patch.Operations[0].path.Equals("/title"))
+            {
+                await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tittel.");
+                await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tittel.");
+            }
+            else if(patch.Operations[0].path.Equals("/description"))
+            {
+                await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret beskrivelse.");
+                await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret beskrivelse.");
+            }
+            await _unitOfWork.CompleteAsync();
+            
+            return new CoordinationResponse(coordination);
         }
 
         private async Task<(Boolean success,String error)> idChecks(Coordination coordination)

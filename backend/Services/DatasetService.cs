@@ -153,6 +153,17 @@ namespace OpenData.API.Services
             {
                 await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Noen har vist interesse for det upubliserte datasettet ditt '" + dataset.Title + "' som nå har " + dataset.InterestCounter + " interesserte.");
             }
+            else if(patch.Operations[0].path.Equals("/title"))
+            {
+                await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tittel.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tittel.");
+            }
+            else if(patch.Operations[0].path.Equals("/description"))
+            {
+                await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret beskrivelse.");
+                await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret beskrivelse.");
+            }
+            
             await _unitOfWork.CompleteAsync();
             
             return new DatasetResponse(dataset);
