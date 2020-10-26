@@ -101,6 +101,27 @@ namespace OpenData.API.Persistence.Repositories
                    ));
             }
 
+            // Sorts the datasets. Default order by title ascending
+            string sortOrder = String.IsNullOrEmpty(query.SortOrder) ? "title_asc" : query.SortOrder.Trim().ToLower();
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    queryable = queryable.OrderByDescending(d => d.Title);
+                    break;
+                case "title_asc":
+                    queryable = queryable.OrderBy(d => d.Title);
+                    break;
+                case "date_desc":
+                     queryable = queryable.OrderByDescending(d => d.DatePublished);
+                    break;
+                case "date_asc":
+                    queryable = queryable.OrderBy(d => d.DatePublished);
+                    break;
+                default:
+                    queryable = queryable.OrderBy(d => d.Title);
+                    break;
+            }
+
             // Here I count all items present in the database for the given query, to return as part of the pagination data.
             int totalItems = await queryable.CountAsync();
 
