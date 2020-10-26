@@ -99,8 +99,6 @@ namespace OpenData.API.Services
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
 
-
-                // This doesnt work to remove and gets an error when adding already added tags.
                 existingCoordination.CoordinationTags.Clear();
                 await addTags(existingCoordination);
 
@@ -128,8 +126,8 @@ namespace OpenData.API.Services
             switch(patch.Operations[0].path)
             {
                 case "/title":
-                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tittel.");
-                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tittel.");
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordning du følger har endret tittel til '" + coordination.Title + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordningen du eier har endret tittel til '" + coordination.Title + "'.");
                     break;
                 case "/description":
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret beskrivelse.");
@@ -144,6 +142,8 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret kategori.");
                     break;
                 case "/tagsIds":
+                    coordination.CoordinationTags.Clear();
+                    await addTags(coordination);
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tags.");
                     await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tags.");
                     break;
