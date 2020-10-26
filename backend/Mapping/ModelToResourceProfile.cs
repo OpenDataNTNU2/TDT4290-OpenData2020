@@ -37,7 +37,8 @@ namespace OpenData.API.Mapping
                     .ForMember(src => src.CoordinationsCount,
                                 opt => opt.MapFrom(src => getCoordinationsCount(src)));
 
-            CreateMap<Coordination, CoordinationResource>();
+            CreateMap<Coordination, CoordinationResource>()
+                    .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => src.AccessLevel.ToDescriptionString()));
             CreateMap<CoordinationTags, CoordinationTagsResource>();
             
             CreateMap<QueryResult<Coordination>, QueryResultResource<CoordinationResource>>();

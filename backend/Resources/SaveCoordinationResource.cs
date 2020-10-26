@@ -12,6 +12,8 @@ namespace OpenData.API.Resources
         [Required]
         public bool UnderCoordination { get; set; }
         public string StatusDescription { get; set; }
+        public int AccessLevel { get; set; }
+
         [Required]
         public int CategoryId { get; set; }
         public string TagsIds { get; set; }
