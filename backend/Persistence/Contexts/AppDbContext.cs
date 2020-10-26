@@ -283,6 +283,8 @@ namespace OpenData.API.Persistence.Contexts
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 101,
                 CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
                 AccessLevel = EAccessLevel.green
             };
 
@@ -293,6 +295,8 @@ namespace OpenData.API.Persistence.Contexts
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 100,
                 CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
                 AccessLevel = EAccessLevel.yellow
             };
             AddRange(bicycleCoordination, beachCoordination);

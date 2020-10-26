@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-
+using System;
 namespace OpenData.API.Resources
 {
     public class CoordinationResource
@@ -11,6 +11,8 @@ namespace OpenData.API.Resources
         public string StatusDescription { get; set; }
         public string AccessLevel { get; set; }
         public PublisherResource Publisher { get; set; }
+        public DateTime DateLastUpdated {get; set; }
+        public DateTime DatePublished {get; set; }
         public IList<DatasetResource> Datasets { get; set; } = new List<DatasetResource>();
         public CategoryResource Category { get; set; }
         public IList<CoordinationTagsResource> CoordinationTags { get; set; } = new List<CoordinationTagsResource>();
