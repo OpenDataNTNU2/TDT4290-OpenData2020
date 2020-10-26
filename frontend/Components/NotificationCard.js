@@ -1,7 +1,10 @@
 import React from 'react';
 import styles from '../styles/NotificationCard.module.css';
+import { useRouter } from 'next/router';
 
 export default function NotificationCard(props) {
+  const router = useRouter();
+
   function getDate(dateString) {
     let notificationDate = new Date(dateString);
     let now = new Date(Date.now());
@@ -20,13 +23,28 @@ export default function NotificationCard(props) {
     }
   }
 
+  function openCatalougeItem(item) {
+    if (parseInt(item.datasetId) !== 0) {
+      router.push('/DetailedDataset/' + item.datasetId);
+    } else if (parseInt(item.coordinationId) !== 0) {
+      router.push('/DetailedCoordination/' + item.coordinationId);
+    }
+    return;
+  }
+
   return (
     <div className={styles.cardContainer}>
       <h2>Varsler</h2>
       <hr />
       {props.notifications && props.notifications.length > 0 ? (
         props.notifications.map((notification) => (
-          <div className={styles.notification} key={notification.id}>
+          <div
+            onClick={() => {
+              openCatalougeItem(notification);
+            }}
+            className={styles.notification}
+            key={notification.id}
+          >
             <p>
               <b>{notification.title}</b>
             </p>
