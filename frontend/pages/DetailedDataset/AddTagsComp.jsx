@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from '@material-ui/core';
-
 import EditIcon from '@material-ui/icons/Edit';
 
 import SelectTags from '../../Components/Forms/SelectTags';
-
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
 const AddTagsComp = (props) => {
   const [editBool, setEditBool] = useState(false);
-  const [editText] = useState(props.value);
+  const [editText] = useState(props.value ? props.value : null);
 
   // variables/states for tags
   const [tags, setTags] = useState([]);
@@ -57,14 +55,14 @@ const AddTagsComp = (props) => {
     ) : (
       <p className={props.styles}>
         <span>Søkeord: </span>
-        {editText?.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
+        {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
         <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
       </p>
     )
   ) : (
     <p className={props.styles}>
       <span>Søkeord: </span>
-      {editText?.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
+      {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
     </p>
   );
 };
