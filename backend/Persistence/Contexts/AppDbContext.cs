@@ -282,7 +282,9 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Bicycle coordination",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 101,
-                CategoryId = 101
+                CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
             };
 
             Coordination beachCoordination = new Coordination
@@ -291,7 +293,9 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand samordning",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 100,
-                CategoryId = 101
+                CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
             };
             AddRange(bicycleCoordination, beachCoordination);
 
