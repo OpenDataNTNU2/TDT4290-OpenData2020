@@ -45,6 +45,9 @@ export default function CreateCoordination(props) {
   const [selectedTags, setSelectedTags] = useState('');
   const [newTags, setNewTags] = useState([]);
 
+  // accesslevel
+  const [accessLevel, setAccessLevel] = useState('1');
+
   // resetter alle feltene etter en submit, sender også inn coordination til det valgte datasettet hvis datasetOption = "1"
   const submitPostReq = (id) => {
     const data = [
@@ -79,6 +82,7 @@ export default function CreateCoordination(props) {
       tagsIds: selectedTags,
       statusDescription: coordinationStatus === 'true' ? statusDescription : '',
       underCoordination: coordinationStatus !== 'false',
+      accessLevel: parseInt(accessLevel),
     };
     if (title !== '' && description !== '') {
       PostApi('https://localhost:5001/api/coordinations', data, submitPostReq);
@@ -181,6 +185,18 @@ export default function CreateCoordination(props) {
           </FormControl>
         </div>
       ) : null}
+      <br />
+      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
+        <FormLabel component="legend">Tilgangsnivå</FormLabel>
+        <RadioInput
+          id="accessLevel"
+          mainValue={accessLevel}
+          handleChange={setAccessLevel}
+          value={['1', '2', '3']}
+          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+          color={['green', 'yellow', 'red']}
+        />
+      </FormControl>
       <br />
       <SelectCategory
         id="category"

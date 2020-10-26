@@ -143,6 +143,7 @@ namespace OpenData.API.Services
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
             patch.ApplyTo(dataset);
+            dataset.DateLastUpdated = DateTime.Now;
 
             switch (patch.Operations[0].path)
             {
@@ -154,26 +155,28 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Noen har vist interesse for det upubliserte datasettet ditt '" + dataset.Title + "' som nå har " + dataset.InterestCounter + " interesserte.");
                     break;
                 case "/title":
-                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tittel.");
-                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tittel.");
+                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Et datasett du abonnerer på har endret tittel til '" + dataset.Title + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Et datasett du eier har endret tittel til '" + dataset.Title + "'.");
                     break;
                 case "/description":
                     await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret beskrivelse.");
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret beskrivelse.");
                     break;
                 case "/publicationStatus":
-                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret publiseringsstatus.");
-                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret publiseringsstatus.");
+                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret publiseringsstatus til '" + dataset.PublicationStatus + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret publiseringsstatus til '" + dataset.PublicationStatus + "'.");
                     break;
                 case "/accessLevel":
-                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tilgangsnivå.");
-                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tilgangsnivå.");
+                    await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tilgangsnivå til '" + dataset.AccessLevel + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tilgangsnivå til '" + dataset.AccessLevel + "'.");
                     break;
                 case "/categoryId":
                     await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret kategori.");
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret kategori.");
                     break;
                 case "/tagsIds":
+                    dataset.DatasetTags.Clear();
+                    await addTags(dataset);
                     await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tags.");
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tags.");
                     break;
