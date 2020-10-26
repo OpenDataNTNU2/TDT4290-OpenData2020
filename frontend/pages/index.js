@@ -143,6 +143,7 @@ export default function Home() {
           <Button variant="contained" onClick={() => changeSort('date_asc')} color={'primary'}><ArrowUpward />Sortert på dato</Button>
         </div>
       )
+      default: return '';
     }
   }
 
