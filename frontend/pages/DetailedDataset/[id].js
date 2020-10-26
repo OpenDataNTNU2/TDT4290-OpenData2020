@@ -270,11 +270,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-          <p>
+          <span>
             <b>Søkeord: </b>
             {data.datasetTags.map((tag) => tag && `${tag.tags.name}, `)}{' '}
             {data.datasetTags.length === 0 ? 'Ingen søkeord lagt til' : null}
-          </p>
+          </span>
         </p>
         <br />
 
