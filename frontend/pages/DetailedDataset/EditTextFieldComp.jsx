@@ -24,6 +24,8 @@ const EditComp = (props) => {
             <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
           </p>
         );
+      default:
+        return '';
     }
   };
 
@@ -38,6 +40,8 @@ const EditComp = (props) => {
             {editText}
           </p>
         );
+      default:
+        return '';
     }
   };
 
