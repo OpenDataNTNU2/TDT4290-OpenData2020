@@ -37,21 +37,23 @@ export default function NotificationCard(props) {
       <h2>Varsler</h2>
       <hr />
       {props.notifications && props.notifications.length > 0 ? (
-        props.notifications.map((notification) => (
-          <div
-            onClick={() => {
-              openCatalougeItem(notification);
-            }}
-            className={styles.notification}
-            key={notification.id}
-          >
-            <p>
-              <b>{notification.title}</b>
-            </p>
-            <p>{notification.description}</p>
-            <p>{getDate(notification.timeOfCreation)}</p>
-          </div>
-        ))
+        props.notifications
+          .sort((a, b) => (new Date(a).getTime() > new Date(b).getTime() ? 1 : -1))
+          .map((notification) => (
+            <div
+              onClick={() => {
+                openCatalougeItem(notification);
+              }}
+              className={styles.notification}
+              key={notification.id}
+            >
+              <p>
+                <b>{notification.title}</b>
+              </p>
+              <p>{notification.description}</p>
+              <p>{getDate(notification.timeOfCreation)}</p>
+            </div>
+          ))
       ) : (
         <p>Ingen varsler</p>
       )}
