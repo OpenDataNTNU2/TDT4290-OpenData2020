@@ -174,6 +174,8 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret kategori.");
                     break;
                 case "/tagsIds":
+                    dataset.DatasetTags.Clear();
+                    await addTags(dataset);
                     await _notificationService.AddUserNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet '" + dataset.Title + "' har endret tags.");
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har endret tags.");
                     break;
