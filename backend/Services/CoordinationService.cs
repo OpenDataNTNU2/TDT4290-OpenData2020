@@ -150,7 +150,7 @@ namespace OpenData.API.Services
                     break;
                 case "/accessLevel":
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
-                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tags endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
                     break;
                 default:
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har blitt endret.");
