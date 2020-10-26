@@ -13,15 +13,15 @@ export default function CoordinationCard(props) {
     const coordinationStatus = props.coordination.underCoordination;
     return (
       <div className={styles.chipsContainer}>
-        {coordinationStatus.underCoordination ? (
+        {coordinationStatus ? (
           <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
             Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )}
       </div>
     );
   };
@@ -45,8 +45,8 @@ export default function CoordinationCard(props) {
             {props.coordination.datasets.length !== 0 ? (
               props.coordination.datasets.map((dataset) => `${dataset.publisher.name}, `)
             ) : (
-              <i> Ingen deltagende kommuner</i>
-            )}
+                <i> Ingen deltagende kommuner</i>
+              )}
           </p>
         </Grid>
       </Grid>

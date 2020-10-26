@@ -8,6 +8,9 @@ import { PageRender } from '../api/serverSideProps';
 
 import SubscribeComp from './SubscribeComp';
 import DistributionCard from '../DetailedDataset/DistributionCard';
+import EditTextFieldComp from '../DetailedDataset/EditTextFieldComp'
+
+
 import DatasetCard from '../../Components/DatasetCard';
 import Input from '../../Components/Forms/Input';
 import GetApi from '../../Components/ApiCalls/GetApi';
@@ -39,12 +42,15 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const [subscribed, setSubscribed] = useState(false)
   const [user, setUser] = useState([])
 
+  // logged in user are owner of coordination
+  const [userAreOwner, setUserAreOwner] = useState(false)
+
   useEffect(() => {
     if (parseInt(JSON.parse(prevPublisherId)) > 99 && parseInt(prevPublisherId) !== data.publisher.id) {
       GetApi(`https://localhost:5001/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
-
     GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
+    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true)
 
   }, [data, subscribed]);
 
@@ -121,24 +127,60 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
-        <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-          Samordnet
-        </div>
+        {coordinationData.underCoordination ?
+          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            Under samordning
+          </div>
+          : <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+            Samordnet
+        </div>}
       </div>
     );
   };
+
+  const updateCoordination = (newValue, editPath) => {
+    const d = [
+      {
+        value: newValue,
+        path: editPath,
+        op: 'replace',
+      },
+    ];
+    PatchApi(`https://localhost:5001/api/coordinations/${data.id}`, d)
+    console.log("patched dataset")
+  }
+
 
   return (
     <Grid container direction="column" style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
       {/* Tags og overskrift */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         {getChips()}
-        <h1 className={styles.title}>{data.title}</h1>
+
+        <EditTextFieldComp
+          value={coordinationData.title}
+          styles={styles.title}
+          type="title"
+          canEdit={userAreOwner}
+          updateDataset={updateCoordination}
+          path="/title"
+          multiline={false}
+        />
+
         {data.underCoordination ? (
-          <p>
-            <b>Status: </b>
-            <i>{data.statusDescription}</i>
-          </p>
+          <div>
+            <EditTextFieldComp
+              value={coordinationData.statusDescription}
+              styles={styles.attributes}
+              type="span"
+              canEdit={userAreOwner}
+              updateDataset={updateCoordination}
+              path="/statusDescription"
+              multiline={true}
+              staticText="Status: "
+            />
+            <Button variant="contained" onClick={() => updateCoordination(false, '/underCoordination')}>Sett status til samordnet</Button>
+          </div>
         ) : null}
       </Grid>
 
@@ -147,11 +189,16 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {/* Informasjon om samordningen */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
-        <p>
-          <b>Beskrivelse: </b>
-          {data.description}
-        </p>
-        <br />
+        <EditTextFieldComp
+          value={coordinationData.description}
+          styles={styles.attributes}
+          type="span"
+          canEdit={userAreOwner}
+          updateDataset={updateCoordination}
+          path="/description"
+          multiline={true}
+          staticText="Beskrivelse: "
+        />
         <p>
           <b>Utgiver av samordning: </b>
           {data.publisher.name}
