@@ -126,8 +126,8 @@ namespace OpenData.API.Services
             switch(patch.Operations[0].path)
             {
                 case "/title":
-                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tittel.");
-                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tittel.");
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordning du følger har endret tittel til '" + coordination.Title + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordningen du eier har endret tittel til '" + coordination.Title + "'.");
                     break;
                 case "/description":
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret beskrivelse.");
