@@ -9,6 +9,7 @@ namespace OpenData.API.Resources
         public string Description { get; set; }
         public bool UnderCoordination { get; set; }
         public string StatusDescription { get; set; }
+        public string AccessLevel { get; set; }
         public PublisherResource Publisher { get; set; }
         public DateTime DateLastUpdated {get; set; }
         public DateTime DatePublished {get; set; }

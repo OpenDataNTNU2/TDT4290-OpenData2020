@@ -285,6 +285,7 @@ namespace OpenData.API.Persistence.Contexts
                 CategoryId = 101,
                 DateLastUpdated = DateTime.Now,
                 DatePublished = DateTime.Now,
+                AccessLevel = EAccessLevel.green
             };
 
             Coordination beachCoordination = new Coordination
@@ -296,6 +297,7 @@ namespace OpenData.API.Persistence.Contexts
                 CategoryId = 101,
                 DateLastUpdated = DateTime.Now,
                 DatePublished = DateTime.Now,
+                AccessLevel = EAccessLevel.yellow
             };
             AddRange(bicycleCoordination, beachCoordination);
 
