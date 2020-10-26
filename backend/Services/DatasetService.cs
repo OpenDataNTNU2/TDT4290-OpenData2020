@@ -22,10 +22,10 @@ namespace OpenData.API.Services
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
         private readonly INotificationService _notificationService;
+        private readonly IGitlabService _gitlabService;
 
 
-
-        public DatasetService(IDatasetRepository datasetRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DatasetService(IDatasetRepository datasetRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ICoordinationRepository coordinationRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork, IMemoryCache cache, IGitlabService gitlabService)
         {
             _datasetRepository = datasetRepository;
             _publisherRepository = publisherRepository;
@@ -35,6 +35,7 @@ namespace OpenData.API.Services
             _unitOfWork = unitOfWork;
             _notificationService = notificationService;
             _cache = cache;
+            _gitlabService = gitlabService;
         }
 
         public async Task<QueryResult<Dataset>> ListAsync(DatasetQuery query)
@@ -84,6 +85,8 @@ namespace OpenData.API.Services
                 _datasetRepository.Update(dataset);
 
                 await addTags(dataset);
+
+                _gitlabService.CreateDatasetProject(dataset);
 
                 return new DatasetResponse(dataset);
             }

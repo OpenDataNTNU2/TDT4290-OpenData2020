@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System;
 
 namespace OpenData.API
 {
@@ -46,6 +47,8 @@ namespace OpenData.API
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
+
+            services.AddHttpClient();
 
             services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
@@ -80,6 +83,7 @@ namespace OpenData.API
 
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IRdfService, RdfService>();
+            services.AddScoped<IGitlabService, GitlabService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
 
