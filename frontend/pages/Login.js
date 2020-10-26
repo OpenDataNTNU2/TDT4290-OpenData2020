@@ -107,12 +107,10 @@ export default function Login({
       style={{ minHeight: '70vh', minWidth: '90vh' }}
     >
       {loggedIn ? (
-        <h2 style={{ fontWeight: 'normal' }}>
-          Logget inn som {loggedUsername}
-        </h2>
+        <h2 style={{ fontWeight: 'normal' }}>Logget inn som {loggedUsername}</h2>
       ) : (
-          <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
-        )}
+        <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
+      )}
       {loggedIn ? null : (
         <form noValidate autoComplete="off" style={{ width: '50vh' }}>
           <TextField
@@ -132,10 +130,10 @@ export default function Login({
           Logg ut
         </Button>
       ) : (
-          <Button variant="contained" color="primary" onClick={handleLoginClick}>
-            Logg inn
-          </Button>
-        )}
+        <Button variant="contained" color="primary" onClick={handleLoginClick}>
+          Logg inn
+        </Button>
+      )}
       <br />
 
       {loggedIn ? null : (

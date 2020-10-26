@@ -26,8 +26,6 @@ export async function PageRender(page, context) {
     };
   }
 
-
-
   if (JSON.stringify(cookies) !== '{}') {
     propsData = {
       props: {

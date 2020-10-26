@@ -3,11 +3,10 @@ import { Grid, Paper, Link, Button } from '@material-ui/core';
 import DeleteApi from '../../Components/ApiCalls/DeleteApi';
 
 const DistributionCard = (props) => {
-
   const removeDistribution = () => {
     // få inn en måte å oppdatere siden på slik at bruker slipper å refreshe for å se at distribusjonen er borte.
-    DeleteApi('https://localhost:5001/api/distributions/' + props.id)
-  }
+    DeleteApi('https://localhost:5001/api/distributions/' + props.id);
+  };
 
   return (
     <Paper
@@ -30,9 +29,13 @@ const DistributionCard = (props) => {
             {props.uri}
           </Link>
         </Grid>
-        {props.canEdit && <Grid item xs={3} alignContent="flex-end">
-          <Button variant="contained" color="secondary" onClick={removeDistribution}>Fjern denne distribusjonen</Button>
-        </Grid>}
+        {props.canEdit && (
+          <Grid item xs={3} alignContent="flex-end">
+            <Button variant="contained" color="secondary" onClick={removeDistribution}>
+              Fjern denne distribusjonen
+            </Button>
+          </Grid>
+        )}
       </Grid>
     </Paper>
   );
