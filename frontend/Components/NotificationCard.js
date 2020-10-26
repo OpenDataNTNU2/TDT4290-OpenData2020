@@ -1,51 +1,59 @@
 import React from 'react';
 import styles from '../styles/NotificationCard.module.css';
+import { useRouter } from 'next/router';
 
 export default function NotificationCard(props) {
-  // vet ikke helt hva som bør være med her, men tenker kanskje noe slikt? ish.. ? :)
-  /*   const dummyNotifications = [
-    {
-      id: 1,
-      title: 'Notification 1 - Oslo kommune',
-      change: 'This is what changed in the dataset',
-      timeOfChange: 'DD.MM.YYYY',
-    },
-    {
-      id: 2,
-      title: 'Notification 2',
-      change: 'This is what changed in the dataset',
-      timeOfChange: 'DD.MM.YYYY',
-    },
-    {
-      id: 3,
-      title: 'Notification 3',
-      change: 'This is what changed in the coordination',
-      timeOfChange: 'DD.MM.YYYY',
-    },
-    {
-      id: 4,
-      title: 'Notification 4',
-      change: 'This is what changed in the coordination',
-      timeOfChange: 'DD.MM.YYYY',
-    },
-  ]; */
+  const router = useRouter();
 
-  // tenker kanskje at vi kan bruke switch case på hva som er endret, og da vise det som er relevant.
-  // eks at samordning har litt andre ting som bør vises kontra dataset hvis en endring er gjort.
+  function getDate(dateString) {
+    let notificationDate = new Date(dateString);
+    let now = new Date(Date.now());
+    if (now - notificationDate < 1000 * 60) {
+      return 'Nå';
+    } else if (now - notificationDate < 1000 * 60 * 60) {
+      return new Date(now - notificationDate).getMinutes() + ' minutter siden';
+    } else if (now - notificationDate < 1000 * 60 * 60 * 24) {
+      return new Date(now - notificationDate).getHours() + ' timer siden';
+    } else if (now - notificationDate < 1000 * 60 * 60 * 24 * 2) {
+      return 'I går kl: ' + notificationDate.toLocaleTimeString();
+    } else {
+      let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      let result = notificationDate.toLocaleDateString('no', options);
+      return result.substr(0, 1).toUpperCase() + result.substr(1);
+    }
+  }
+
+  function openCatalougeItem(item) {
+    if (parseInt(item.datasetId) !== 0) {
+      router.push('/DetailedDataset/' + item.datasetId);
+    } else if (parseInt(item.coordinationId) !== 0) {
+      router.push('/DetailedCoordination/' + item.coordinationId);
+    }
+    return;
+  }
 
   return (
     <div className={styles.cardContainer}>
       <h2>Varsler</h2>
+      <hr />
       {props.notifications && props.notifications.length > 0 ? (
-        props.notifications.map((notification) => (
-          <div className={styles.notification} key={notification.id}>
-            <p>
-              <b>{notification.title}</b>
-            </p>
-            <p>{notification.description}</p>
-            <p>Endret: {notification.timeOfCreation}</p>
-          </div>
-        ))
+        props.notifications
+          .sort((a, b) => (new Date(a).getTime() > new Date(b).getTime() ? 1 : -1))
+          .map((notification) => (
+            <div
+              onClick={() => {
+                openCatalougeItem(notification);
+              }}
+              className={styles.notification}
+              key={notification.id}
+            >
+              <p>
+                <b>{notification.title}</b>
+              </p>
+              <p>{notification.description}</p>
+              <p>{getDate(notification.timeOfCreation)}</p>
+            </div>
+          ))
       ) : (
         <p>Ingen varsler</p>
       )}
