@@ -8,7 +8,7 @@ import PostApi from '../../Components/ApiCalls/PostApi';
 
 const AddTagsComp = (props) => {
   const [editBool, setEditBool] = useState(false);
-  const [editText] = useState(props.value ? props.value : null);
+  const [editText] = useState(props.value ? props.value : []);
 
   // variables/states for tags
   const [tags, setTags] = useState([]);
