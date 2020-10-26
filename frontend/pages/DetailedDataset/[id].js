@@ -112,7 +112,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
         {data.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
-            Offentlig
+            Kan deles offentlig
           </div>
         ) : null}
         {data.accessLevel === 'Yellow' ? (
@@ -283,11 +283,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-          <p>
+          <span>
             <b>Søkeord: </b>
             {data.datasetTags.map((tag) => tag && `${tag.tags.name}, `)}{' '}
             {data.datasetTags.length === 0 ? 'Ingen søkeord lagt til' : null}
-          </p>
+          </span>
         </p>
         <br />
 

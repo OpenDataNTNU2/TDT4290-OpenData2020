@@ -10,10 +10,9 @@ export default function CoordinationCard(props) {
   };
 
   const getChips = () => {
-    const coordinationStatus = props.coordination.underCoordination;
     return (
       <div className={styles.chipsContainer}>
-        {coordinationStatus.underCoordination ? (
+        {props.coordination.underCoordination ? (
           <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
             Under samordning
           </div>
@@ -22,6 +21,21 @@ export default function CoordinationCard(props) {
             Samordnet
           </div>
         )}
+        {props.coordination.accessLevel === 'Green' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
+            Kan deles offentlig
+          </div>
+        ) : null}
+        {props.coordination.accessLevel === 'Yellow' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#D4B546' }}>
+            Begrenset offentlighet
+          </div>
+        ) : null}
+        {props.coordination.accessLevel === 'Red' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#DA6464' }}>
+            Unntatt offentlighet
+          </div>
+        ) : null}
       </div>
     );
   };

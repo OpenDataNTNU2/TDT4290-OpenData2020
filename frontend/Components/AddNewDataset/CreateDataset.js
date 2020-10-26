@@ -257,7 +257,7 @@ export default function CreateDataset(props) {
           mainValue={accessLevel}
           handleChange={setAccessLevel}
           value={['1', '2', '3']}
-          label={['Offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
           color={['green', 'yellow', 'red']}
         />
       </FormControl>

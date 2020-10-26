@@ -115,9 +115,30 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
-        <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-          Samordnet
-        </div>
+        {data.underCoordination ? (
+          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            Under samordning
+          </div>
+        ) : (
+          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+            Samordnet
+          </div>
+        )}
+        {data.accessLevel === 'Green' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
+            Kan deles offentlig
+          </div>
+        ) : null}
+        {data.accessLevel === 'Yellow' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#D4B546' }}>
+            Begrenset offentlighet
+          </div>
+        ) : null}
+        {data.accessLevel === 'Red' ? (
+          <div className={styles.chip} style={{ backgroundColor: '#DA6464' }}>
+            Unntatt offentlighet
+          </div>
+        ) : null}
       </div>
     );
   };
