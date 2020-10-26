@@ -1,11 +1,9 @@
-import { Grid, Snackbar, Divider, Button } from '@material-ui/core';
+import { Grid, Snackbar, Divider } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
 import DistributionCard from './DistributionCard';
 import SubscribeComp from './SubscribeComp';
-
-import { useRouter } from 'next/router'
 
 import { PageRender } from '../api/serverSideProps';
 import PatchApi from '../../Components/ApiCalls/PatchApi';
@@ -14,14 +12,11 @@ import styles from '../../styles/Detailed.module.css';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
-import EditIcon from '@material-ui/icons/Edit';
-import Input from '../../Components/Forms/Input';
-
-import EditTextFieldComp from './EditTextFieldComp'
+import EditTextFieldComp from './EditTextFieldComp';
 import EditPublishedStatusComp from './EditPublishedStatusComp';
-import EditCategoryComp from './EditCategoryComp'
-import AddDistributionsComp from './AddDistributionsComp'
-import AddTagsComp from './AddTagsComp'
+import EditCategoryComp from './EditCategoryComp';
+import AddDistributionsComp from './AddDistributionsComp';
+import AddTagsComp from './AddTagsComp';
 
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
@@ -29,7 +24,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
 
-  const [userAreOwner, setUserAreOwner] = useState(false)
+  const [userAreOwner, setUserAreOwner] = useState(false);
 
   let requestButton;
   let publishedStatus;
@@ -37,7 +32,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   let cardOrNoCard;
 
   // variable set to false if user already are subscribed, and/or when user subscribes
-  const [subscribed, setSubscribed] = useState(false)
+  const [subscribed, setSubscribed] = useState(false);
 
   const updateData = async () => {
     // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
@@ -136,15 +131,13 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             Samordnet
           </div>
         ) : (
-            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-              Ikke samordnet
-            </div>
-          )}
+          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+            Ikke samordnet
+          </div>
+        )}
       </div>
     );
   };
-
-
 
   const subscribe = (url, desc) => {
     // gjør en sjekk her
@@ -152,37 +145,35 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     let d = {
       userId: prevUserId,
       datasetId: data.id,
+    };
+    if (url !== '') {
+      d.url = url;
     }
-    if (url !== "") {
-      d.url = url
+    if (desc !== '') {
+      d.useCaseDescription = desc;
     }
-    if (desc !== "") {
-      d.useCaseDescription = desc
-    }
-    PostApi('https://localhost:5001/api/users/subscribe', d, successfullySubscribed)
+    PostApi('https://localhost:5001/api/users/subscribe', d, successfullySubscribed);
+  };
 
-  }
-
-  const successfullySubscribed = () => {
-    console.log("Subscribed!")
-    setSubscribed(true)
+  function successfullySubscribed() {
+    console.log('Subscribed!');
+    setSubscribed(true);
   }
 
   useEffect(() => {
-    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
-    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true)
-  }, [data, subscribed])
+    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+  }, [data, subscribed]);
 
-  const checkUserSubscription = (response) => {
+  function checkUserSubscription(response) {
     for (let i = 0; i < response.subscriptions.length; i++) {
       if (response.subscriptions[i].datasetId === data.id) {
-        setSubscribed(true)
+        setSubscribed(true);
         return;
       }
     }
-    setSubscribed(false)
+    setSubscribed(false);
   }
-
 
   const updateDataset = (newValue, editPath) => {
     const d = [
@@ -192,14 +183,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         op: 'replace',
       },
     ];
-    PatchApi(`https://localhost:5001/api/datasets/${data.id}`, d)
-    console.log("patched dataset")
-  }
+    PatchApi(`https://localhost:5001/api/datasets/${data.id}`, d);
+    console.log('patched dataset');
+  };
 
   console.log(data);
   ifPublished(data.publicationStatus);
-
-
 
   return (
     <div>
@@ -209,7 +198,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%', backgroundColor: 'white' }}
       >
         {getChips()}
-
 
         <EditTextFieldComp
           value={data.title}
@@ -265,11 +253,9 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           canEdit={userAreOwner}
           updateDataset={updateDataset}
           path="/tagsIds"
-
         />
 
         <p className={styles.attributes}>
-
           <span>Eier: </span>
           {data.publisher.name}
           <br />
@@ -296,13 +282,8 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <span>{cardOrNoCard}</span>
         <br />
         <span>
-          <AddDistributionsComp
-            canEdit={userAreOwner}
-            dataId={data.id}
-            distributionCards={distributionCards}
-          />
+          <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
         </span>
-
 
         {/* Request dataset */}
         <span>
@@ -310,16 +291,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           {requestButton}
         </span>
 
-        {parseInt(prevPublisherId) !== data.publisher.id &&
+        {parseInt(prevPublisherId) !== data.publisher.id && (
           <span>
-            <SubscribeComp
-              onClick={subscribe}
-              subscribed={subscribed}
-            />
+            <SubscribeComp onClick={subscribe} subscribed={subscribed} />
           </span>
-        }
-
-
+        )}
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
           <Alert elevation={1} severity="info">

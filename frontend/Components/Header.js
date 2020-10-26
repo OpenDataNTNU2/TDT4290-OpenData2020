@@ -2,7 +2,6 @@ import { Tabs, Tab, Chip } from '@material-ui/core';
 
 import { Face, Notifications, NotificationsActive } from '@material-ui/icons';
 
-
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { parseCookies } from '../pages/api/serverSideProps';
@@ -11,7 +10,12 @@ import styles from '../styles/Header.module.css';
 import GetApi from './ApiCalls/GetApi';
 import NotificationCard from './NotificationCard';
 
-export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', prevPublisherId = '-1', prevUserId = '-1' }) {
+export default function Header({
+  prevLoggedIn = false,
+  prevLoggedUsername = '',
+  prevPublisherId = '-1',
+  prevUserId = '-1',
+}) {
   const router = useRouter();
   const [value, setValue] = useState('/');
 
@@ -20,21 +24,20 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
     router.push(newValue);
   };
 
-  const [toggleShowNotifications, setToggleShowNotifications] = useState(false)
-  const [notifications, setNotifications] = useState([])
+  const [toggleShowNotifications, setToggleShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    if (prevLoggedIn === "false") setNotifications([])
-    if (JSON.parse(prevUserId) > 0) GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications)
-  }, [prevUserId, prevLoggedUsername, prevLoggedIn])
+    if (prevLoggedIn === 'false') setNotifications([]);
+    if (JSON.parse(prevUserId) > 0)
+      GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications);
+  }, [prevUserId, prevLoggedUsername, prevLoggedIn]);
 
-  const getUserNotifications = (response) => {
+  function getUserNotifications(response) {
     if (response.notifications.length !== 0) {
-      setNotifications(response.notifications)
+      setNotifications(response.notifications);
     }
   }
-
-
 
   return (
     <div className={styles.header}>
@@ -54,23 +57,23 @@ export default function Header({ prevLoggedIn = false, prevLoggedUsername = '', 
           <Chip icon={<Face />} label={JSON.parse(prevLoggedUsername)} color="primary" />
         )}
         {/* Notifications */}
-        {prevLoggedUsername && JSON.parse(prevLoggedUsername) !== '' && JSON.parse(prevLoggedIn) ?
-          notifications.length > 0 ?
+        {prevLoggedUsername && JSON.parse(prevLoggedUsername) !== '' && JSON.parse(prevLoggedIn) ? (
+          notifications.length > 0 ? (
             <NotificationsActive
               className={styles.notificationBell}
-              color={toggleShowNotifications ? "action" : "secondary"}
+              color={toggleShowNotifications ? 'action' : 'secondary'}
               fontSize="large"
               onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
             />
-            :
+          ) : (
             <Notifications
               className={styles.notificationBell}
-              color={toggleShowNotifications ? "action" : "inherit"}
+              color={toggleShowNotifications ? 'action' : 'inherit'}
               fontSize="large"
               onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
             />
-
-          : null}
+          )
+        ) : null}
 
         <div className={styles.logInButton} onClick={() => router.push('/Login')}>
           LOGG {JSON.parse(prevLoggedIn) ? 'UT' : 'INN'}
