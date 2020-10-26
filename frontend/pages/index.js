@@ -29,13 +29,13 @@ export default function Home() {
   const fcUrl = '&CategoryIds=';
   const pUrl = '&Page=';
   const items = '&ItemsPerPage=10';
-  const sortUrl = '&SortOrder='
+  const sortUrl = '&SortOrder=';
 
   const [searchUrl, setSearchUrl] = useState('');
   const [filterPublishersUrl, setFilterPublishersUrl] = useState('');
   const [filterCategoriesUrl, setFilterCategoriesUrl] = useState('');
 
-  const [sortType, setSortType] = useState('title_asc')
+  const [sortType, setSortType] = useState('title_asc');
 
   const [page, setPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
@@ -49,17 +49,23 @@ export default function Home() {
 
   const getDatasets = async (p = page, c = false, s = searchUrl, st = sortType) => {
     if (s !== searchUrl) setSearchUrl(s);
-    if (st !== sortType) setSortType(st)
-    if (changedFilter) { setPage(1); setDatasets([]) }
+    if (st !== sortType) setSortType(st);
+    if (changedFilter) {
+      setPage(1);
+      setDatasets([]);
+    }
     if (!hasMore && c) {
       /* p = 1; */
       setPage(1);
       setHasMore(true);
     }
     try {
-      fetch(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st, {
-        method: 'GET',
-      })
+      fetch(
+        url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st,
+        {
+          method: 'GET',
+        }
+      )
         .then((response) => response.json())
         .then((response) => {
           if (response.totalItems === 0) {
@@ -93,11 +99,13 @@ export default function Home() {
       setHasMore(false);
     }
 
-    console.log(url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st);
+    console.log(
+      url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st
+    );
   };
 
   useEffect(() => {
-    getDatasets()
+    getDatasets();
   }, [filterPublishersUrl, filterCategoriesUrl, page, url]);
 
   const changeUrl = (value) => {
@@ -111,41 +119,76 @@ export default function Home() {
 
   const changeSort = (type) => {
     setDatasets([]);
-    setSortType(type)
-    setPage(1)
-    getDatasets(1, true, searchUrl, type)
-
-  }
+    setSortType(type);
+    setPage(1);
+    getDatasets(1, true, searchUrl, type);
+  };
 
   const getSortButtons = () => {
     switch (sortType) {
-      case 'title_asc': return (
-        <div style={{ marginLeft: "1vh" }}>
-          <Button variant="contained" onClick={() => changeSort('title_desc')} color={'primary'} style={{ marginRight: "1vh" }}><ArrowDownward />Sortert på tittel</Button>
-          <Button variant="contained" onClick={() => changeSort('date_asc')} >Sorter på dato</Button>
-        </div>
-      )
-      case 'title_desc': return (
-        <div style={{ marginLeft: "1vh" }}>
-          <Button variant="contained" onClick={() => changeSort('title_asc')} color={'primary'} style={{ marginRight: "1vh" }}><ArrowUpward />Sortert på tittel</Button>
-          <Button variant="contained" onClick={() => changeSort('date_asc')} >Sorter på dato</Button>
-        </div>
-      )
-      case 'date_asc': return (
-        <div style={{ marginLeft: "1vh" }}>
-          <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: "1vh" }}>Sorter på tittel</Button>
-          <Button variant="contained" onClick={() => changeSort('date_desc')} color={'primary'}><ArrowDownward />Sortert på dato</Button>
-        </div>
-      )
-      case 'date_desc': return (
-        <div style={{ marginLeft: "1vh" }}>
-          <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: "1vh" }}>Sorter på tittel</Button>
-          <Button variant="contained" onClick={() => changeSort('date_asc')} color={'primary'}><ArrowUpward />Sortert på dato</Button>
-        </div>
-      )
-      default: return '';
+      case 'title_asc':
+        return (
+          <div style={{ marginLeft: '1vh' }}>
+            <Button
+              variant="contained"
+              onClick={() => changeSort('title_desc')}
+              color={'primary'}
+              style={{ marginRight: '1vh' }}
+            >
+              <ArrowDownward />
+              Sortert på tittel
+            </Button>
+            <Button variant="contained" onClick={() => changeSort('date_asc')}>
+              Sorter på dato
+            </Button>
+          </div>
+        );
+      case 'title_desc':
+        return (
+          <div style={{ marginLeft: '1vh' }}>
+            <Button
+              variant="contained"
+              onClick={() => changeSort('title_asc')}
+              color={'primary'}
+              style={{ marginRight: '1vh' }}
+            >
+              <ArrowUpward />
+              Sortert på tittel
+            </Button>
+            <Button variant="contained" onClick={() => changeSort('date_asc')}>
+              Sorter på dato
+            </Button>
+          </div>
+        );
+      case 'date_asc':
+        return (
+          <div style={{ marginLeft: '1vh' }}>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+              Sorter på tittel
+            </Button>
+            <Button variant="contained" onClick={() => changeSort('date_desc')} color={'primary'}>
+              <ArrowDownward />
+              Sortert på dato
+            </Button>
+          </div>
+        );
+      case 'date_desc':
+        return (
+          <div style={{ marginLeft: '1vh' }}>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+              Sorter på tittel
+            </Button>
+            <Button variant="contained" onClick={() => changeSort('date_asc')} color={'primary'}>
+              <ArrowUpward />
+              Sortert på dato
+            </Button>
+          </div>
+        );
+
+      default:
+        return '';
     }
-  }
+  };
 
   return (
     <div className="datakatalog">
@@ -170,8 +213,6 @@ export default function Home() {
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
             <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
 
-
-
             {/* Midlertidig select bar, bør opprette et form */}
             <FormControl variant="outlined" style={{ width: '200px' }}>
               <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
@@ -187,9 +228,8 @@ export default function Home() {
               </Select>
             </FormControl>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: "2vh" }}>
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '2vh' }}>
             {getSortButtons()}
-
           </div>
           <InfiniteScroll
             dataLength={page * 10}
@@ -198,12 +238,14 @@ export default function Home() {
             loader={<h4>{loader}</h4>}
           >
             {url === 'https://localhost:5001/api/datasets' ? (
-              datasets && datasets !== [] &&
+              datasets &&
+              datasets !== [] &&
               Object.values(datasets).map(
                 (d) => d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
               )
             ) : url === 'https://localhost:5001/api/coordinations' ? (
-              datasets && datasets !== [] &&
+              datasets &&
+              datasets !== [] &&
               Object.values(datasets).map(
                 (c) =>
                   c && (
@@ -216,8 +258,8 @@ export default function Home() {
                   )
               )
             ) : (
-                  <p>laster...</p>
-                )}
+              <p>laster...</p>
+            )}
             {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
         </Grid>
