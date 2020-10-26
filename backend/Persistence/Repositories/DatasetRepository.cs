@@ -101,8 +101,8 @@ namespace OpenData.API.Persistence.Repositories
                    ));
             }
 
-            // Sorts the datasets. Default order by title ascending
-            string sortOrder = String.IsNullOrEmpty(query.SortOrder) ? "title_asc" : query.SortOrder.Trim().ToLower();
+            // Sorts the datasets. Default order by date descending
+            string sortOrder = String.IsNullOrEmpty(query.SortOrder) ? "date_desc" : query.SortOrder.Trim().ToLower();
             switch (sortOrder)
             {
                 case "title_desc":
@@ -118,7 +118,7 @@ namespace OpenData.API.Persistence.Repositories
                     queryable = queryable.OrderBy(d => d.DatePublished);
                     break;
                 default:
-                    queryable = queryable.OrderBy(d => d.Title);
+                    queryable = queryable.OrderByDescending(d => d.DatePublished);
                     break;
             }
 
