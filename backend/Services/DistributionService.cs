@@ -14,13 +14,15 @@ namespace OpenData.API.Services
     {
         private readonly IDistributionRepository _distributionRepository;
         private readonly IDatasetRepository _datasetRepository;
+        private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
 
-        public DistributionService(IDistributionRepository distributionRepository, IDatasetRepository datasetRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public DistributionService(IDistributionRepository distributionRepository, IDatasetRepository datasetRepository, INotificationService notificationService, IUnitOfWork unitOfWork, IMemoryCache cache)
         {
             _distributionRepository = distributionRepository;
             _datasetRepository = datasetRepository;
+            _notificationService = notificationService;
             _unitOfWork = unitOfWork;
             _cache = cache;
         }
@@ -51,12 +53,13 @@ namespace OpenData.API.Services
                 var existingDataset = await _datasetRepository.FindByIdAsync(distribution.DatasetId);
                 if (existingDataset == null)
                     return new DistributionResponse("Invalid dataset.");
-                
-                // existingDataset.Distributions.Add(distribution);
 
                 await _distributionRepository.AddAsync(distribution);
+                
+                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har lagt til en ny distribusjon.");
+                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har lagt til en ny distribusjon.");
+
                 await _unitOfWork.CompleteAsync();
-                // _datasetRepository.Update(existingDataset);
 
                 return new DistributionResponse(distribution);
             }
@@ -102,9 +105,15 @@ namespace OpenData.API.Services
             if (existingDistribution == null)
                 return new DistributionResponse("Distribution not found.");
 
+            var existingDataset = await _datasetRepository.FindByIdAsync(existingDistribution.DatasetId);
+
             try
             {
                 _distributionRepository.Remove(existingDistribution);
+
+                await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har fjernet en distribusjon.");
+                await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har fjernet en distribusjon.");
+
                 await _unitOfWork.CompleteAsync();
 
                 return new DistributionResponse(existingDistribution);
