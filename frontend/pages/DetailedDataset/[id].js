@@ -187,6 +187,16 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     console.log('patched dataset');
   };
 
+  // fixing layour of date so it doesnt look so wiiiiierd
+  function fixDate(date) {
+    const fixing = new Date(date);
+    const dd = fixing.getDate() < 10 ? `0${fixing.getDate()}` : fixing.getDate();
+    let mm = fixing.getMonth();
+    mm = mm < 10 ? `0${parseInt(mm) + 1}` : parseInt(mm) + 1;
+    const yyyy = fixing.getFullYear();
+    return dd + '-' + mm + '-' + yyyy;
+  }
+
   console.log(data);
   ifPublished(data.publicationStatus);
 
@@ -260,7 +270,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           {data.publisher.name}
           <br />
           <span>Dato publisert: </span>
-          25.06 2017
+          {fixDate(data.datePublished)}
+          <br />
+          <span>Sist oppdatert: </span>
+          {fixDate(data.dateLastUpdated)}
           <br />
           {data.coordination && (
             <div>
