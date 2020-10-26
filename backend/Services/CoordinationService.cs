@@ -61,7 +61,8 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
-
+                coordination.DatePublished = DateTime.Now;
+                coordination.DateLastUpdated = DateTime.Now;
                 await _coordinationRepository.AddAsync(coordination);
                 await _unitOfWork.CompleteAsync();
                 
@@ -98,6 +99,8 @@ namespace OpenData.API.Services
                 existingCoordination.StatusDescription = coordination.StatusDescription;
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
+                existingCoordination.DateLastUpdated = DateTime.Now;
+                existingCoordination.AccessLevel = coordination.AccessLevel;
 
                 existingCoordination.CoordinationTags.Clear();
                 await addTags(existingCoordination);
@@ -122,6 +125,7 @@ namespace OpenData.API.Services
             var coordination = await _coordinationRepository.FindByIdAsync(id);
 
             patch.ApplyTo(coordination);
+            coordination.DateLastUpdated = DateTime.Now;
 
             switch(patch.Operations[0].path)
             {
@@ -146,6 +150,10 @@ namespace OpenData.API.Services
                     await addTags(coordination);
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tags.");
                     await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tags.");
+                    break;
+                case "/accessLevel":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
                     break;
                 default:
                     await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har blitt endret.");

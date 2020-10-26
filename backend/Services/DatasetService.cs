@@ -143,6 +143,7 @@ namespace OpenData.API.Services
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
             patch.ApplyTo(dataset);
+            dataset.DateLastUpdated = DateTime.Now;
 
             switch (patch.Operations[0].path)
             {
