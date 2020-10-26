@@ -9,6 +9,7 @@ namespace OpenData.API.Domain.Models
         public string Description { get; set; }
         public bool UnderCoordination { get; set; }
         public string StatusDescription { get; set; }
+        public EAccessLevel AccessLevel { get; set; }
         public int PublisherId { get; set; }
         public Publisher Publisher { get; set; }
         public IList<Dataset> Datasets { get; set; } = new List<Dataset>();

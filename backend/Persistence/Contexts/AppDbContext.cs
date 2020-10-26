@@ -282,7 +282,8 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Bicycle coordination",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 101,
-                CategoryId = 101
+                CategoryId = 101,
+                AccessLevel = EAccessLevel.green
             };
 
             Coordination beachCoordination = new Coordination
@@ -291,7 +292,8 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand samordning",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 100,
-                CategoryId = 101
+                CategoryId = 101,
+                AccessLevel = EAccessLevel.yellow
             };
             AddRange(bicycleCoordination, beachCoordination);
 

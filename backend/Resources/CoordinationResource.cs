@@ -9,6 +9,7 @@ namespace OpenData.API.Resources
         public string Description { get; set; }
         public bool UnderCoordination { get; set; }
         public string StatusDescription { get; set; }
+        public string AccessLevel { get; set; }
         public PublisherResource Publisher { get; set; }
         public IList<DatasetResource> Datasets { get; set; } = new List<DatasetResource>();
         public CategoryResource Category { get; set; }

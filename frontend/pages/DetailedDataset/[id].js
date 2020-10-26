@@ -112,7 +112,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
         {data.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
-            Offentlig
+            Kan deles offentlig
           </div>
         ) : null}
         {data.accessLevel === 'Yellow' ? (

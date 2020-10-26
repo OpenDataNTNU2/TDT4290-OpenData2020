@@ -60,7 +60,7 @@ export default function DatasetCard({ dataset, onClick, pathName = '' }) {
 
         {dataset.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
-            Offentlig
+            Kan deles offentlig
           </div>
         ) : null}
         {dataset.accessLevel === 'Yellow' ? (
