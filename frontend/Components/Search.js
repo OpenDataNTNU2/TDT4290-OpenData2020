@@ -31,8 +31,6 @@ export default function Search(props) {
   const [searchQuery, setSearchQuery] = useState({});
   const classes = useStyles();
 
-  console.log(searchQuery);
-
   const sendQuery = async (value) => {
     const cancelPrevQuery = await props.getDatasets(1, true, value);
     return cancelPrevQuery;
@@ -56,7 +54,7 @@ export default function Search(props) {
   };
 
   return (
-    <div style={{ marginBottom: '2em' }}>
+    <div >
       <Paper className={classes.root}>
         <InputBase
           id="searchbar"
