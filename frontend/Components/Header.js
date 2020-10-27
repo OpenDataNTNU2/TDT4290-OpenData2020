@@ -44,10 +44,10 @@ export default function Header({
       <div className={styles.tabContainer}>
         <Tabs value={value} onChange={handleChange} centered>
           <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
-          {JSON.parse(prevPublisherId) <= 99 ? null : (
+          {JSON.parse(prevPublisherId) <= 0 ? null : (
             <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />
           )}
-          {JSON.parse(prevPublisherId) <= 99 ? null : (
+          {JSON.parse(prevPublisherId) <= 0 ? null : (
             <Tab disableFocusRipple disableRipple label="Legg til nytt datasett" value="/AddNewDataset" />
           )}
         </Tabs>
