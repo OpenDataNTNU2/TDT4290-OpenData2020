@@ -5,6 +5,8 @@ import EditIcon from '@material-ui/icons/Edit';
 
 import RadioInput from '../../Components/Forms/RadioInput';
 
+import styles from '../../styles/Detailed.module.css';
+
 const EditPublishedStatusComp = (props) => {
   const [editBool, setEditBool] = useState(false);
   const [editText, setEditText] = useState(props.value);
@@ -49,7 +51,7 @@ const EditPublishedStatusComp = (props) => {
     ) : (
       <p className={props.styles}>
         <span>Publiseringsstatus: </span>
-        {editText} <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
+        {editText} <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
       </p>
     )
   ) : (
