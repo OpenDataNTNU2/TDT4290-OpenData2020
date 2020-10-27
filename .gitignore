@@ -270,3 +270,11 @@ yarn-error.log*
 
 # vercel
 .vercel
+
+# local appsettings files
+**/appsettings.development.json
+**/appsettings.staging.json
+**/appsettings.production.json
+**/appsettings.Development.json
+**/appsettings.Staging.json
+**/appsettings.Production.json
