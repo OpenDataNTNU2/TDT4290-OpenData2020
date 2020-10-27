@@ -59,8 +59,8 @@ export default function CoordinationCard(props) {
             {props.coordination.datasets.length !== 0 ? (
               props.coordination.datasets.map((dataset) => `${dataset.publisher.name}, `)
             ) : (
-              <i> Ingen deltagende kommuner</i>
-            )}
+                <i> Ingen deltagende kommuner</i>
+              )}
           </p>
         </Grid>
       </Grid>

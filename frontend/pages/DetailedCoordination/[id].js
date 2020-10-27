@@ -8,6 +8,9 @@ import { PageRender } from '../api/serverSideProps';
 
 import SubscribeComp from './SubscribeComp';
 import DistributionCard from '../DetailedDataset/DistributionCard';
+import EditTextFieldComp from '../DetailedDataset/EditTextFieldComp'
+
+
 import DatasetCard from '../../Components/DatasetCard';
 import Input from '../../Components/Forms/Input';
 import GetApi from '../../Components/ApiCalls/GetApi';
@@ -38,12 +41,16 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
 
+  // logged in user are owner of coordination
+  const [userAreOwner, setUserAreOwner] = useState(false)
+
   useEffect(() => {
     if (parseInt(JSON.parse(prevPublisherId)) > 99 && parseInt(prevPublisherId) !== data.publisher.id) {
       GetApi(`https://localhost:5001/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
+    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription)
+    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true)
 
-    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
   }, [data, subscribed]);
 
   function checkUserSubscription(response) {
@@ -115,7 +122,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
-        {data.underCoordination ? (
+        {coordinationData.underCoordination ? (
           <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
             Under samordning
           </div>
@@ -124,17 +131,17 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
             Samordnet
           </div>
         )}
-        {data.accessLevel === 'Green' ? (
+        {coordinationData.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
             Kan deles offentlig
           </div>
         ) : null}
-        {data.accessLevel === 'Yellow' ? (
+        {coordinationData.accessLevel === 'Yellow' ? (
           <div className={styles.chip} style={{ backgroundColor: '#D4B546' }}>
             Begrenset offentlighet
           </div>
         ) : null}
-        {data.accessLevel === 'Red' ? (
+        {coordinationData.accessLevel === 'Red' ? (
           <div className={styles.chip} style={{ backgroundColor: '#DA6464' }}>
             Unntatt offentlighet
           </div>
@@ -143,17 +150,49 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     );
   };
 
+  const updateCoordination = (newValue, editPath) => {
+    const d = [
+      {
+        value: newValue,
+        path: editPath,
+        op: 'replace',
+      },
+    ];
+    PatchApi(`https://localhost:5001/api/coordinations/${data.id}`, d)
+    console.log("patched dataset")
+  }
+
+
   return (
     <Grid container direction="column" style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
       {/* Tags og overskrift */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         {getChips()}
-        <h1 className={styles.title}>{data.title}</h1>
+
+        <EditTextFieldComp
+          value={coordinationData.title}
+          styles={styles.title}
+          type="title"
+          canEdit={userAreOwner}
+          updateDataset={updateCoordination}
+          path="/title"
+          multiline={false}
+        />
+
         {data.underCoordination ? (
-          <p>
-            <b>Status: </b>
-            <i>{data.statusDescription}</i>
-          </p>
+          <div>
+            <EditTextFieldComp
+              value={coordinationData.statusDescription}
+              styles={styles.attributes}
+              type="span"
+              canEdit={userAreOwner}
+              updateDataset={updateCoordination}
+              path="/statusDescription"
+              multiline={true}
+              staticText="Status: "
+            />
+            <Button variant="contained" onClick={() => updateCoordination(false, '/underCoordination')}>Sett status til samordnet</Button>
+          </div>
         ) : null}
       </Grid>
 
@@ -162,11 +201,16 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {/* Informasjon om samordningen */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
-        <p>
-          <b>Beskrivelse: </b>
-          {data.description}
-        </p>
-        <br />
+        <EditTextFieldComp
+          value={coordinationData.description}
+          styles={styles.attributes}
+          type="span"
+          canEdit={userAreOwner}
+          updateDataset={updateCoordination}
+          path="/description"
+          multiline={true}
+          staticText="Beskrivelse: "
+        />
         <p>
           <b>Utgiver av samordning: </b>
           {data.publisher.name}
@@ -176,8 +220,8 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           {coordinationData.datasets.length === 0 ? (
             <i>Ingen deltakere med i samordningen</i>
           ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${dataset.publisher.name}, `)
-          )}
+              coordinationData.datasets.map((dataset) => dataset && `${dataset.publisher.name}, `)
+            )}
         </p>
         <br />
         <p>
@@ -200,10 +244,10 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                 />
               ))
             ) : (
-              <p>
-                <i>Ingen distribusjon i dette datasettet</i>
-              </p>
-            )}
+                <p>
+                  <i>Ingen distribusjon i dette datasettet</i>
+                </p>
+              )}
             <br />
           </div>
         ))}
@@ -237,52 +281,52 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {/* Send forespørsel om å bli med i samordningen */}
       {JSON.parse(prevPublisherId) === null ||
-      parseInt(JSON.parse(prevPublisherId)) === -1 ||
-      parseInt(prevPublisherId) === data.publisher.id ? null : (
-        <Grid style={{ padding: '3% 0 3% 0' }}>
-          <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
-          <p>
-            Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
-            ønsker å være med.
+        parseInt(JSON.parse(prevPublisherId)) === -1 ||
+        parseInt(prevPublisherId) === data.publisher.id ? null : (
+          <Grid style={{ padding: '3% 0 3% 0' }}>
+            <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
+            <p>
+              Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
+              ønsker å være med.
           </p>
-          <br />
-          <Input
-            id="joinCoordinationId"
-            multiline
-            label="Begrunnelse for forespørsel"
-            value={joinCoordinationReason}
-            handleChange={setJoinCoordinationReason}
-          />
-          <br />
-          <br />
-          {datasets.length !== 0 ? (
-            <FormControl variant="outlined" style={{ width: '50vh' }}>
-              <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
-              <Select
-                labelId="requestToJoinCoordinationLabelID"
-                label="Velg dataset"
-                id="requestToJoinCoordinationID"
-                value={selectedDataset}
-                onChange={(event) => setSelectedDataset(event.target.value)}
-              >
-                {Object.values(datasets.items).map(
-                  (dataset) =>
-                    dataset && (
-                      <MenuItem value={dataset.id} key={dataset.id}>
-                        {dataset.title}
-                      </MenuItem>
-                    )
-                )}
-              </Select>
-            </FormControl>
-          ) : null}
-          <br />
-          <br />
-          <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
-            Send Forespørsel
+            <br />
+            <Input
+              id="joinCoordinationId"
+              multiline
+              label="Begrunnelse for forespørsel"
+              value={joinCoordinationReason}
+              handleChange={setJoinCoordinationReason}
+            />
+            <br />
+            <br />
+            {datasets.length !== 0 ? (
+              <FormControl variant="outlined" style={{ width: '50vh' }}>
+                <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
+                <Select
+                  labelId="requestToJoinCoordinationLabelID"
+                  label="Velg dataset"
+                  id="requestToJoinCoordinationID"
+                  value={selectedDataset}
+                  onChange={(event) => setSelectedDataset(event.target.value)}
+                >
+                  {Object.values(datasets.items).map(
+                    (dataset) =>
+                      dataset && (
+                        <MenuItem value={dataset.id} key={dataset.id}>
+                          {dataset.title}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            ) : null}
+            <br />
+            <br />
+            <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
+              Send Forespørsel
           </Button>
-        </Grid>
-      )}
+          </Grid>
+        )}
 
       {/* Forespørsler om å bli med i samordningen */}
       {/* TODO: Nå kan kommuner legge til flere datasett til samme samordning, bør dette endres? */}
@@ -319,8 +363,8 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                 )
             )
           ) : (
-            <p>Ingen forespørsler</p>
-          )}
+              <p>Ingen forespørsler</p>
+            )}
         </Grid>
       ) : null}
 
