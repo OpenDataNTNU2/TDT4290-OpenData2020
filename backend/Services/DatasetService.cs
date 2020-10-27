@@ -80,6 +80,8 @@ namespace OpenData.API.Services
                 dataset.DateLastUpdated = DateTime.Now;
                 await _datasetRepository.AddAsync(dataset);
                 await _unitOfWork.CompleteAsync();
+                dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
+                _datasetRepository.Update(dataset);
 
                 await addTags(dataset);
 
@@ -108,7 +110,6 @@ namespace OpenData.API.Services
                 }
                 // Update attributes
                 existingDataset.Title = dataset.Title; 
-                existingDataset.Identifier = dataset.Identifier; 
                 existingDataset.Description = dataset.Description; 
                 existingDataset.DateLastUpdated = DateTime.Now;
                 existingDataset.PublisherId = dataset.PublisherId; 
