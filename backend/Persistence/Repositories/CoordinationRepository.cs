@@ -64,6 +64,42 @@ namespace OpenData.API.Persistence.Repositories
                 queryable = queryable.Where(d => categoryIds.Contains(d.CategoryId));
             }
 
+            // Filter on Access Level
+            if (!String.IsNullOrEmpty(query.AccessLevels))
+            {
+                // Parses the list of Access levels from string to list of EAccessLevels
+                List<EAccessLevel> accessLevels = new List<EAccessLevel>();
+                foreach (string accessLevel in query.AccessLevels.Split(','))
+                {
+                    if (accessLevel == null || accessLevel == "") continue;
+                    Enum.TryParse(accessLevel.Trim(), out EAccessLevel aLevel);
+                    accessLevels.Add(aLevel);
+                }
+                queryable = queryable.Where(d => accessLevels.Contains(d.AccessLevel));
+            }
+
+            // Filter on Publication status aka underCoordination
+            if (!String.IsNullOrEmpty(query.PublicationStatuses))
+            {
+                // Parses the list of Publications statuses from string to list of bools
+                List<bool> pubStatuses = new List<bool>();
+                foreach (string pubStatus in query.PublicationStatuses.Split(','))
+                {
+                    if (pubStatus == null || pubStatus == "") continue;
+                    string cleanedPubStatus = pubStatus.Trim().ToLower();
+
+                    // coordination.underCoordination = false -> published
+                    if (cleanedPubStatus == "published") {
+                        pubStatuses.Add(false);
+                    }
+                    // coordination.underCoordination = true -> under coordination
+                    else if (cleanedPubStatus == "under_coordination") {
+                        pubStatuses.Add(true);
+                    }
+                }
+                queryable = queryable.Where(d => pubStatuses.Contains(d.UnderCoordination));
+            }
+
             // Checks if the search string is in the title, description, publisher name, and tags of the dataset
             if (!String.IsNullOrEmpty(query.Search))
             {
@@ -73,6 +109,27 @@ namespace OpenData.API.Persistence.Repositories
                    d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) ||
                    d.CoordinationTags.Any(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower()))
                    );
+            }
+
+            // Sorts the coordinations. Default order by date ascending
+            string sortOrder = String.IsNullOrEmpty(query.SortOrder) ? "date_asc" : query.SortOrder.Trim().ToLower();
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    queryable = queryable.OrderByDescending(d => d.Title);
+                    break;
+                case "title_asc":
+                    queryable = queryable.OrderBy(d => d.Title);
+                    break;
+                case "date_desc":
+                     queryable = queryable.OrderByDescending(d => d.DatePublished);
+                    break;
+                case "date_asc":
+                    queryable = queryable.OrderBy(d => d.DatePublished);
+                    break;
+                default:
+                    queryable = queryable.OrderBy(d => d.DatePublished);
+                    break;
             }
 
             // Here I count all items present in the database for the given query, to return as part of the pagination data.
