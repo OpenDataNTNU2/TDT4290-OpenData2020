@@ -27,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Search(props) {
   const [query, setQuery] = useState('');
-  const [setSearchQuery] = useState({});
   const classes = useStyles();
 
   const sendQuery = async (value) => {
@@ -41,13 +40,6 @@ export default function Search(props) {
     setQuery(value);
 
     const search = _.debounce(sendQuery, 500);
-
-    setSearchQuery((prevSearch) => {
-      if (prevSearch.cancel) {
-        prevSearch.cancel();
-      }
-      return search;
-    });
 
     search(value);
   };
