@@ -36,7 +36,7 @@ export default function FilterPublisher(props) {
   useEffect(() => {
     GetApi('https://localhost:5001/api/publishers', setRes);
 
-    const pubs = mapResponseToPublishers(res, props.isDataset);
+    const pubs = mapResponseToPublishers(res, props.type);
 
     setPublishers(pubs);
     if (res.length < 5) {
@@ -76,13 +76,13 @@ export default function FilterPublisher(props) {
   );
 }
 
-export function mapResponseToPublishers(res, isDataset) {
+export function mapResponseToPublishers(res, type) {
   // extracted from line 39 in useEffect
   // this is a transformation of data from the server, and can be unit tested
   // ideally, all transformations are extracted into functions, so they can be tested
   const pubs = [];
   for (let i = 0; i < res.length; i += 1) {
-    const length = isDataset ? res[i].datasets.length : res[i].coordinations.length;
+    const length = res[i].datasets.length > res[i].coordinations.length ? res[i].datasets.length : res[i].coordinations.length
     length > 0 ? pubs.push([res[i].name.split(' ')[0], res[i].id, false, i, length]) : null; // are the 'false' and 'i' properties used anywhere?
   }
   return pubs;

@@ -31,8 +31,10 @@ export default function Search(props) {
   const [searchQuery, setSearchQuery] = useState({});
   const classes = useStyles();
 
+  // getDatasets(page, false, searchUrl, sortType, setDatasets, 'datasets')
+
   const sendQuery = async (value) => {
-    const cancelPrevQuery = await props.getDatasets(1, true, value);
+    const cancelPrevQuery = await props.getDatasets(value);
     return cancelPrevQuery;
   };
 

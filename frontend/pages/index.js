@@ -16,14 +16,16 @@ import FilterCategory from '../Components/Filters/FilterCategory';
 import FilterTag from '../Components/Filters/FilterTag';
 
 import { PageRender } from './api/serverSideProps';
+import GetApi from '../Components/ApiCalls/GetApi';
 
 // Home page, I think this can be the Data catalogue, just change the name from home to datacatalogue or something
 export default function Home() {
   const router = useRouter();
 
-  const [url, setUrl] = useState('https://localhost:5001/api/datasets');
+  const url = 'https://localhost:5001/api/'
 
-  // const url = 'https://localhost:5001/api/datasets'
+  const [urlType, setUrlType] = useState('both');
+
   const sUrl = '?Search=';
   const fUrl = '&PublisherIds=';
   const fcUrl = '&CategoryIds=';
@@ -37,80 +39,170 @@ export default function Home() {
 
   const [sortType, setSortType] = useState('title_asc');
 
+
   const [page, setPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
+
+  const [totalItemsDatasets, setTotalItemsDatasets] = useState(0);
+  const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0)
+
   const [hasMore, setHasMore] = useState(true);
 
   const [changedFilter, setChangedFilter] = useState(false);
 
   const [datasets, setDatasets] = useState([]);
+  const [coordinations, setCoordinations] = useState([]);
 
   const [loader, setLoader] = useState('Loading...');
 
-  const getDatasets = async (p = page, c = false, s = searchUrl, st = sortType) => {
-    if (s !== searchUrl) setSearchUrl(s);
-    if (st !== sortType) setSortType(st);
-    if (changedFilter) {
-      setPage(1);
-      setDatasets([]);
-    }
-    if (!hasMore && c) {
-      /* p = 1; */
-      setPage(1);
-      setHasMore(true);
-    }
-    try {
-      fetch(
-        url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st,
-        {
-          method: 'GET',
-        }
-      )
-        .then((response) => response.json())
-        .then((response) => {
-          if (response.totalItems === 0) {
-            setLoader('No items found');
-          } else if (response.totalItems !== 0) {
-            if (loader !== 'Loading...') {
-              setLoader('Loading...');
-            }
-            if (response.totalItems > 10) {
-              setHasMore(true);
-            } else {
-              setHasMore(false);
-            }
-          }
-          if (response.totalItems > 10 && datasets.length !== 0 && !changedFilter && !c) {
-            const newArr = datasets;
-            for (let i = 0; i < 10; i += 1) {
-              newArr.push(response.items[i]);
-            }
-            setDatasets(newArr);
-          } else {
-            setDatasets(response.items);
-            setChangedFilter(false);
-          }
-          setTotalItems(response.totalItems);
-        });
-    } catch (_) {
-      console.log('failed to fetch datasets');
-    }
-    if (page * 10 > totalItems && totalItems !== 1 && hasMore) {
-      setHasMore(false);
-    }
 
-    console.log(
-      url + sUrl + s + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + p + items + sortUrl + st
-    );
-  };
+  const fetchContent = async (value = searchUrl) => {
+    if (value !== searchUrl) {
+      setSearchUrl(value)
+    }
+    setPage(1)
+    if (urlType === 'both') {
+      GetApi(url + 'datasets' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addDatasets)
+      GetApi(url + 'coordinations' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addCoordinations)
+    }
+    else {
+      GetApi(url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addToEmptyList)
+    }
+    console.log(url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType)
+  }
+
+  const addDatasets = (response) => {
+    setDatasets(response.items)
+    setTotalItemsDatasets(response.totalItems)
+    if (response.totalItems > response.items.length) {
+      setHasMore(true)
+    }
+    else { setHasMore(false) }
+  }
+
+  const addCoordinations = (response) => {
+    setCoordinations(response.items)
+    setTotalItemsCoordinations(response.totalItems)
+    if (response.totalItems > response.items.length) {
+      setHasMore(true)
+    }
+    else { setHasMore(false) }
+  }
+
+  const addToEmptyList = (response) => {
+    if (urlType === 'datasets') {
+      setDatasets(response.items)
+      setTotalItemsDatasets(response.totalItems)
+      if (response.totalItems > response.items.length) {
+        setHasMore(true)
+      }
+      else { setHasMore(false) }
+    }
+    else if (urlType === 'coordinations') {
+      setCoordinations(response.items)
+      setTotalItemsCoordinations(response.totalItems)
+      if (response.totalItems > response.items.length) {
+        setHasMore(true)
+      }
+      else { setHasMore(false) }
+    }
+  }
+
+  const fetchNextPage = async () => {
+    if (urlType === 'both') {
+      if (totalItemsDatasets >= datasets.length) {
+        GetApi(url + "datasets" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
+      }
+      if (totalItemsCoordinations >= coordinations.length) {
+        GetApi(url + "coordinations" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
+      }
+    }
+    else if (urlType === 'datasets') {
+      if (totalItemsDatasets >= datasets.length) {
+        GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
+      }
+    }
+    else {
+      if (totalItemsCoordinations >= coordinations.length) {
+        GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
+      }
+    }
+    console.log(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType)
+
+  }
+
+  const addCoordinationsToExisting = (response) => {
+    if (totalItemsDatasets > datasets.length || totalItemsCoordinations > coordinations.length) {
+      setHasMore(true)
+    }
+    else { setHasMore(false) }
+    if (totalItemsDatasets > coordinations.length) {
+      if (loader !== 'Loading...') {
+        setLoader('Loading...')
+      }
+      if (response.totalItems > 10) {
+
+        const newArr = coordinations;
+        for (let i = 0; i < 10; i += 1) {
+          newArr.push(response.items[i]);
+        }
+        setCoordinations(newArr);
+      }
+    }
+    setLoader('No more items')
+    setTotalItemsCoordinations(response.totalItems);
+  }
+
+  const addDatasetsToExisting = (response) => {
+    if (totalItemsDatasets > datasets.length || totalItemsCoordinations > coordinations.length) {
+      setHasMore(true)
+    }
+    else { setHasMore(false) }
+
+
+    if (totalItemsDatasets > datasets.length) {
+      if (loader !== 'Loading...') {
+        setLoader('Loading...')
+      }
+      if (response.totalItems > 10) {
+
+        const newArr = datasets;
+        for (let i = 0; i < 10; i += 1) {
+          newArr.push(response.items[i]);
+        }
+        setDatasets(newArr);
+
+      }
+    }
+    setLoader('No more items')
+    setTotalItemsDatasets(response.totalItems);
+
+  }
+
 
   useEffect(() => {
-    getDatasets();
-  }, [filterPublishersUrl, filterCategoriesUrl, page, url]);
+    if (page !== 1 && (coordinations.length < totalItemsCoordinations || datasets.length < totalItemsDatasets)) {
+      fetchNextPage()
+    }
+    console.log(page)
+  }, [page])
+
+
+  useEffect(() => {
+    fetchContent()
+  }, [filterPublishersUrl, filterCategoriesUrl, urlType]);
 
   const changeUrl = (value) => {
+    switch (value) {
+      case 'both': { setUrlType(value); }
+      case 'datasets': { setUrlType("datasets"); }
+      case 'coordinations': { setUrlType("coordinations"); }
+    }
+
     setDatasets([]);
-    setUrl(value);
+    setCoordinations([])
+
+    setUrlType(value);
+
   };
 
   const onClick = (path, id) => {
@@ -119,9 +211,13 @@ export default function Home() {
 
   const changeSort = (type) => {
     setDatasets([]);
+    setCoordinations([])
+
     setSortType(type);
     setPage(1);
-    getDatasets(1, true, searchUrl, type);
+
+    fetchContent()
+
   };
 
   const getSortButtons = () => {
@@ -190,6 +286,20 @@ export default function Home() {
     }
   };
 
+  const checkIsMore = () => {
+    console.log("check has more: " + totalItemsDatasets + " : " + datasets.length)
+    console.log("check has more: " + totalItemsCoordinations + " : " + coordinations.length)
+    if (urlType === 'both' && (totalItemsDatasets > datasets.length || totalItemsCoordinations > coordinations.length)) {
+      setPage(page + 1)
+    }
+    else if (urlType === 'datasets' && totalItemsDatasets > datasets.length) {
+      setPage(page + 1)
+    }
+    else if (urlType === 'coordinations' && totalItemsCoordinations > coordinations.length) {
+      setPage(page + 1)
+    }
+  }
+
   return (
     <div className="datakatalog">
       <Grid container style={{ padding: '3%', marginTop: '50px' }} justify="space-evenly">
@@ -197,21 +307,30 @@ export default function Home() {
           <FilterPublisher
             url={filterPublishersUrl}
             setUrl={setFilterPublishersUrl}
-            isDataset={url.includes('dataset')}
+
             setPage={setPage}
             changed={changedFilter}
             setChanged={setChangedFilter}
+            type={urlType}
           />
           <FilterCategory
             url={filterCategoriesUrl}
             setUrl={setFilterCategoriesUrl}
-            isDataset={url.includes('dataset')}
+
+            type={urlType}
           />
           <FilterTag />
         </Grid>
         <Grid item xs={8}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
-            <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
+            <Search
+              setSearchUrl={setSearchUrl}
+              searchUrl={searchUrl}
+              getDatasets={fetchContent}
+              urlType={urlType}
+              sortType={sortType}
+              functions={[setDatasets, setCoordinations]}
+            />
 
             {/* Midlertidig select bar, bør opprette et form */}
             <FormControl variant="outlined" style={{ width: '200px' }}>
@@ -220,11 +339,13 @@ export default function Home() {
                 labelId="chooseWhatToView"
                 label="Datasett / Samordning"
                 id="chooseWhatToViewId"
-                value={url}
+                value={urlType}
                 onChange={(event) => changeUrl(event.target.value)}
               >
-                <MenuItem value="https://localhost:5001/api/datasets">Dataset</MenuItem>
-                <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
+                <MenuItem value="both">Alle</MenuItem>
+                <MenuItem value="datasets">Dataset</MenuItem>
+                <MenuItem value="coordinations">Samordning</MenuItem>
+
               </Select>
             </FormControl>
           </div>
@@ -233,11 +354,51 @@ export default function Home() {
           </div>
           <InfiniteScroll
             dataLength={page * 10}
-            next={() => setPage(page + 1)}
+            next={checkIsMore}
             hasMore={hasMore}
             loader={<h4>{loader}</h4>}
           >
-            {url === 'https://localhost:5001/api/datasets' ? (
+            {urlType === 'both' ?
+              <div>
+                {coordinations && coordinations != [] && <h2 style={{ marginLeft: "1.5vh", fontWeight: 'normal' }}>Samordninger: </h2>}
+                {coordinations && coordinations !== [] &&
+                  Object.values(coordinations).map(
+                    (c) =>
+                      c && (
+                        <CoordinationCard
+                          key={c.id}
+                          id={c.id}
+                          coordination={c}
+                          onClick={() => onClick('/DetailedCoordination/', c.id)}
+                        />
+                      )
+                  )}
+                <br />
+                {datasets && datasets != [] && <h2 style={{ marginLeft: "1.5vh", fontWeight: 'normal' }}>Datasett: </h2>}
+                {datasets && datasets !== [] &&
+                  Object.values(datasets).map(
+                    (d) => d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
+                  )}
+
+              </div>
+              : urlType === 'datasets' && datasets && datasets !== [] ?
+                Object.values(datasets).map(
+                  (d) => d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
+                )
+                : urlType === 'coordinations' && coordinations && coordinations !== [] &&
+                Object.values(coordinations).map(
+                  (c) =>
+                    c && (
+                      <CoordinationCard
+                        key={c.id}
+                        id={c.id}
+                        coordination={c}
+                        onClick={() => onClick('/DetailedCoordination/', c.id)}
+                      />
+                    )
+                )
+            }
+            {/*url === 'https://localhost:5001/api/datasets' ? (
               datasets &&
               datasets !== [] &&
               Object.values(datasets).map(
@@ -258,8 +419,8 @@ export default function Home() {
                   )
               )
             ) : (
-              <p>laster...</p>
-            )}
+                  <p>laster...</p>
+            )*/}
             {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
           </InfiniteScroll>
         </Grid>
