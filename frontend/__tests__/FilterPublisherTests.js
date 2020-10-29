@@ -17,9 +17,9 @@ test('Publisher mapping function handles single dataset publisher correctly', ()
 
   const mapped = mapResponseToPublishers(testResponse, 'datasets');
   expect(mapped.length).toBe(1);
-  expect(mapped[0].name).toBe('Eksempel'); // prop 0 is name
-  expect(mapped[0].id).toBe(101); // prop 1 is id
-  expect(mapped[0].count).toBe(2); // prop 4 is length
+  expect(mapped[0].name).toBe('Eksempel');
+  expect(mapped[0].id).toBe(101);
+  expect(mapped[0].count).toBe(2);
 });
 
 test('Publisher mapping function handles single coordination publisher correctly', () => {
