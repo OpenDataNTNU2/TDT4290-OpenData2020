@@ -88,9 +88,14 @@ namespace OpenData.API.Controllers
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostImportAsync(string url, int categoryId)
         {   
-            Dataset datatset = await _rdfService.import(url, categoryId);
+            var result = await _rdfService.import(url, categoryId);
 
-            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorResource(result.Message));
+            }
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
             return Ok(datasetResource);
         }
 
@@ -99,9 +104,9 @@ namespace OpenData.API.Controllers
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostPopulate(int numberOfDatasets)
         {   
-            Dataset datatset = await _rdfService.populate(numberOfDatasets);
+            var datatset = await _rdfService.populate(numberOfDatasets);
 
-            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset.Resource);
             return Ok(datasetResource);
         }
 

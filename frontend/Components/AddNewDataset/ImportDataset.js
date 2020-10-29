@@ -15,6 +15,8 @@ export default function CreateDataset() {
   const [importUrl, setImportUrl] = useState('');
   const [numberOfDatasets, setNumberOfDatasets] = useState(10);
   const [open, setOpen] = useState(false);
+  const [required, setRequired] = useState(false);
+  const [invalid, setInvalid] = useState(false);
 
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
@@ -24,6 +26,10 @@ export default function CreateDataset() {
   }, []);
 
   const importDataset = () => {
+    if (selectedCategory === '' || importUrl === '') {
+      setRequired(true);
+      return;
+    }
     const category = selectedCategory ? `&categoryId=${selectedCategory}` : '';
     PostApi(`${host}/api/datasets/import?url=${importUrl}${category}`, { url: importUrl }, importPostReq);
   };
@@ -34,10 +40,14 @@ export default function CreateDataset() {
     PostApi(`${host}/api/categories/import?url=${importUrl}`, { url: importUrl }, importPostReq);
   };
 
-  function importPostReq() {
-    console.log(`imported dataset from: ${importUrl}`);
-    setOpen(true);
-    setImportUrl('');
+  function importPostReq(id) {
+    if (id == null) {
+      setInvalid(true);
+    } else {
+      console.log(`imported dataset from: ${importUrl}`);
+      setOpen(true);
+      setImportUrl('');
+    }
   }
 
   return (
@@ -58,7 +68,7 @@ export default function CreateDataset() {
       <br />
       <SelectCategory
         id="category"
-        mainLabel="Kategori"
+        mainLabel="Datasett kategori"
         value={categories}
         setSelectedCategory={setSelectedCategory}
         selected={selectedCategory}
@@ -100,6 +110,16 @@ export default function CreateDataset() {
       <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
         <Alert elevation={1} severity="success">
           Datasett importert
+        </Alert>
+      </Snackbar>
+      <Snackbar open={required} autoHideDuration={5000} onClose={() => setRequired(false)}>
+        <Alert elevation={1} severity="error">
+          Husk å fylle inn alle feltene som kreves
+        </Alert>
+      </Snackbar>
+      <Snackbar open={invalid} autoHideDuration={5000} onClose={() => setInvalid(false)}>
+        <Alert elevation={1} severity="error">
+          Ugyldig link
         </Alert>
       </Snackbar>
     </Grid>
