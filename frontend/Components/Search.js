@@ -14,7 +14,6 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     minWidth: '400px',
-    margin: '0px 15px 25px 0px',
     flexDirection: 'row',
   },
   input: {
@@ -28,7 +27,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Search(props) {
   const [query, setQuery] = useState('');
-  const [searchQuery, setSearchQuery] = useState({});
   const classes = useStyles();
 
   // getDatasets(page, false, searchUrl, sortType, setDatasets, 'datasets')
@@ -45,18 +43,11 @@ export default function Search(props) {
 
     const search = _.debounce(sendQuery, 500);
 
-    setSearchQuery((prevSearch) => {
-      if (prevSearch.cancel) {
-        prevSearch.cancel();
-      }
-      return search;
-    });
-
     search(value);
   };
 
   return (
-    <div >
+    <div>
       <Paper className={classes.root}>
         <InputBase
           id="searchbar"

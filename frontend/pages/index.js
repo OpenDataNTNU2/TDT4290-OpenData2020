@@ -185,12 +185,12 @@ export default function Home() {
     switch (sortType) {
       case 'title_asc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
+          <div>
             <Button
               variant="contained"
               onClick={() => changeSort('title_desc')}
               color={'primary'}
-              style={{ marginRight: '1vh' }}
+              style={{ marginRight: '10px' }}
             >
               <ArrowDownward />
               Sortert på tittel
@@ -202,12 +202,12 @@ export default function Home() {
         );
       case 'title_desc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
+          <div>
             <Button
               variant="contained"
               onClick={() => changeSort('title_asc')}
               color={'primary'}
-              style={{ marginRight: '1vh' }}
+              style={{ marginRight: '10px' }}
             >
               <ArrowUpward />
               Sortert på tittel
@@ -219,8 +219,8 @@ export default function Home() {
         );
       case 'date_asc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
-            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+          <div>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '10px' }}>
               Sorter på tittel
             </Button>
             <Button variant="contained" onClick={() => changeSort('date_desc')} color={'primary'}>
@@ -231,8 +231,8 @@ export default function Home() {
         );
       case 'date_desc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
-            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+          <div>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '10px' }}>
               Sorter på tittel
             </Button>
             <Button variant="contained" onClick={() => changeSort('date_asc')} color={'primary'}>
@@ -310,7 +310,14 @@ export default function Home() {
               </Select>
             </FormControl>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '2vh' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: '20px 0 40px 10px',
+            }}
+          >
             {getSortButtons()}
           </div>
           <InfiniteScroll

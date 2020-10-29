@@ -205,7 +205,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       <Grid
         container
         direction="column"
-        style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%', backgroundColor: 'white' }}
+        style={{
+          minHeight: '70vh',
+          minWidth: '90vh',
+          padding: '5% 10% 5% 10%',
+          backgroundColor: 'white',
+        }}
       >
         {getChips()}
 
@@ -283,11 +288,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-          <span>
-            <b>Søkeord: </b>
-            {data.datasetTags.map((tag) => tag && `${tag.tags.name}, `)}{' '}
-            {data.datasetTags.length === 0 ? 'Ingen søkeord lagt til' : null}
-          </span>
         </p>
         <br />
 

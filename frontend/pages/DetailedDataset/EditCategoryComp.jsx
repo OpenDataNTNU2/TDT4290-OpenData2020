@@ -5,6 +5,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import SelectCategory from '../../Components/Forms/SelectCategory';
 import GetApi from '../../Components/ApiCalls/GetApi';
 
+import styles from '../../styles/Detailed.module.css';
+
 const EditCategoryComp = (props) => {
   const [editBool, setEditBool] = useState(false);
   const [editText, setEditText] = useState(props.value);
@@ -51,7 +53,7 @@ const EditCategoryComp = (props) => {
     ) : (
       <p className={props.styles}>
         <span>Kategori: </span>
-        {editText} <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
+        {editText} <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
       </p>
     )
   ) : (
