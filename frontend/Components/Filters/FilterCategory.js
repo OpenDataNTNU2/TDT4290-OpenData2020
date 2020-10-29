@@ -62,7 +62,7 @@ export default function FilterCategory(props) {
     cats.map(
       (category) =>
         (props.type === 'both' ? category.datasetsCount + category.coordinationsCount : props.type === 'datasets' ? category.datasetsCount : category.coordinationsCount) > 0 && (
-          <div>
+          <div key={'mainDiv' + category.id}>
             {category.narrower.length === 0 ? (
               <CheckboxInput
                 key={category.id}

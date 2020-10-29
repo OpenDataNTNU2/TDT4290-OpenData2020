@@ -16,7 +16,6 @@ export default function FilterPublisher(props) {
   const [res, setRes] = useState({});
 
   const handleChange = (event) => {
-    props.setChanged(true);
     const newArr = addedFilters;
     newArr.push(event.target.value);
     for (let i = 0; i < newArr.length - 1; i += 1) {
@@ -82,7 +81,14 @@ export function mapResponseToPublishers(res, type) {
   // ideally, all transformations are extracted into functions, so they can be tested
   const pubs = [];
   for (let i = 0; i < res.length; i += 1) {
-    const length = res[i].datasets.length > res[i].coordinations.length ? res[i].datasets.length : res[i].coordinations.length
+    let length;
+    if (type === 'both') {
+      length = res[i].datasets.length + res[i].coordinations.length
+    }
+    else {
+      length = type === 'datasets' ? res[i].datasets.length : res[i].coordinations.length
+    }
+    // const length = res[i].datasets.length > res[i].coordinations.length ? res[i].datasets.length : res[i].coordinations.length
     length > 0 ? pubs.push([res[i].name.split(' ')[0], res[i].id, false, i, length]) : null; // are the 'false' and 'i' properties used anywhere?
   }
   return pubs;
