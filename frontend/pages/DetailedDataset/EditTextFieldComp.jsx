@@ -4,6 +4,8 @@ import { Button, Grid } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import Input from '../../Components/Forms/Input';
 
+import styles from '../../styles/Detailed.module.css';
+
 const EditComp = (props) => {
   const [editBool, setEditBool] = useState(false);
   const [editText, setEditText] = useState(props.value);
@@ -13,7 +15,7 @@ const EditComp = (props) => {
       case 'title':
         return (
           <h1 className={props.styles}>
-            {editText} <EditIcon onClick={() => setEditBool(true)} />
+            {editText} <EditIcon className={styles.editIcon} onClick={() => setEditBool(true)} />
           </h1>
         );
       case 'span':
@@ -21,7 +23,7 @@ const EditComp = (props) => {
           <p className={props.styles}>
             <span>{props.staticText}</span>
             {editText}
-            <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
+            <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
           </p>
         );
       default:

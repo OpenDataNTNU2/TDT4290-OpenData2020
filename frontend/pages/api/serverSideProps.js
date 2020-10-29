@@ -1,11 +1,13 @@
 import cookie from 'cookie';
 
 export async function PageRender(page, context) {
-  let uri = 'https://localhost:5001/api/datasets';
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
+  let uri = `${host}/api/datasets`;
   if (page === 'ID') {
-    uri = `https://localhost:5001/api/datasets/${context.params.id}`;
+    uri = `${host}/api/datasets/${context.params.id}`;
   } else if (page === 'CoordinationID') {
-    uri = `https://localhost:5001/api/coordinations/${context.params.id}`;
+    uri = `${host}/api/coordinations/${context.params.id}`;
   }
   const res = await fetch(uri, createRequestOptions(true));
   const data = await res.json();

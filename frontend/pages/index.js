@@ -21,9 +21,10 @@ import { PageRender } from './api/serverSideProps';
 export default function Home() {
   const router = useRouter();
 
-  const [url, setUrl] = useState('https://localhost:5001/api/datasets');
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+  const [url, setUrl] = useState(`${host}/api/datasets`);
 
-  // const url = 'https://localhost:5001/api/datasets'
+  // const url = `${host}/api/datasets`
   const sUrl = '?Search=';
   const fUrl = '&PublisherIds=';
   const fcUrl = '&CategoryIds=';
@@ -128,12 +129,12 @@ export default function Home() {
     switch (sortType) {
       case 'title_asc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
+          <div>
             <Button
               variant="contained"
               onClick={() => changeSort('title_desc')}
               color={'primary'}
-              style={{ marginRight: '1vh' }}
+              style={{ marginRight: '10px' }}
             >
               <ArrowDownward />
               Sortert på tittel
@@ -145,12 +146,12 @@ export default function Home() {
         );
       case 'title_desc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
+          <div>
             <Button
               variant="contained"
               onClick={() => changeSort('title_asc')}
               color={'primary'}
-              style={{ marginRight: '1vh' }}
+              style={{ marginRight: '10px' }}
             >
               <ArrowUpward />
               Sortert på tittel
@@ -162,8 +163,8 @@ export default function Home() {
         );
       case 'date_asc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
-            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+          <div>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '10px' }}>
               Sorter på tittel
             </Button>
             <Button variant="contained" onClick={() => changeSort('date_desc')} color={'primary'}>
@@ -174,8 +175,8 @@ export default function Home() {
         );
       case 'date_desc':
         return (
-          <div style={{ marginLeft: '1vh' }}>
-            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '1vh' }}>
+          <div>
+            <Button variant="contained" onClick={() => changeSort('title_asc')} style={{ marginRight: '10px' }}>
               Sorter på tittel
             </Button>
             <Button variant="contained" onClick={() => changeSort('date_asc')} color={'primary'}>
@@ -210,7 +211,14 @@ export default function Home() {
           <FilterTag />
         </Grid>
         <Grid item xs={8}>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: '0 10px',
+            }}
+          >
             <Search setSearchUrl={setSearchUrl} searchUrl={searchUrl} getDatasets={getDatasets} />
 
             {/* Midlertidig select bar, bør opprette et form */}
@@ -223,12 +231,19 @@ export default function Home() {
                 value={url}
                 onChange={(event) => changeUrl(event.target.value)}
               >
-                <MenuItem value="https://localhost:5001/api/datasets">Dataset</MenuItem>
-                <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
+                <MenuItem value={`${host}/api/datasets`}>Dataset</MenuItem>
+                <MenuItem value={`${host}/api/coordinations`}>Samordning</MenuItem>
               </Select>
             </FormControl>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '2vh' }}>
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              margin: '20px 0 40px 10px',
+            }}
+          >
             {getSortButtons()}
           </div>
           <InfiniteScroll
@@ -237,13 +252,13 @@ export default function Home() {
             hasMore={hasMore}
             loader={<h4>{loader}</h4>}
           >
-            {url === 'https://localhost:5001/api/datasets' ? (
+            {url === `${host}/api/datasets` ? (
               datasets &&
               datasets !== [] &&
               Object.values(datasets).map(
                 (d) => d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
               )
-            ) : url === 'https://localhost:5001/api/coordinations' ? (
+            ) : url === `${host}/api/coordinations` ? (
               datasets &&
               datasets !== [] &&
               Object.values(datasets).map(

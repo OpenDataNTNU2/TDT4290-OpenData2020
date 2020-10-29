@@ -19,6 +19,8 @@ import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
   // show/hide snackbar with successfull put message
@@ -152,7 +154,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     if (desc !== '') {
       d.useCaseDescription = desc;
     }
-    PostApi('https://localhost:5001/api/users/subscribe', d, successfullySubscribed);
+    PostApi(`${host}/api/users/subscribe`, d, successfullySubscribed);
   };
 
   function successfullySubscribed() {
@@ -161,7 +163,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   }
 
   useEffect(() => {
-    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+    GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
     if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
   }, [data, subscribed]);
 
@@ -183,7 +185,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         op: 'replace',
       },
     ];
-    PatchApi(`https://localhost:5001/api/datasets/${data.id}`, d);
+    PatchApi(`${host}/api/datasets/${data.id}`, d);
     console.log('patched dataset');
   };
 
@@ -205,7 +207,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       <Grid
         container
         direction="column"
-        style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%', backgroundColor: 'white' }}
+        style={{
+          minHeight: '70vh',
+          minWidth: '90vh',
+          padding: '5% 10% 5% 10%',
+          backgroundColor: 'white',
+        }}
       >
         {getChips()}
 
@@ -283,11 +290,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-          <span>
-            <b>Søkeord: </b>
-            {data.datasetTags.map((tag) => tag && `${tag.tags.name}, `)}{' '}
-            {data.datasetTags.length === 0 ? 'Ingen søkeord lagt til' : null}
-          </span>
         </p>
         <br />
 

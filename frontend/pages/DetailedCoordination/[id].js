@@ -21,6 +21,7 @@ import styles from '../../styles/Detailed.module.css';
 
 export default function DetailedCoordination({ data, prevPublisherId, prevUserId, prevLoggedUsername }) {
   const router = useRouter();
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
   const [coordinationData, setCoordinationData] = useState(data);
 
   // variable for which dataset other municipalities will join with
@@ -44,10 +45,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   useEffect(() => {
+
     if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
-      GetApi(`https://localhost:5001/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
+      GetApi(`${host}/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
-    GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+    GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+
     if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
   }, [data, subscribed]);
 
@@ -67,11 +70,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       coordinationId: data.id,
       datasetId: selectedDataset,
     };
-    PostApi('https://localhost:5001/api/applications', d, successfullySentApplication);
+    PostApi(`${host}/api/applications`, d, successfullySentApplication);
   };
 
   function successfullySentApplication() {
-    console.log('application sent to: https://localhost:5001/api/applications');
+    console.log(`application sent to: ${host}/api/applications`);
     setSelectedDataset('');
     setJoinCoordinationReason('');
     setOpenCreateApplicationFeedback(true);
@@ -86,9 +89,9 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       },
     ];
 
-    PatchApi(`https://localhost:5001/api/datasets/${datasetId}`, d);
-    DeleteApi(`https://localhost:5001/api/applications/${applicationId}`);
-    GetApi(`https://localhost:5001/api/coordinations/${data.id}`, setCoordinationData);
+    PatchApi(`${host}/api/datasets/${datasetId}`, d);
+    DeleteApi(`${host}/api/applications/${applicationId}`);
+    GetApi(`${host}/api/coordinations/${data.id}`, setCoordinationData);
     setOpenRespondToApplicationFeedback(true);
   };
 
@@ -105,7 +108,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     if (desc !== '') {
       d.useCaseDescription = desc;
     }
-    PostApi('https://localhost:5001/api/users/subscribe', d, successfullySubscribed);
+    PostApi(`${host}/api/users/subscribe`, d, successfullySubscribed);
   };
 
   function successfullySubscribed() {
@@ -156,7 +159,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
         op: 'replace',
       },
     ];
-    PatchApi(`https://localhost:5001/api/coordinations/${data.id}`, d);
+    PatchApi(`${host}/api/coordinations/${data.id}`, d);
     console.log('patched dataset');
   };
 

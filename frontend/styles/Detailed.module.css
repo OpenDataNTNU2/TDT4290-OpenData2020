@@ -22,10 +22,19 @@
 }
 
 .attributes {
-  line-height: 40px;
+  line-height: 30px;
+  margin: 0;
 }
 
 .attributes > span {
   font-weight: 700;
   font-size: 16px;
+}
+
+.editIcon {
+  margin-left: 10px;
+}
+
+.editIcon:hover {
+  cursor: pointer;
 }
