@@ -13,7 +13,7 @@ import { ArrowDownward, ArrowUpward } from '@material-ui/icons';
 // import filters
 import FilterPublisher from '../Components/Filters/FilterPublisher';
 import FilterCategory from '../Components/Filters/FilterCategory';
-import FilterTag from '../Components/Filters/FilterTag';
+import FilterAccess from '../Components/Filters/FilterAccess';
 
 import { PageRender } from './api/serverSideProps';
 import GetApi from '../Components/ApiCalls/GetApi';
@@ -29,6 +29,8 @@ export default function Home() {
   const sUrl = '?Search=';
   const fUrl = '&PublisherIds=';
   const fcUrl = '&CategoryIds=';
+  const fpStatus = '&PublicationStatuses='
+  const faLevel = '&AccessLevels='
   const pUrl = '&Page=';
   const items = '&ItemsPerPage=10';
   const sortUrl = '&SortOrder=';
@@ -36,6 +38,10 @@ export default function Home() {
   const [searchUrl, setSearchUrl] = useState('');
   const [filterPublishersUrl, setFilterPublishersUrl] = useState('');
   const [filterCategoriesUrl, setFilterCategoriesUrl] = useState('');
+  const [filterPublishStatus, setFilterPublishStatus] = useState('');
+  const [filterAccessLevel, setFilterAccessLevel] = useState('');
+
+
   const [sortType, setSortType] = useState('title_asc');
   const [page, setPage] = useState(1);
 
@@ -54,13 +60,13 @@ export default function Home() {
     }
     setPage(1)
     if (urlType === 'both') {
-      GetApi(url + 'datasets' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addDatasets)
-      GetApi(url + 'coordinations' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addCoordinations)
+      GetApi(url + 'datasets' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + "1" + items + sortUrl + sortType, addDatasets)
+      GetApi(url + 'coordinations' + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + "1" + items + sortUrl + sortType, addCoordinations)
     }
     else {
-      GetApi(url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType, addToEmptyList)
+      GetApi(url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + "1" + items + sortUrl + sortType, addToEmptyList)
     }
-    console.log('Fetching from url: ' + url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + "1" + items + sortUrl + sortType)
+    console.log('Fetching from url: ' + url + urlType + sUrl + value + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + "1" + items + sortUrl + sortType)
   }
 
   const addDatasets = (response) => {
@@ -99,19 +105,19 @@ export default function Home() {
   const fetchNextPage = async () => {
     if (urlType === 'both') {
       if (totalItemsDatasets >= datasets.length) {
-        GetApi(url + "datasets" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
+        GetApi(url + "datasets" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
       }
       if (totalItemsCoordinations >= coordinations.length) {
-        GetApi(url + "coordinations" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
+        GetApi(url + "coordinations" + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
       }
     }
     else if (urlType === 'datasets' && totalItemsDatasets >= datasets.length) {
-      GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
+      GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + page + items + sortUrl + sortType, addDatasetsToExisting)
     }
     else if (urlType === 'coordinations' && totalItemsCoordinations >= coordinations.length) {
-      GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
+      GetApi(url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + page + items + sortUrl + sortType, addCoordinationsToExisting)
     }
-    console.log('Fetching from url: ' + url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + pUrl + page + items + sortUrl + sortType)
+    console.log('Fetching from url: ' + url + urlType + sUrl + searchUrl + fUrl + filterPublishersUrl + fcUrl + filterCategoriesUrl + fpStatus + filterPublishStatus + faLevel + filterAccessLevel + pUrl + page + items + sortUrl + sortType)
 
   }
 
@@ -157,8 +163,10 @@ export default function Home() {
   }, [page])
 
   useEffect(() => {
+    setDatasets([]);
+    setCoordinations([])
     fetchContent()
-  }, [filterPublishersUrl, filterCategoriesUrl, urlType]);
+  }, [filterPublishersUrl, filterCategoriesUrl, urlType, filterPublishStatus, filterAccessLevel]);
 
   const changeUrl = (value) => {
     switch (value) {
@@ -182,6 +190,11 @@ export default function Home() {
     setPage(1);
     fetchContent()
   };
+
+  const changeFilters = () => {
+    setDatasets([]);
+    setCoordinations([]);
+  }
 
   const getSortButtons = () => {
     switch (sortType) {
@@ -282,7 +295,12 @@ export default function Home() {
             setUrl={setFilterCategoriesUrl}
             type={urlType}
           />
-          <FilterTag />
+
+          <FilterAccess
+            setFilterPublishStatus={setFilterPublishStatus}
+            setFilterAccessLevel={setFilterAccessLevel}
+
+          />
         </Grid>
         <Grid item xs={8}>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between' }}>
