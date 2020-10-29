@@ -23,7 +23,7 @@ namespace OpenData.API
             using (var context = scope.ServiceProvider.GetService<AppDbContext>())
             {
                 context.Database.EnsureCreated();
-                context.AddTestData();
+                // context.AddTestData();
             }
 
             host.Run();

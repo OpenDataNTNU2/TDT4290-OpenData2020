@@ -18,7 +18,7 @@ export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
 
   return (
     <Grid>
-      {JSON.parse(prevPublisherId) <= 99 ? (
+      {JSON.parse(prevPublisherId) <= 0 ? (
         <div>
           <p>No access, please log into a municipality user</p>
         </div>

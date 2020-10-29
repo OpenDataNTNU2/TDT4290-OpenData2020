@@ -78,7 +78,7 @@ export default function CreateDataset() {
 
       <Alert elevation={1} severity="info">
         Kopier inn en link for å importere, eks:
-        <br /> Datset: https://fellesdatakatalog.digdir.no/api/datasets/8e994595-423b-4dcb-ab83-271989b0d9f0
+        <br /> Datset: https://data.norge.no/datasets/fff3a365-cd82-448e-97a2-05aade8f6cf1
         <br /> Kategorier: https://psi.norge.no/los/tema/arbeid
       </Alert>
       <br />

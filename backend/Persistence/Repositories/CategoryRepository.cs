@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Repositories;
 using OpenData.API.Persistence.Contexts;
+using System;
 
 namespace OpenData.API.Persistence.Repositories
 {
@@ -17,6 +18,18 @@ namespace OpenData.API.Persistence.Repositories
         {
             var categories =  await _context.Categories
                     .Include(p => p.Broader)
+                    .Include(c => c.Datasets)
+                    .Include(c => c.Coordinations)
+                    .Include(p => p.Narrower).ThenInclude(c => c.Datasets)
+                    .Include(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                    .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
                     .AsNoTracking()
                     .ToListAsync();
             List<Category> remove = new List<Category>();
@@ -27,7 +40,7 @@ namespace OpenData.API.Persistence.Repositories
                     remove.Add(categories[i]);
                     continue;
                 }
-                categories[i] = await getCategoryWithNarrowers(categories[i].Id);
+                // categories[i] = await getCategoryWithNarrowers(categories[i].Id);
             }
 
             foreach (Category r in remove)

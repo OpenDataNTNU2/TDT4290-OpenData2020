@@ -55,7 +55,8 @@ namespace OpenData.API
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseInMemoryDatabase(Configuration.GetConnectionString("memory"));
+                // options.UseInMemoryDatabase(Configuration.GetConnectionString("memory"));
+                options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
             });
 
             services.AddScoped<IDatasetRepository, DatasetRepository>();

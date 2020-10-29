@@ -47,14 +47,14 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Category>().ToTable("Categories");
             builder.Entity<Category>().HasKey(p => p.Id);
             builder.Entity<Category>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-            builder.Entity<Category>().Property(p => p.Name).IsRequired().HasMaxLength(60);
+            builder.Entity<Category>().Property(p => p.Name).IsRequired();
             builder.Entity<Category>().HasMany(p => p.Datasets).WithOne(p => p.Category).HasForeignKey(p => p.CategoryId);
 
             builder.Entity<Dataset>().ToTable("Datasets");
             builder.Entity<Dataset>().HasKey(p => p.Id);
             builder.Entity<Dataset>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();//.HasValueGenerator<InMemoryIntegerValueGenerator<int>>();
             builder.Entity<Dataset>().Property(p => p.Identifier).IsRequired();
-            builder.Entity<Dataset>().Property(p => p.Title).IsRequired().HasMaxLength(60);
+            builder.Entity<Dataset>().Property(p => p.Title).IsRequired();
             builder.Entity<Dataset>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Dataset>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Dataset>().HasMany(p => p.Distributions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
@@ -65,7 +65,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Distribution>().ToTable("Distributions");
             builder.Entity<Distribution>().HasKey(p => p.Id);
             builder.Entity<Distribution>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-            builder.Entity<Distribution>().Property(p => p.Title).IsRequired().HasMaxLength(60);
+            builder.Entity<Distribution>().Property(p => p.Title).IsRequired();
             builder.Entity<Distribution>().Property(p => p.DatasetId).IsRequired();
 
             builder.Entity<Tags>().ToTable("Tags");

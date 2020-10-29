@@ -45,10 +45,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   useEffect(() => {
-    if (parseInt(JSON.parse(prevPublisherId)) > 99 && parseInt(prevPublisherId) !== data.publisher.id) {
+
+    if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
       GetApi(`${host}/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
     GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+
     if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
   }, [data, subscribed]);
 

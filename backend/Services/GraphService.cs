@@ -61,7 +61,7 @@ namespace OpenData.API.Services
             await _datasetRepository.AddAsync(dataset);
             await _unitOfWork.CompleteAsync();
             
-            AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
+            await AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
             await AddDistribution(g, dataset.Id);
             return dataset;
         }
@@ -146,7 +146,7 @@ namespace OpenData.API.Services
         }
 
         // Add tags in a graph to the database
-        public async void AddTags(Graph g, String keywords, Dataset dataset)
+        public async Task AddTags(Graph g, String keywords, Dataset dataset)
         {
             String[] keywordsList = keywords.Split(",");
             IEnumerable<Tags> existingTags = await _tagsRepository.ListAsync();
