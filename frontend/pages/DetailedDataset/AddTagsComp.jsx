@@ -57,18 +57,18 @@ const AddTagsComp = (props) => {
         </Button>
       </div>
     ) : (
+        <p className={props.styles}>
+          <span>Søkeord: </span>
+          {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
+          <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
+        </p>
+      )
+  ) : (
       <p className={props.styles}>
         <span>Søkeord: </span>
         {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
-        <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
       </p>
-    )
-  ) : (
-    <p className={props.styles}>
-      <span>Søkeord: </span>
-      {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
-    </p>
-  );
+    );
 };
 
 export default AddTagsComp;
