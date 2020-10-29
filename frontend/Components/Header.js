@@ -17,6 +17,7 @@ export default function Header({
   prevUserId = '-1',
 }) {
   const router = useRouter();
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
   const [value, setValue] = useState('/');
 
   const handleChange = (event, newValue) => {
@@ -29,8 +30,7 @@ export default function Header({
 
   useEffect(() => {
     if (prevLoggedIn === 'false') setNotifications([]);
-    if (JSON.parse(prevUserId) > 0)
-      GetApi(`https://localhost:5001/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications);
+    if (JSON.parse(prevUserId) > 0) GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications);
   }, [prevUserId, prevLoggedUsername, prevLoggedIn]);
 
   function getUserNotifications(response) {

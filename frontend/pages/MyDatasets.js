@@ -9,6 +9,7 @@ import CoordinationCard from '../Components/CoordinationCard';
 
 export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPublisherId = 0 }) {
   const router = useRouter();
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
   const [datasets, setDatasets] = useState([]);
 
   const [coordinations, setCoordinations] = useState([]);
@@ -25,8 +26,8 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
 
   // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
   useEffect(() => {
-    GetApi(`https://localhost:5001/api/datasets?PublisherIds=${prevPublisherId}`, setMyDatasets);
-    GetApi(`https://localhost:5001/api/coordinations?PublisherIds=${prevPublisherId}`, setMyCoordinations);
+    GetApi(`${host}/api/datasets?PublisherIds=${prevPublisherId}`, setMyDatasets);
+    GetApi(`${host}/api/coordinations?PublisherIds=${prevPublisherId}`, setMyCoordinations);
   }, [prevPublisherId]);
 
   const onClick = (path, id) => {

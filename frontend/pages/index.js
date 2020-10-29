@@ -21,9 +21,10 @@ import { PageRender } from './api/serverSideProps';
 export default function Home() {
   const router = useRouter();
 
-  const [url, setUrl] = useState('https://localhost:5001/api/datasets');
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+  const [url, setUrl] = useState(`${host}/api/datasets`);
 
-  // const url = 'https://localhost:5001/api/datasets'
+  // const url = `${host}/api/datasets`
   const sUrl = '?Search=';
   const fUrl = '&PublisherIds=';
   const fcUrl = '&CategoryIds=';
@@ -230,8 +231,8 @@ export default function Home() {
                 value={url}
                 onChange={(event) => changeUrl(event.target.value)}
               >
-                <MenuItem value="https://localhost:5001/api/datasets">Dataset</MenuItem>
-                <MenuItem value="https://localhost:5001/api/coordinations">Samordning</MenuItem>
+                <MenuItem value={`${host}/api/datasets`}>Dataset</MenuItem>
+                <MenuItem value={`${host}/api/coordinations`}>Samordning</MenuItem>
               </Select>
             </FormControl>
           </div>
@@ -251,13 +252,13 @@ export default function Home() {
             hasMore={hasMore}
             loader={<h4>{loader}</h4>}
           >
-            {url === 'https://localhost:5001/api/datasets' ? (
+            {url === `${host}/api/datasets` ? (
               datasets &&
               datasets !== [] &&
               Object.values(datasets).map(
                 (d) => d && <DatasetCard key={d.id} dataset={d} onClick={() => onClick('/DetailedDataset/', d.id)} />
               )
-            ) : url === 'https://localhost:5001/api/coordinations' ? (
+            ) : url === `${host}/api/coordinations` ? (
               datasets &&
               datasets !== [] &&
               Object.values(datasets).map(
