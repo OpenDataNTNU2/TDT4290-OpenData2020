@@ -65,3 +65,7 @@ Common text is description of content in folder.
   - Not important, might delete since we are using material ui
 - **utils**
   - This will handle global state for logged in users
+- .env
+  - This contains environment variables used to connect to the backend
+- .env.local
+  - gitignored. You can make this file to override any of the environment variables defined in .env

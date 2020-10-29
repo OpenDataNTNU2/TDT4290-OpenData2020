@@ -14,6 +14,8 @@ import RadioInput from '../Forms/RadioInput';
 
 // TODO: Fikse feedback hvis en ugyldig link blir benyttet, ellers funker det :)
 export default function CreateCoordination(props) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   // feedback til bruker, setter snackbars i bunn til true/false
   const [openSuccessFeedback, setOpenSuccessFeedback] = useState(false);
   const [openFailedFeedback, setOpenFailedFeedback] = useState(false);
@@ -57,8 +59,8 @@ export default function CreateCoordination(props) {
         op: 'replace',
       },
     ];
-    if (datasetOption === '1') PatchApi(`https://localhost:5001/api/datasets/${selectedDataset.id}`, data);
-    console.log('Posted coordination to: https://localhost:5001/api/coordinations');
+    if (datasetOption === '1') PatchApi(`${host}/api/datasets/${selectedDataset.id}`, data);
+    console.log(`Posted coordination to: ${host}/api/coordinations`);
 
     setOpenSuccessFeedback(true);
     setTitle('');
@@ -70,7 +72,7 @@ export default function CreateCoordination(props) {
   };
 
   const addTags = () => {
-    newTags.map((tag) => PostApi('https://localhost:5001/api/tags', { name: tag.name }));
+    newTags.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }));
   };
 
   const handleChange = () => {
@@ -85,7 +87,7 @@ export default function CreateCoordination(props) {
       accessLevel: parseInt(accessLevel),
     };
     if (title !== '' && description !== '') {
-      PostApi('https://localhost:5001/api/coordinations', data, submitPostReq);
+      PostApi(`${host}/api/coordinations`, data, submitPostReq);
     } else {
       setOpenFailedFeedback(true);
     }
@@ -94,9 +96,9 @@ export default function CreateCoordination(props) {
 
   // this should be fetched when clicking the radiobutton for choose existing
   useEffect(() => {
-    GetApi(`https://localhost:5001/api/datasets?PublisherIds=${props.publisherId}`, setDatasets);
-    GetApi('https://localhost:5001/api/categories', setCategories);
-    GetApi('https://localhost:5001/api/tags', setTags);
+    GetApi(`${host}/api/datasets?PublisherIds=${props.publisherId}`, setDatasets);
+    GetApi(`${host}/api/categories`, setCategories);
+    GetApi(`${host}/api/tags`, setTags);
   }, [props]);
 
   return (

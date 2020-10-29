@@ -22,8 +22,10 @@ import GetApi from '../Components/ApiCalls/GetApi';
 export default function Home() {
   const router = useRouter();
 
-  const url = 'https://localhost:5001/api/'
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+  const [url, setUrl] = useState(`${host}/api/datasets`);
   const [urlType, setUrlType] = useState('both');
+
   const sUrl = '?Search=';
   const fUrl = '&PublisherIds=';
   const fcUrl = '&CategoryIds=';
@@ -306,7 +308,6 @@ export default function Home() {
                 <MenuItem value="both">Alle</MenuItem>
                 <MenuItem value="datasets">Dataset</MenuItem>
                 <MenuItem value="coordinations">Samordning</MenuItem>
-
               </Select>
             </FormControl>
           </div>
