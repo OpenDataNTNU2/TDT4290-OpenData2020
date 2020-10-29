@@ -25,7 +25,7 @@ public class CategoryService : ICategoryService
     public async Task<IEnumerable<Category>> ListAsync()
     {
         var categories = await _cache.GetOrCreateAsync(CacheKeys.CategoryList, (entry) => {
-            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1);
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
             return _categoryRepository.ListAsync();
         });
         return categories;
