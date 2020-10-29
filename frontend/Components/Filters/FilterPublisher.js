@@ -47,9 +47,9 @@ export default function FilterPublisher(props) {
     .slice(0, showItems)
     .map((pub) => (
       <FormControlLabel
-        key={pub[1]}
-        control={<Checkbox value={pub[1]} onChange={handleChange} name={pub[0]} />}
-        label={`${pub[0]} (${pub[4]})`}
+        key={pub.id}
+        control={<Checkbox value={pub.id} onChange={handleChange} name={pub.name} />}
+        label={`${pub.name} (${pub.count})`}
       />
     ));
 
@@ -82,14 +82,24 @@ export function mapResponseToPublishers(res, type) {
   const pubs = [];
   for (let i = 0; i < res.length; i += 1) {
     let length;
-    if (type === 'both') {
-      length = res[i].datasets.length + res[i].coordinations.length
+    switch (type) {
+      case 'datasets':
+        length = res[i].datasets.length;
+        break;
+      case 'coordinations':
+        length = res[i].coordinations.length;
+        break;
+      case 'both':
+      default:
+        length = res[i].datasets.length + res[i].coordinations.length;
     }
-    else {
-      length = type === 'datasets' ? res[i].datasets.length : res[i].coordinations.length
+    if (length > 0) {
+      pubs.push({
+        name: res[i].name.split(' ')[0],
+        id: res[i].id,
+        count: length,
+      });
     }
-    // const length = res[i].datasets.length > res[i].coordinations.length ? res[i].datasets.length : res[i].coordinations.length
-    length > 0 ? pubs.push([res[i].name.split(' ')[0], res[i].id, false, i, length]) : null; // are the 'false' and 'i' properties used anywhere?
   }
   return pubs;
 }
