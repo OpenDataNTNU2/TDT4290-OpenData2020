@@ -15,11 +15,11 @@ test('Publisher mapping function handles single dataset publisher correctly', ()
     },
   ];
 
-  const mapped = mapResponseToPublishers(testResponse, true);
+  const mapped = mapResponseToPublishers(testResponse, 'datasets');
   expect(mapped.length).toBe(1);
-  expect(mapped[0][0]).toBe('Eksempel'); // prop 0 is name
-  expect(mapped[0][1]).toBe(101); // prop 1 is id
-  expect(mapped[0][4]).toBe(2); // prop 4 is length
+  expect(mapped[0].name).toBe('Eksempel'); // prop 0 is name
+  expect(mapped[0].id).toBe(101); // prop 1 is id
+  expect(mapped[0].count).toBe(2); // prop 4 is length
 });
 
 test('Publisher mapping function handles single coordination publisher correctly', () => {
@@ -32,9 +32,26 @@ test('Publisher mapping function handles single coordination publisher correctly
     },
   ];
 
-  const mapped = mapResponseToPublishers(testResponse, false);
+  const mapped = mapResponseToPublishers(testResponse, 'coordinations');
   expect(mapped.length).toBe(1);
-  expect(mapped[0][0]).toBe('Eksempel');
-  expect(mapped[0][1]).toBe(101);
-  expect(mapped[0][4]).toBe(1);
+  expect(mapped[0].name).toBe('Eksempel');
+  expect(mapped[0].id).toBe(101);
+  expect(mapped[0].count).toBe(1);
+});
+
+test('Publisher mapping function handles single mixed publisher correctly', () => {
+  const testResponse = [
+    {
+      name: 'Eksempel',
+      id: 101,
+      datasets: [100, 101],
+      coordinations: [105],
+    },
+  ];
+
+  const mapped = mapResponseToPublishers(testResponse, 'both');
+  expect(mapped.length).toBe(1);
+  expect(mapped[0].name).toBe('Eksempel');
+  expect(mapped[0].id).toBe(101);
+  expect(mapped[0].count).toBe(3);
 });
