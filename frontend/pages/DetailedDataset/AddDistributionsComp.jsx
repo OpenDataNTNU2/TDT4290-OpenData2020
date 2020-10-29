@@ -4,6 +4,8 @@ import Distribution from '../../Components/Forms/Distribution';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
 const AddDistributionsComp = (props) => {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [editBool, setEditBool] = useState(false);
   const [distTitle, setDistTitle] = useState(['']);
   const [distUri, setDistUri] = useState(['']);
@@ -24,7 +26,7 @@ const AddDistributionsComp = (props) => {
         datasetId: props.dataId,
       };
       try {
-        PostApi('https://localhost:5001/api/distributions', data2, updateDataset);
+        PostApi(`${host}/api/distributions`, data2, updateDataset);
       } catch (_) {
         alert('failed to post dataset');
       }

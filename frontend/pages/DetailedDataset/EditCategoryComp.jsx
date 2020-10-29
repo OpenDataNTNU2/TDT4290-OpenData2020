@@ -8,6 +8,8 @@ import GetApi from '../../Components/ApiCalls/GetApi';
 import styles from '../../styles/Detailed.module.css';
 
 const EditCategoryComp = (props) => {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [editBool, setEditBool] = useState(false);
   const [editText, setEditText] = useState(props.value);
 
@@ -15,7 +17,7 @@ const EditCategoryComp = (props) => {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    GetApi('https://localhost:5001/api/categories', setCategories);
+    GetApi(`${host}/api/categories`, setCategories);
   }, [props]);
 
   const updateDataset = () => {

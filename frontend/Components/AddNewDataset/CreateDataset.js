@@ -25,6 +25,8 @@ import GetApi from '../ApiCalls/GetApi';
 import PostApi from '../ApiCalls/PostApi';
 
 export default function CreateDataset(props) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   // variables/states for "main data", will add more here
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -109,7 +111,7 @@ export default function CreateDataset(props) {
         datasetId: dataId,
       };
       try {
-        PostApi('https://localhost:5001/api/distributions', data2, postDistributions);
+        PostApi(`${host}/api/distributions`, data2, postDistributions);
       } catch (_) {
         alert('failed to post dataset');
       }
@@ -125,7 +127,7 @@ export default function CreateDataset(props) {
   };
 
   const addTags = () => {
-    newTags.map((tag) => PostApi('https://localhost:5001/api/tags', { name: tag.name }, postDistributions));
+    newTags.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }, postDistributions));
   };
 
   // posts data into the api with datasets
@@ -134,7 +136,7 @@ export default function CreateDataset(props) {
     console.log(`data: ${data}`);
     console.log(data);
     if (checkRequiredVariables()) {
-      PostApi('https://localhost:5001/api/datasets', data, addDistributions);
+      PostApi(`${host}/api/datasets`, data, addDistributions);
       addTags();
     } else {
       setFeedbackRequired(true);
@@ -155,9 +157,9 @@ export default function CreateDataset(props) {
 
   // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
   useEffect(() => {
-    GetApi('https://localhost:5001/api/tags', setTags);
-    GetApi('https://localhost:5001/api/categories', setCategories);
-    GetApi('https://localhost:5001/api/coordinations', setCoordinations);
+    GetApi(`${host}/api/tags`, setTags);
+    GetApi(`${host}/api/categories`, setCategories);
+    GetApi(`${host}/api/coordinations`, setCoordinations);
   }, [props.prevLoggedIn]);
 
   function submitApplicationToJoinCoordination(id) {
@@ -166,11 +168,11 @@ export default function CreateDataset(props) {
       coordinationId: selectedCoordination,
       datasetId: id,
     };
-    PostApi('https://localhost:5001/api/applications', d, successfullySentApplication);
+    PostApi(`${host}/api/applications`, d, successfullySentApplication);
   }
 
   function successfullySentApplication() {
-    console.log('application sent to: https://localhost:5001/api/applications');
+    console.log(`application sent to: ${host}/api/applications`);
     setSelectedCoordination('');
     setJoinCoordinationReason('');
   }

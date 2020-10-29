@@ -11,6 +11,8 @@ export default function Login({
   prevPublisherId = '-1',
   prevUserId = '-1',
 }) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
   // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
 
@@ -51,7 +53,7 @@ export default function Login({
       username,
     };
     try {
-      await fetch(`https://localhost:5001/api/users/${username}`, {
+      await fetch(`${host}/api/users/${username}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

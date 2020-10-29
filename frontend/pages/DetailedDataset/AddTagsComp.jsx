@@ -9,6 +9,8 @@ import PostApi from '../../Components/ApiCalls/PostApi';
 import styles from '../../styles/Detailed.module.css';
 
 const AddTagsComp = (props) => {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [editBool, setEditBool] = useState(false);
   const [editText] = useState(props.value ? props.value : []);
 
@@ -18,7 +20,7 @@ const AddTagsComp = (props) => {
   const [newTags, setNewTags] = useState([]);
 
   useEffect(() => {
-    GetApi('https://localhost:5001/api/tags', setTags);
+    GetApi(`${host}/api/tags`, setTags);
   }, [props]);
 
   const submitTags = () => {
@@ -31,7 +33,7 @@ const AddTagsComp = (props) => {
   };
 
   function addNewTags() {
-    newTags?.map((tag) => PostApi('https://localhost:5001/api/tags', { name: tag.name }, postTagsInfo));
+    newTags?.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }, postTagsInfo));
   }
 
   function postTagsInfo() {

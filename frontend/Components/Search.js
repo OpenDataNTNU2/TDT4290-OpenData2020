@@ -27,6 +27,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Search(props) {
   const [query, setQuery] = useState('');
+  // La stå! Blir brukt til å cancle precious søke requests.
+  const [searchQuery, setSearchQuery] = useState({});
   const classes = useStyles();
 
   // getDatasets(page, false, searchUrl, sortType, setDatasets, 'datasets')
@@ -42,7 +44,14 @@ export default function Search(props) {
     setQuery(value);
 
     const search = _.debounce(sendQuery, 500);
-
+    // La stå! Blir brukt til å cancle precious søke requests.
+    setSearchQuery((prevSearch) => {
+      if (prevSearch.cancel) {
+        prevSearch.cancel();
+      }
+      return search;
+    });
+    console.log(searchQuery);
     search(value);
   };
 

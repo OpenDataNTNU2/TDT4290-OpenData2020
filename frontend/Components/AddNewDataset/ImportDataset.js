@@ -10,6 +10,8 @@ import Input from '../Forms/Input';
 
 // TODO: Fikse feedback hvis en ugyldig link blir benyttet, ellers funker det :)
 export default function CreateDataset() {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [importUrl, setImportUrl] = useState('');
   const [numberOfDatasets, setNumberOfDatasets] = useState(10);
   const [open, setOpen] = useState(false);
@@ -18,26 +20,18 @@ export default function CreateDataset() {
   const [selectedCategory, setSelectedCategory] = useState('');
 
   useEffect(() => {
-    GetApi('https://localhost:5001/api/categories', setCategories);
+    GetApi(`${host}/api/categories`, setCategories);
   }, []);
 
   const importDataset = () => {
     const category = selectedCategory ? `&categoryId=${selectedCategory}` : '';
-    PostApi(
-      `https://localhost:5001/api/datasets/import?url=${importUrl}${category}`,
-      { url: importUrl },
-      importPostReq
-    );
+    PostApi(`${host}/api/datasets/import?url=${importUrl}${category}`, { url: importUrl }, importPostReq);
   };
   const populateSite = () => {
-    PostApi(
-      `https://localhost:5001/api/datasets/populate?numberOfDatasets=${numberOfDatasets}`,
-      { numberOfDatasets },
-      importPostReq
-    );
+    PostApi(`${host}/api/datasets/populate?numberOfDatasets=${numberOfDatasets}`, { numberOfDatasets }, importPostReq);
   };
   const importCategories = () => {
-    PostApi(`https://localhost:5001/api/categories/import?url=${importUrl}`, { url: importUrl }, importPostReq);
+    PostApi(`${host}/api/categories/import?url=${importUrl}`, { url: importUrl }, importPostReq);
   };
 
   function importPostReq() {

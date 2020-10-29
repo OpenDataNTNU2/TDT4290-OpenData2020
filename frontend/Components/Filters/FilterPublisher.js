@@ -9,6 +9,8 @@ import GetApi from '../ApiCalls/GetApi';
 import styles from '../../styles/Filters.module.css';
 
 export default function FilterPublisher(props) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [addedFilters, setAddedFilters] = useState([]);
   const [publishers, setPublishers] = useState([]);
   const [showItems, setShowItems] = useState(5);
@@ -33,7 +35,7 @@ export default function FilterPublisher(props) {
   };
 
   useEffect(() => {
-    GetApi('https://localhost:5001/api/publishers', setRes);
+    GetApi(`${host}/api/publishers`, setRes);
 
     const pubs = mapResponseToPublishers(res, props.type);
 

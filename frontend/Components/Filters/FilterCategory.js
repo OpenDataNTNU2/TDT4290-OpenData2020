@@ -12,6 +12,8 @@ import styles from '../../styles/Filters.module.css';
 // NB: de ulike filter funksjonene er veldig like atm, dette blir kanskje endret, mtp at vi skal ha under kategorier og slikt
 // så ikke slå de sammen. Vi tar heller en vurdering på det senere.
 export default function FilterCategory(props) {
+  const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+
   const [addedFilters, setAddedFilters] = useState([]);
   const [categories, setCategories] = useState([]);
   const [showItems, setShowItems] = useState(5);
@@ -38,7 +40,7 @@ export default function FilterCategory(props) {
 
   // fetches the categories and places all the top level categories into a list.
   useEffect(() => {
-    GetApi('https://localhost:5001/api/categories', setRes);
+    GetApi(`${host}/api/categories`, setRes);
     const pub = [];
     for (let i = 0; i < res.length; i += 1) {
       if (res[i].broader === null) pub.push(res[i]);
