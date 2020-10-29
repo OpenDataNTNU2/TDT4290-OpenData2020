@@ -9,6 +9,7 @@ import { PageRender } from '../api/serverSideProps';
 import SubscribeComp from './SubscribeComp';
 import DistributionCard from '../DetailedDataset/DistributionCard';
 import EditTextFieldComp from '../DetailedDataset/EditTextFieldComp';
+import AddTagsComp from '../DetailedDataset/AddTagsComp';
 
 import DatasetCard from '../../Components/DatasetCard';
 import Input from '../../Components/Forms/Input';
@@ -128,10 +129,10 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
             Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )}
         {coordinationData.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
             Kan deles offentlig
@@ -213,6 +214,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           multiline={true}
           staticText="Beskrivelse: "
         />
+        <AddTagsComp
+          value={coordinationData.coordinationTags}
+          styles={styles.attributes}
+          canEdit={userAreOwner}
+          updateDataset={updateCoordination}
+          path="/tagsIds"
+        />
         <p>
           <b>Utgiver av samordning: </b>
           {data.publisher.name}
@@ -222,8 +230,8 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           {coordinationData.datasets.length === 0 ? (
             <i>Ingen deltakere med i samordningen</i>
           ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${dataset.publisher.name}, `)
-          )}
+              coordinationData.datasets.map((dataset) => dataset && `${dataset.publisher.name}, `)
+            )}
         </p>
         <br />
         <p>
@@ -246,10 +254,10 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                 />
               ))
             ) : (
-              <p>
-                <i>Ingen distribusjon i dette datasettet</i>
-              </p>
-            )}
+                <p>
+                  <i>Ingen distribusjon i dette datasettet</i>
+                </p>
+              )}
             <br />
           </div>
         ))}
@@ -283,52 +291,52 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {/* Send forespørsel om å bli med i samordningen */}
       {JSON.parse(prevPublisherId) === null ||
-      parseInt(JSON.parse(prevPublisherId)) === -1 ||
-      parseInt(prevPublisherId) === data.publisher.id ? null : (
-        <Grid style={{ padding: '3% 0 3% 0' }}>
-          <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
-          <p>
-            Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
-            ønsker å være med.
+        parseInt(JSON.parse(prevPublisherId)) === -1 ||
+        parseInt(prevPublisherId) === data.publisher.id ? null : (
+          <Grid style={{ padding: '3% 0 3% 0' }}>
+            <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
+            <p>
+              Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
+              ønsker å være med.
           </p>
-          <br />
-          <Input
-            id="joinCoordinationId"
-            multiline
-            label="Begrunnelse for forespørsel"
-            value={joinCoordinationReason}
-            handleChange={setJoinCoordinationReason}
-          />
-          <br />
-          <br />
-          {datasets.length !== 0 ? (
-            <FormControl variant="outlined" style={{ width: '50vh' }}>
-              <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
-              <Select
-                labelId="requestToJoinCoordinationLabelID"
-                label="Velg dataset"
-                id="requestToJoinCoordinationID"
-                value={selectedDataset}
-                onChange={(event) => setSelectedDataset(event.target.value)}
-              >
-                {Object.values(datasets.items).map(
-                  (dataset) =>
-                    dataset && (
-                      <MenuItem value={dataset.id} key={dataset.id}>
-                        {dataset.title}
-                      </MenuItem>
-                    )
-                )}
-              </Select>
-            </FormControl>
-          ) : null}
-          <br />
-          <br />
-          <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
-            Send Forespørsel
+            <br />
+            <Input
+              id="joinCoordinationId"
+              multiline
+              label="Begrunnelse for forespørsel"
+              value={joinCoordinationReason}
+              handleChange={setJoinCoordinationReason}
+            />
+            <br />
+            <br />
+            {datasets.length !== 0 ? (
+              <FormControl variant="outlined" style={{ width: '50vh' }}>
+                <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
+                <Select
+                  labelId="requestToJoinCoordinationLabelID"
+                  label="Velg dataset"
+                  id="requestToJoinCoordinationID"
+                  value={selectedDataset}
+                  onChange={(event) => setSelectedDataset(event.target.value)}
+                >
+                  {Object.values(datasets.items).map(
+                    (dataset) =>
+                      dataset && (
+                        <MenuItem value={dataset.id} key={dataset.id}>
+                          {dataset.title}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            ) : null}
+            <br />
+            <br />
+            <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
+              Send Forespørsel
           </Button>
-        </Grid>
-      )}
+          </Grid>
+        )}
 
       {/* Forespørsler om å bli med i samordningen */}
       {/* TODO: Nå kan kommuner legge til flere datasett til samme samordning, bør dette endres? */}
@@ -365,20 +373,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                 )
             )
           ) : (
-            <p>Ingen forespørsler</p>
-          )}
+              <p>Ingen forespørsler</p>
+            )}
         </Grid>
       ) : null}
 
       {parseInt(prevPublisherId) === coordinationData.publisher.id && <Divider variant="fullWidth" />}
 
-      <Grid style={{ padding: '3% 0 3% 0' }}>
-        <h1 style={{ fontWeight: 'normal' }}>Søkeord</h1>
-        {coordinationData.coordinationTags.map((tag) => (
-          <p key={tag.id}>{tag.tags.name}, </p>
-        ))}
-        {coordinationData.coordinationTags.length === 0 ? <p>Ingen søkeord lagt til</p> : null}
-      </Grid>
 
       {parseInt(prevPublisherId) !== coordinationData.publisher.id && (
         <Grid style={{ padding: '3% 0 3% 0' }}>
