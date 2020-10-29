@@ -23,7 +23,7 @@ export default function Home() {
   const router = useRouter();
 
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
-  const [url, setUrl] = useState(`${host}/api/datasets`);
+  const [url, setUrl] = useState(`${host}/api/`);
   const [urlType, setUrlType] = useState('both');
 
   const sUrl = '?Search=';
