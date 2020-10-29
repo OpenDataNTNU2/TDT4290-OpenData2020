@@ -35,7 +35,8 @@ namespace Tests
                 new CoordinationRepository(Context),
                 new TagsRepository(Context),
                 new UnitOfWork(Context),
-                new MemoryCache(new MemoryCacheOptions()));
+                new MemoryCache(new MemoryCacheOptions()),
+                new GitlabService(Context));
             ExampleV = new Dataset
             {
                 Id = 104,

@@ -2,7 +2,8 @@ using OpenData.API.Domain.Models;
 using OpenData.External.Gitlab.Models;
 using OpenData.External.Gitlab;
 using System.Threading.Tasks;
-using OpenData.API.Domain.Services;
+using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab.Services.Communication;
 using System.Net.Http;
 
 namespace OpenData.API.Services
@@ -19,11 +20,11 @@ namespace OpenData.API.Services
             _gitlabClient = new GitlabClient(_gitlabProjectConfig, clientFactory);
         }
 
-        public void CreateDatasetProject(Dataset dataset)
+        public Task<GitlabProjectResponse> CreateDatasetProject(Dataset dataset)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.generateDefaultGitlabProject();
             _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
-            _gitlabClient.CreateGitlabProject(gitlabProject);
+            return _gitlabClient.CreateGitlabProject(gitlabProject);
         }
 
         private void _PopulateGitlabProjectWithDataset(GitlabProject gitlabProject, Dataset dataset)

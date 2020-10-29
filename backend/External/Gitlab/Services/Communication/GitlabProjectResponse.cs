@@ -1,16 +1,16 @@
 using OpenData.External.Gitlab.Models;
+using OpenData.API.Domain.Services.Communication;
 
-
-namespace OpenData.API.Domain.Services.Communication
+namespace OpenData.External.Gitlab.Services.Communication
 {
-    public class GitlabResponse : BaseResponse<GitlabProject>
+    public class GitlabProjectResponse : BaseResponse<GitlabProject>
     {
         /// <summary>
         /// Creates a success response.
         /// </summary>
         /// <param name="gitlabProject">Saved publisher.</param>
         /// <returns>Response.</returns>
-        public GitlabResponse(GitlabProject gitlabProject) : base(gitlabProject)
+        public GitlabProjectResponse(GitlabProject gitlabProject) : base(gitlabProject)
         { }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace OpenData.API.Domain.Services.Communication
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Response.</returns>
-        public GitlabResponse(string message) : base(message)
+        public GitlabProjectResponse(string message) : base(message)
         { }
     }
 }

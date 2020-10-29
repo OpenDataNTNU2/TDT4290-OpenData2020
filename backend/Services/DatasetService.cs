@@ -8,6 +8,8 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab.Services.Communication;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace OpenData.API.Services
@@ -79,16 +81,29 @@ namespace OpenData.API.Services
                 }
                 dataset.DatePublished = DateTime.Now;
                 dataset.DateLastUpdated = DateTime.Now;
-                await _datasetRepository.AddAsync(dataset);
-                await _unitOfWork.CompleteAsync();
-                dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
-                _datasetRepository.Update(dataset);
 
-                await addTags(dataset);
+                var createDatasetTask = Task.Run(async() => {
+                    await _datasetRepository.AddAsync(dataset);
+                    await _unitOfWork.CompleteAsync();
+                    await addTags(dataset);
+                    dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
+                    _datasetRepository.Update(dataset);
+                });
 
-                _gitlabService.CreateDatasetProject(dataset);
+                // NOTE: TODO: her venter jeg på at datasettet skal opprettes uten feil,
+                // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
+                // i gitlab.
+                // Dette kan kanskje gjøres smoothere.
+                var gitlabProjectResponse = await await createDatasetTask.ContinueWith((antecedent) => {
+                    return _gitlabService.CreateDatasetProject(dataset);
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
-                return new DatasetResponse(dataset);
+                if (gitlabProjectResponse.Success) {
+                    // TODO: dataset.gitlab_link = gitlabProject.path elns
+                    return new DatasetResponse(dataset);
+                } else {
+                    return new DatasetResponse(gitlabProjectResponse.Message);
+                }
             }
             catch (Exception ex)
             {

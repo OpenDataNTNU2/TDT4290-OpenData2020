@@ -1,6 +1,8 @@
 using OpenData.External.Gitlab.Models;
+using OpenData.External.Gitlab.Services.Communication;
 using System.Net.Http;
 using System;
+using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text;
 
@@ -28,7 +30,7 @@ namespace OpenData.External.Gitlab
             _jsonSerializerOptions.IgnoreNullValues = true;
         }
 
-        public async void CreateGitlabProject(GitlabProject gitlabProject)
+        public async Task<GitlabProjectResponse> CreateGitlabProject(GitlabProject gitlabProject)
         {
             // endpoint: POST /projects/user/:user_id,
             var endpoint = "projects/user/" + _gitlabProjectConfig.open_data_user_id;
@@ -38,16 +40,17 @@ namespace OpenData.External.Gitlab
                     Encoding.UTF8,
                     "application/json");
 
-            Console.WriteLine(gitlabProjectJson);
-
-            using var httpResponse =
-                await _gitlabApiHttpClient.PostAsync(endpoint, gitlabProjectJson);
-            
-           var content = await httpResponse.Content.ReadAsStringAsync();
-           
-           Console.WriteLine(content);
-
-            httpResponse.EnsureSuccessStatusCode();
+            try {
+                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabProjectJson);
+                var content = await httpResponse.Content.ReadAsStringAsync();
+                if (httpResponse.IsSuccessStatusCode) {
+                    return new GitlabProjectResponse(JsonSerializer.Deserialize<GitlabProject>(content));
+                } else {
+                    return new GitlabProjectResponse(content);
+                }
+            } catch (HttpRequestException e) {
+                return new GitlabProjectResponse(e.Message);
+            }
         }
     }
 }

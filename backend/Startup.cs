@@ -12,6 +12,7 @@ using OpenData.API.Extensions;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using OpenData.External.Gitlab.Services;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
