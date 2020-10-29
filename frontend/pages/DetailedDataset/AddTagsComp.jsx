@@ -6,6 +6,8 @@ import SelectTags from '../../Components/Forms/SelectTags';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 
+import styles from '../../styles/Detailed.module.css';
+
 const AddTagsComp = (props) => {
   const [editBool, setEditBool] = useState(false);
   const [editText] = useState(props.value ? props.value : []);
@@ -56,7 +58,7 @@ const AddTagsComp = (props) => {
       <p className={props.styles}>
         <span>Søkeord: </span>
         {editText.map((tag) => tag && `${tag.tags.name}, `)} {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
-        <EditIcon fontSize="small" onClick={() => setEditBool(true)} />
+        <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
       </p>
     )
   ) : (
