@@ -38,7 +38,7 @@ export default function NotificationCard(props) {
       <hr />
       {props.notifications && props.notifications.length > 0 ? (
         props.notifications
-          .sort((a, b) => (new Date(a).getTime() > new Date(b).getTime() ? 1 : -1))
+          .sort((a, b) => (a.timeOfCreation > b.timeOfCreation ? -1 : 1))
           .map((notification) => (
             <div
               onClick={() => {
