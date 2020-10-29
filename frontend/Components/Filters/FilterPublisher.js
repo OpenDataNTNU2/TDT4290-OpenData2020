@@ -81,27 +81,27 @@ export function mapResponseToPublishers(res, type) {
   // extracted from line 39 in useEffect
   // this is a transformation of data from the server, and can be unit tested
   // ideally, all transformations are extracted into functions, so they can be tested
-  const pubs = [];
-  for (let i = 0; i < res.length; i += 1) {
-    let length;
-    switch (type) {
-      case 'datasets':
-        length = res[i].datasets.length;
-        break;
-      case 'coordinations':
-        length = res[i].coordinations.length;
-        break;
-      case 'both':
-      default:
-        length = res[i].datasets.length + res[i].coordinations.length;
-    }
-    if (length > 0) {
-      pubs.push({
-        name: res[i].name.split(' ')[0],
-        id: res[i].id,
-        count: length,
-      });
-    }
-  }
+  if (JSON.stringify(res) === '{}') return [];
+  let pubs = res
+    .map((entry) => {
+      let count;
+      switch (type) {
+        case 'datasets':
+          count = entry.datasets.length;
+          break;
+        case 'coordinations':
+          count = entry.coordinations.length;
+          break;
+        case 'both':
+        default:
+          count = entry.datasets.length + entry.coordinations.length;
+      }
+      return {
+        name: entry.name.split(' ')[0],
+        id: entry.id,
+        count: count,
+      };
+    })
+    .filter((entry) => entry.count > 0);
   return pubs;
 }
