@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
 import DistributionCard from './DistributionCard';
+import UseCaseCard from './UseCaseCard';
 import SubscribeComp from './SubscribeComp';
 
 import { PageRender } from '../api/serverSideProps';
@@ -299,6 +300,21 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <span>
           <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
         </span>
+
+        <br />
+        <Divider variant="fullWidth" />
+        <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
+        {Object.values(data.subscriptions).length == 0 ? (
+          <>
+            Dette datasettet har ingen usecase enda. <br />
+          </>
+        ) : (
+          Object.values(data.subscriptions).map((sub) => {
+            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+          })
+        )}
+        <br />
+        <Divider variant="fullWidth" />
 
         {/* Request dataset */}
         <span>
