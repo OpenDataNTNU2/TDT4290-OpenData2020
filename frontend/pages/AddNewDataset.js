@@ -1,4 +1,4 @@
-import { Grid, AppBar, Tab } from '@material-ui/core';
+import { AppBar, Tab } from '@material-ui/core';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { useState } from 'react';
@@ -17,18 +17,20 @@ export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
   };
 
   return (
-    <Grid>
+    <div>
       {JSON.parse(prevPublisherId) <= 0 ? (
         <div>
           <p>No access, please log into a municipality user</p>
         </div>
       ) : (
-        <Grid
-          container
-          spacing={1}
-          direction="column"
-          alignItems="center"
-          style={{ minHeight: '70vh', minWidth: '60vh', marginTop: '5vh' }}
+        <div
+          style={{
+            minHeight: '70vh',
+            margin: '50px 0',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }}
         >
           <div>
             <TabContext value={page}>
@@ -53,9 +55,9 @@ export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
               </TabPanel>
             </TabContext>
           </div>
-        </Grid>
+        </div>
       )}
-    </Grid>
+    </div>
   );
 }
 
