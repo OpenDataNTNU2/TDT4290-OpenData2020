@@ -48,12 +48,14 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   useEffect(() => {
-    if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
-      GetApi(`${host}/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
-    }
-    GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+    if (prevLoggedUsername !== 'false') {
+      if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
+        GetApi(`${host}/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
+      }
+      GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
 
-    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+      if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+    }
   }, [data, subscribed]);
 
   function checkUserSubscription(response) {
@@ -193,9 +195,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
               multiline={true}
               staticText="Status: "
             />
-            <Button variant="contained" onClick={() => updateCoordination(false, '/underCoordination')}>
-              Sett status til samordnet
-            </Button>
+            {userAreOwner && (
+              <Button variant="contained" onClick={() => updateCoordination(false, '/underCoordination')}>
+                Sett status til samordnet
+              </Button>
+            )}
           </div>
         ) : null}
       </Grid>
@@ -394,7 +398,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {parseInt(prevPublisherId) === coordinationData.publisher.id && <Divider variant="fullWidth" />}
 
-      {parseInt(prevPublisherId) !== coordinationData.publisher.id && (
+      {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== coordinationData.publisher.id && (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <SubscribeComp onClick={subscribe} subscribed={subscribed} />
         </Grid>

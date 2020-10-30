@@ -165,8 +165,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   }
 
   useEffect(() => {
-    GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
-    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+    if (prevLoggedUsername !== 'false') {
+      GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+      if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+    }
   }, [data, subscribed]);
 
   function checkUserSubscription(response) {
@@ -323,7 +325,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           {requestButton}
         </span>
 
-        {parseInt(prevPublisherId) !== data.publisher.id && (
+        {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
           <span>
             <SubscribeComp onClick={subscribe} subscribed={subscribed} />
           </span>
