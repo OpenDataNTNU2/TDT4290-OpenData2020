@@ -1,19 +1,23 @@
 import { Divider, Typography } from '@material-ui/core';
 import { PageRender } from './api/serverSideProps';
+import * as content from '../utils/About.json';
 
 export default function About() {
-  const om = 'Om prosjektet';
   return (
     <div
       style={{
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
-        margin: '50px 20vw',
+        margin: '3% 20vw',
       }}
     >
-      <Typography variant="h3">{om}</Typography>
-      <Divider />
+      <Typography variant="h4">{content.title}</Typography>
+      <Divider style={{ marginTop: '1%', marginBottom: '2%' }} />
+      <Typography paragraph>{content.us}</Typography>
+      <Typography paragraph>{content.content}</Typography>
+      <Typography>
+        <a href="https://xn--sampne-kua.no/om/">{content.link}</a>
+      </Typography>
     </div>
   );
 }
