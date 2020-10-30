@@ -43,6 +43,7 @@ export default function Header({
     <div className={styles.header}>
       <div className={styles.tabContainer}>
         <Tabs value={value} onChange={handleChange} centered>
+          <Tab disableFocusRipple disableRipple label="Om prosjektet" value="/About" />
           <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
           {JSON.parse(prevPublisherId) <= 99 ? null : (
             <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />
