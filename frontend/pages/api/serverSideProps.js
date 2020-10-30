@@ -21,9 +21,9 @@ export async function PageRender(page, context) {
       props: {
         data,
         uri,
-        prevPublisherId: cookies.prevPublisherId,
-        prevUserId: cookies.prevUserId,
-        prevLoggedUsername: cookies.prevLoggedUsername,
+        prevPublisherId: cookies.prevPublisherId ? cookies.prevPublisherId : '-1',
+        prevUserId: cookies.prevUserId ? cookies.prevUserId : '-1',
+        prevLoggedUsername: cookies.prevLoggedUsername ? cookies.prevLoggedUsername : 'false',
       },
     };
   }

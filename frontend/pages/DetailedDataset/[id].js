@@ -134,10 +134,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             Samordnet
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-            Ikke samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+              Ikke samordnet
+            </div>
+          )}
       </div>
     );
   };
@@ -164,8 +164,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   }
 
   useEffect(() => {
-    GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
-    if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+    if (prevLoggedUsername !== 'false') {
+      GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
+      if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
+    }
+
   }, [data, subscribed]);
 
   function checkUserSubscription(response) {
@@ -309,10 +312,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             Dette datasettet har ingen usecase enda. <br />
           </>
         ) : (
-          Object.values(data.subscriptions).map((sub) => {
-            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-          })
-        )}
+            Object.values(data.subscriptions).map((sub) => {
+              return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+            })
+          )}
         <br />
         <Divider variant="fullWidth" />
 
@@ -322,7 +325,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           {requestButton}
         </span>
 
-        {parseInt(prevPublisherId) !== data.publisher.id && (
+        {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
           <span>
             <SubscribeComp onClick={subscribe} subscribed={subscribed} />
           </span>
