@@ -7,7 +7,7 @@ const UseCaseCard = (props) => {
       variant="elevation"
       elevation={3}
       spacing={2}
-      style={{ backgroundColor: 'white', padding: '1%', marginBottom: '2%' }}
+      style={{ backgroundColor: 'white', padding: '1%', marginBottom: '1%' }}
     >
       <Grid container direction="row" alignItems="stretch">
         <Grid item xs={9}>
@@ -15,7 +15,7 @@ const UseCaseCard = (props) => {
             <b>{props.useCaseDescription}</b>
           </p>
           <Link target="_blank" rel="noopener" color="inherit" href={props.uri}>
-            <b>URL til usecase: </b>
+            <b>Link: </b>
             {props.url}
           </Link>
         </Grid>

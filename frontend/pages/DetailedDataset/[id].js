@@ -302,13 +302,19 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         </span>
 
         <br />
-        <h3 style={{ fontWeight: '600' }}>Dataasettet blir brukt til:</h3>
-        {Object.values(data.subscriptions).length == 0
-          ? 'Dette datasettet har ingen usecase enda.'
-          : Object.values(data.subscriptions).map((sub) => {
-              return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-            })}
+        <Divider variant="fullWidth" />
+        <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
+        {Object.values(data.subscriptions).length == 0 ? (
+          <>
+            Dette datasettet har ingen usecase enda. <br />
+          </>
+        ) : (
+          Object.values(data.subscriptions).map((sub) => {
+            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+          })
+        )}
         <br />
+        <Divider variant="fullWidth" />
 
         {/* Request dataset */}
         <span>

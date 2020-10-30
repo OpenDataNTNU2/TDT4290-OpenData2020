@@ -8,6 +8,7 @@ import { PageRender } from '../api/serverSideProps';
 
 import SubscribeComp from './SubscribeComp';
 import DistributionCard from '../DetailedDataset/DistributionCard';
+import UseCaseCard from '../DetailedDataset/UseCaseCard';
 import EditTextFieldComp from '../DetailedDataset/EditTextFieldComp';
 
 import DatasetCard from '../../Components/DatasetCard';
@@ -45,7 +46,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   useEffect(() => {
-
     if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
       GetApi(`${host}/api/datasets?PublisherIds=${JSON.parse(prevPublisherId)}`, setDatasets);
     }
@@ -280,6 +280,19 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       <Divider variant="fullWidth" />
       <br />
+      <h3 style={{ fontWeight: '600' }}>Samordningen blir brukt til:</h3>
+      {Object.values(coordinationData.subscriptions).length == 0 ? (
+        <>
+          Denne samordningen har ingen usecase enda. <br />
+        </>
+      ) : (
+        Object.values(coordinationData.subscriptions).map((sub) => {
+          return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+        })
+      )}
+
+      <br />
+      <Divider variant="fullWidth" />
 
       {/* Send forespørsel om å bli med i samordningen */}
       {JSON.parse(prevPublisherId) === null ||
