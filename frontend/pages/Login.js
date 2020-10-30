@@ -91,7 +91,7 @@ export default function Login({
 
   // resetter alle statsene når bruker trykker på logg ut
   const handleLogoutClick = () => {
-    setLoggedUsername('');
+    setLoggedUsername(false);
     setUserId('-1');
     setPublisherId('-1');
     setLoggedIn(false);
@@ -111,8 +111,8 @@ export default function Login({
       {loggedIn ? (
         <h2 style={{ fontWeight: 'normal' }}>Logget inn som {loggedUsername}</h2>
       ) : (
-        <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
-      )}
+          <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
+        )}
       {loggedIn ? null : (
         <form noValidate autoComplete="off" style={{ width: '50vh' }}>
           <TextField
@@ -132,10 +132,10 @@ export default function Login({
           Logg ut
         </Button>
       ) : (
-        <Button variant="contained" color="primary" onClick={handleLoginClick}>
-          Logg inn
-        </Button>
-      )}
+          <Button variant="contained" color="primary" onClick={handleLoginClick}>
+            Logg inn
+          </Button>
+        )}
       <br />
 
       {loggedIn ? null : (
