@@ -12,6 +12,7 @@ import PatchApi from '../../Components/ApiCalls/PatchApi';
 import styles from '../../styles/Detailed.module.css';
 import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
+import capitalize from '../../utils/helperFunctions';
 
 import EditTextFieldComp from './EditTextFieldComp';
 import EditPublishedStatusComp from './EditPublishedStatusComp';
@@ -275,7 +276,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
         <p className={styles.attributes}>
           <span>Eier: </span>
-          {data.publisher.name}
+          {capitalize(data.publisher.name)}
           <br />
           <span>Dato publisert: </span>
           {fixDate(data.datePublished)}
@@ -305,9 +306,9 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <Divider variant="fullWidth" />
         <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
         {Object.values(data.subscriptions).length == 0 ? (
-          <>
+          <div>
             Dette datasettet har ingen usecase enda. <br />
-          </>
+          </div>
         ) : (
           Object.values(data.subscriptions).map((sub) => {
             return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
