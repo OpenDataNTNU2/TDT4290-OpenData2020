@@ -144,10 +144,6 @@ export default function Login({
         </Alert>
       )}
       <br />
-      <Alert elevation={1} severity="info">
-        UserId:
-        {userId}
-      </Alert>
 
       <Snackbar open={notEligUsername} autoHideDuration={6000}>
         <Alert elevation={1} severity="error">
