@@ -22,7 +22,7 @@ export default function Header({
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    router.push(newValue);
+    router.push(newValue).then(() => window.scrollTo(0, 0));
   };
 
   const [notifications, setNotifications] = useState([]);

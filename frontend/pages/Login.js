@@ -37,7 +37,7 @@ export default function Login({
 
   // refresh website when loggedIn changes, aka user logs in or out
   useEffect(() => {
-    Router.push('/Login');
+    Router.push('/Login').then(() => window.scrollTo(0, 0));
   }, [loggedIn]);
 
   // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.
