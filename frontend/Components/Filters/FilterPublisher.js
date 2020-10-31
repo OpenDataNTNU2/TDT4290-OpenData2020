@@ -5,6 +5,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 
 import GetApi from '../ApiCalls/GetApi';
+import capitalize from '../../utils/helperFunctions';
 
 import styles from '../../styles/Filters.module.css';
 
@@ -51,7 +52,7 @@ export default function FilterPublisher(props) {
       <FormControlLabel
         key={pub.id}
         control={<Checkbox value={pub.id} onChange={handleChange} name={pub.name} />}
-        label={`${pub.name} (${pub.count})`}
+        label={`${capitalize(pub.name)} (${pub.count})`}
       />
     ));
 

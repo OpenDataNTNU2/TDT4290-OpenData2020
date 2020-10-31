@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Box } from '@material-ui/core/';
 import styles from '../styles/DatasetCard.module.css';
+import capitalize from '../utils/helperFunctions';
 
 export default function DatasetCard({ dataset, onClick, pathName = '' }) {
   let reqCounter;
@@ -89,7 +90,7 @@ export default function DatasetCard({ dataset, onClick, pathName = '' }) {
       <Grid container alignItems="flex-end" wrap="wrap">
         <Grid item xs={9}>
           <h3 className={styles.title}>{dataset.title}</h3>
-          <p className={styles.publisher}>{dataset.publisher.name}</p>
+          <p className={styles.publisher}>{capitalize(dataset.publisher.name)}</p>
           <p className={styles.desc}>{cutString(dataset.description)}</p>
 
           <Grid container direction="row">

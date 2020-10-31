@@ -1,4 +1,4 @@
-import { Tabs, Tab, Chip } from '@material-ui/core';
+import { Tabs, Tab, Chip, Popover } from '@material-ui/core';
 
 import { Face, Notifications, NotificationsActive } from '@material-ui/icons';
 
@@ -22,11 +22,23 @@ export default function Header({
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
-    router.push(newValue);
+    router.push(newValue).then(() => window.scrollTo(0, 0));
   };
 
-  const [toggleShowNotifications, setToggleShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
+
+  // Handle open/close notifications
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const openNotificationCard = Boolean(anchorEl);
 
   useEffect(() => {
     if (prevLoggedIn === 'false') setNotifications([]);
@@ -62,16 +74,16 @@ export default function Header({
           notifications.length > 0 ? (
             <NotificationsActive
               className={styles.notificationBell}
-              color={toggleShowNotifications ? 'action' : 'secondary'}
+              color={openNotificationCard ? 'action' : 'secondary'}
               fontSize="large"
-              onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
+              onClick={handleClick}
             />
           ) : (
             <Notifications
               className={styles.notificationBell}
-              color={toggleShowNotifications ? 'action' : 'inherit'}
+              color={openNotificationCard ? 'action' : 'inherit'}
               fontSize="large"
-              onClick={() => setToggleShowNotifications(!toggleShowNotifications)}
+              onClick={handleClick}
             />
           )
         ) : null}
@@ -80,7 +92,22 @@ export default function Header({
           LOGG {JSON.parse(prevLoggedIn) ? 'UT' : 'INN'}
         </div>
       </div>
-      {toggleShowNotifications ? <NotificationCard notifications={notifications} /> : null}
+      <Popover
+        open={openNotificationCard}
+        anchorEl={anchorEl}
+        onClose={handleClose}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'center',
+        }}
+        style={{ marginTop: '30px' }}
+      >
+        <NotificationCard notifications={notifications} />
+      </Popover>
     </div>
   );
 }
