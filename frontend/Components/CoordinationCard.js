@@ -1,5 +1,6 @@
 import { Grid } from '@material-ui/core/';
 import styles from '../styles/CoordinationCard.module.css';
+import capitalize from '../utils/helperFunctions';
 
 export default function CoordinationCard(props) {
   const cutString = (string) => {
@@ -47,20 +48,17 @@ export default function CoordinationCard(props) {
       <Grid container wrap="wrap">
         <Grid item xs={9}>
           <h3 className={styles.title}>{props.coordination.title}</h3>
-          <p className={styles.publisher}>
-            Utgiver:
-            {props.coordination.publisher.name}
-          </p>
+          <p className={styles.publisher}>Utgiver: {capitalize(props.coordination.publisher.name)}</p>
           <p className={styles.desc}>{cutString(props.coordination.description)}</p>
         </Grid>
         <Grid container direction="row">
           <p>
-            <strong>Deltagende kommuner:</strong>
+            <strong>Deltagende kommuner: </strong>
             {props.coordination.datasets.length !== 0 ? (
-              props.coordination.datasets.map((dataset) => `${dataset.publisher.name}, `)
+              props.coordination.datasets.map((dataset) => `${capitalize(dataset.publisher.name)}, `)
             ) : (
-                <i> Ingen deltagende kommuner</i>
-              )}
+              <i> Ingen deltagende kommuner</i>
+            )}
           </p>
         </Grid>
       </Grid>

@@ -19,6 +19,7 @@ import GetApi from '../../Components/ApiCalls/GetApi';
 import PostApi from '../../Components/ApiCalls/PostApi';
 import PatchApi from '../../Components/ApiCalls/PatchApi';
 import DeleteApi from '../../Components/ApiCalls/DeleteApi';
+import capitalize from '../../utils/helperFunctions';
 
 import styles from '../../styles/Detailed.module.css';
 
@@ -121,7 +122,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   }
 
   const onClick = (path, id) => {
-    router.push(path + id);
+    router.push(path + id).then(() => window.scrollTo(0, 0));
   };
 
   const getChips = () => {
@@ -235,7 +236,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           {coordinationData.datasets.length === 0 ? (
             <i>Ingen deltakere med i samordningen</i>
           ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${dataset.publisher.name}, `)
+            coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
           )}
         </p>
         <br />
@@ -246,7 +247,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
         {coordinationData.datasets.map((dataset) => (
           <div key={dataset.id}>
             <p>
-              {dataset.publisher.name} -{dataset.title}
+              {capitalize(dataset.publisher.name)} -{dataset.title}
             </p>
             {dataset.distributions.length !== 0 ? (
               dataset.distributions.map((dist) => (
@@ -295,9 +296,9 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <br />
       <h3 style={{ fontWeight: '600' }}>Samordningen blir brukt til:</h3>
       {Object.values(coordinationData.subscriptions).length == 0 ? (
-        <>
+        <div>
           Denne samordningen har ingen usecase enda. <br />
-        </>
+        </div>
       ) : (
         Object.values(coordinationData.subscriptions).map((sub) => {
           return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
@@ -403,7 +404,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           <RequestMunicipalityComp coordination={coordinationData} />
         </Grid>
       )}
-
       {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== coordinationData.publisher.id && (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <SubscribeComp onClick={subscribe} subscribed={subscribed} />

@@ -25,9 +25,9 @@ export default function NotificationCard(props) {
 
   function openCatalougeItem(item) {
     if (parseInt(item.datasetId) !== 0) {
-      router.push('/DetailedDataset/' + item.datasetId);
+      router.push('/DetailedDataset/' + item.datasetId).then(() => window.scrollTo(0, 0));
     } else if (parseInt(item.coordinationId) !== 0) {
-      router.push('/DetailedCoordination/' + item.coordinationId);
+      router.push('/DetailedCoordination/' + item.coordinationId).then(() => window.scrollTo(0, 0));
     }
     return;
   }

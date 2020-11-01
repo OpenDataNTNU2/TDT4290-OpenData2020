@@ -11,7 +11,7 @@ export default function Auth(ctx) {
   }
 
   if (!token) {
-    Router.push('/login');
+    Router.push('/login').then(() => window.scrollTo(0, 0));
   }
 
   return token;

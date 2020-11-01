@@ -31,7 +31,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
   }, [prevPublisherId]);
 
   const onClick = (path, id) => {
-    router.push(path + id);
+    router.push(path + id).then(() => window.scrollTo(0, 0));
   };
 
   const getUser = () => {
