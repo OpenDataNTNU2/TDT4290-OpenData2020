@@ -91,7 +91,7 @@ export default function Login({
 
   // resetter alle statsene når bruker trykker på logg ut
   const handleLogoutClick = () => {
-    setLoggedUsername('');
+    setLoggedUsername(false);
     setUserId('-1');
     setPublisherId('-1');
     setLoggedIn(false);
