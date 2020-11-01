@@ -39,6 +39,7 @@ namespace OpenData.API.Controllers
         }
 
         /// <summary> Saves new category </summary>
+        /// <param name="resource">Category data.</param>
         /// <returns> Response of request </returns>
         [HttpPost]
         [ProducesResponseType(typeof(IEnumerable<CategoryResource>), 200)]
@@ -61,6 +62,11 @@ namespace OpenData.API.Controllers
 
         }
 
+        /// <summary>
+        /// Imports a new categories.
+        /// </summary>
+        /// <param name="url">URL to import from.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("import")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]

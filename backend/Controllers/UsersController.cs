@@ -97,6 +97,11 @@ namespace OpenData.API.Controllers
             return Ok(userResource);
         }
 
+        /// <summary>
+        /// Subscribes a user to a dataset og coordination
+        /// </summary>
+        /// <param name="resource">Subscription containing User Id and Dataset/Coordination Id.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("subscribe")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
