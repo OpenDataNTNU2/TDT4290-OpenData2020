@@ -276,7 +276,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           path="/tagsIds"
         />
 
-        <p className={styles.attributes}>
+        <div className={styles.attributes}>
           <span>Eier: </span>
           {capitalize(data.publisher.name)}
           <br />
@@ -294,7 +294,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-        </p>
+        </div>
         <br />
 
         <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
@@ -317,18 +317,18 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           })
         )}
         <br />
-        <Divider variant="fullWidth" />
 
-        {/* Request dataset */}
-        <span>
-          {ifPublished(data.publicationStatus)}
-          {requestButton}
-        </span>
-
+        {/* Request dataset & subscribe only if it is not your dataset */}
         {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
-          <span>
-            <SubscribeComp onClick={subscribe} subscribed={subscribed} />
-          </span>
+          <div>
+            <span>
+              {ifPublished(data.publicationStatus)}
+              {requestButton}
+            </span>
+            <span>
+              <SubscribeComp onClick={subscribe} subscribed={subscribed} />
+            </span>
+          </div>
         )}
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
