@@ -5,20 +5,20 @@ namespace OpenData.External.Gitlab.Models
     public class GitlabProject
     {
         // from https://docs.gitlab.com/ee/api/projects.html#create-project-for-user
-        public int user_id {get; set; } //  	yes 	The user ID of the project owner
+        public int user_id {get; set; } // 	yes 	The user ID of the project owner
         public string name {get; set; } // 	yes 	The name of the new project
         public string path {get; set; } // 	no 	Custom repository name for new project. By default generated based on name
         public int? namespace_id {get; set;} // 	no 	Namespace for the new project (defaults to the current user’s namespace)
         public string description {get; set;} // 	no 	Short project description
-        public bool? issues_enabled {get; set;} //  	no 	(deprecated) Enable issues for this project. Use issues_access_level instead
-        public bool? merge_requests_enabled {get; set;} //  	no 	(deprecated) Enable merge requests for this project. Use merge_requests_access_level instead
-        public bool? jobs_enabled {get; set;} //  	no 	(deprecated) Enable jobs for this project. Use builds_access_level instead
-        public bool? wiki_enabled {get; set;} //  	no 	(deprecated) Enable wiki for this project. Use wiki_access_level instead
+        public bool? issues_enabled {get; set;} // 	no 	(deprecated) Enable issues for this project. Use issues_access_level instead
+        public bool? merge_requests_enabled {get; set;} // 	no 	(deprecated) Enable merge requests for this project. Use merge_requests_access_level instead
+        public bool? jobs_enabled {get; set;} // 	no 	(deprecated) Enable jobs for this project. Use builds_access_level instead
+        public bool? wiki_enabled {get; set;} // 	no 	(deprecated) Enable wiki for this project. Use wiki_access_level instead
         public bool? snippets_enabled {get; set;} // 	no 	(deprecated) Enable snippets for this project. Use snippets_access_level instead
         public string issues_access_level {get; set;} // 	no 	One of disabled, private or enabled
         public string repository_access_level {get; set;} // 	no 	One of disabled, private or enabled
         public string merge_requests_access_level {get; set;} // 	no 	One of disabled, private or enabled
-        public string forking_access_level {get; set;} //  	no 	One of disabled, private or enabled
+        public string forking_access_level {get; set;} // 	no 	One of disabled, private or enabled
         public string builds_access_level {get; set;} // 	no 	One of disabled, private or enabled
         public string wiki_access_level {get; set; } // 	no 	One of disabled, private or enabled
         public string snippets_access_level {get; set; } // 	no 	One of disabled, private or enabled

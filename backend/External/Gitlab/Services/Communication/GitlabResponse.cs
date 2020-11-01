@@ -3,14 +3,14 @@ using OpenData.API.Domain.Services.Communication;
 
 namespace OpenData.External.Gitlab.Services.Communication
 {
-    public class GitlabProjectResponse : BaseResponse<GitlabProject>
+    public class GitlabResponse<T> : BaseResponse<T>
     {
         /// <summary>
         /// Creates a success response.
         /// </summary>
-        /// <param name="gitlabProject">Saved publisher.</param>
+        /// <param name="gitlabObject">Saved gitlab object.</param>
         /// <returns>Response.</returns>
-        public GitlabProjectResponse(GitlabProject gitlabProject) : base(gitlabProject)
+        public GitlabResponse(T gitlabObject) : base(gitlabObject)
         { }
 
         /// <summary>
@@ -18,7 +18,7 @@ namespace OpenData.External.Gitlab.Services.Communication
         /// </summary>
         /// <param name="message">Error message.</param>
         /// <returns>Response.</returns>
-        public GitlabProjectResponse(string message) : base(message)
+        public GitlabResponse(string message) : base(message)
         { }
     }
 }

@@ -7,6 +7,7 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using OpenData.External.Gitlab.Services;
 
 namespace OpenData.API.Services
 {
@@ -15,12 +16,14 @@ namespace OpenData.API.Services
         private readonly IPublisherRepository _publisherRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
+        private readonly IGitlabService _gitlabService;
 
-        public PublisherService(IPublisherRepository publisherRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public PublisherService(IPublisherRepository publisherRepository, IUnitOfWork unitOfWork, IMemoryCache cache, IGitlabService gitlabService)
         {
             _publisherRepository = publisherRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
+            _gitlabService = gitlabService;
         }
 
         public async Task<IEnumerable<Publisher>> ListAsync()
@@ -39,10 +42,23 @@ namespace OpenData.API.Services
         {
             try
             {
-                await _publisherRepository.AddAsync(publisher);
-                await _unitOfWork.CompleteAsync();
+                var createPublisherTask = Task.Run(async() => {
+                    await _publisherRepository.AddAsync(publisher);
+                    await _unitOfWork.CompleteAsync();
+                });
 
-                return new PublisherResponse(publisher);
+                var gitlabGroupResponse = await await createPublisherTask.ContinueWith((antecedent) => {
+                    return _gitlabService.CreateGitlabGroupForPublisher(publisher);
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                if (gitlabGroupResponse.Success) {
+                    // TODO: publisher.gitlab_group_namespace_id = smth
+                    // TODO: publisher.gitlab_group_link = smth
+                    return new PublisherResponse(publisher);
+                } else {
+                    // TODO: hvis opprettelse av gruppe i gitlab feiler bør publisher fjernes fra databasen
+                    return new PublisherResponse(gitlabGroupResponse.Message);
+                }
             }
             catch (Exception ex)
             {

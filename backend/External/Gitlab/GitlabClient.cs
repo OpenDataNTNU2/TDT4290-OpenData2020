@@ -1,5 +1,6 @@
 using OpenData.External.Gitlab.Models;
 using OpenData.External.Gitlab.Services.Communication;
+using OpenData.API.Domain.Services.Communication;
 using System.Net.Http;
 using System;
 using System.Threading.Tasks;
@@ -30,26 +31,37 @@ namespace OpenData.External.Gitlab
             _jsonSerializerOptions.IgnoreNullValues = true;
         }
 
-        public async Task<GitlabProjectResponse> CreateGitlabProject(GitlabProject gitlabProject)
+        public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject)
         {
-            // endpoint: POST /projects/user/:user_id,
+            // api endpoint: POST /projects/user/:user_id
             var endpoint = "projects/user/" + _gitlabProjectConfig.open_data_user_id;
+            return _PostGitlabObject(gitlabProject, endpoint);
+        }
 
-            var gitlabProjectJson = new StringContent(
-                    JsonSerializer.Serialize(gitlabProject, _jsonSerializerOptions),
+        public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup)
+        {
+            // api endpoint: POST /groups
+            var endpoint = "groups";
+            return _PostGitlabObject(gitlabGroup, endpoint);
+        }
+
+        private async Task<GitlabResponse<T>> _PostGitlabObject<T>(T gitlabObject, string endpoint)
+        {
+            var gitlabGroupJson = new StringContent(
+                    JsonSerializer.Serialize(gitlabObject, _jsonSerializerOptions),
                     Encoding.UTF8,
                     "application/json");
 
             try {
-                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabProjectJson);
+                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabGroupJson);
                 var content = await httpResponse.Content.ReadAsStringAsync();
                 if (httpResponse.IsSuccessStatusCode) {
-                    return new GitlabProjectResponse(JsonSerializer.Deserialize<GitlabProject>(content));
+                    return new GitlabResponse<T>(JsonSerializer.Deserialize<T>(content));
                 } else {
-                    return new GitlabProjectResponse(content);
+                    return new GitlabResponse<T>(content);
                 }
             } catch (HttpRequestException e) {
-                return new GitlabProjectResponse(e.Message);
+                return new GitlabResponse<T>(e.Message);
             }
         }
     }

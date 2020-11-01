@@ -9,7 +9,6 @@ using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
 using OpenData.External.Gitlab.Services;
-using OpenData.External.Gitlab.Services.Communication;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace OpenData.API.Services
@@ -102,6 +101,7 @@ namespace OpenData.API.Services
                     // TODO: dataset.gitlab_link = gitlabProject.path elns
                     return new DatasetResponse(dataset);
                 } else {
+                    // TODO: hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
                     return new DatasetResponse(gitlabProjectResponse.Message);
                 }
             }

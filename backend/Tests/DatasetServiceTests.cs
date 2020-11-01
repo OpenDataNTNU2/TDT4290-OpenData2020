@@ -35,8 +35,13 @@ namespace Tests
                 new CoordinationRepository(Context),
                 new TagsRepository(Context),
                 new UnitOfWork(Context),
-                new MemoryCache(new MemoryCacheOptions()),
-                new GitlabService(Context));
+                new MemoryCache(new MemoryCacheOptions()) /*,
+                fuck C# som ikke har anonyme implementasjoner av interfaces (wtf liksom? vi lever i en sivilisert verden, ikke koding anno 1999)
+                og hele dette clusterfucket av dependency injections som er totalt uegnet både på kort og lang sikt ...
+                Til og med singletons - eller gud forby - statiske klassemetoder, hadde vært mer oversiktlig og lettere å implementere enn dette
+                stakkarslige systemet med services som later som om de kan genereres automagisk med dependency injection, men likevel
+                må initialiseres med andre services ... som igjen må initialiseres ...
+                Hva er grunnen til å skrive "objektorientert" igjen??? Ett av verdens største mysterier ... */);
             ExampleV = new Dataset
             {
                 Id = 104,
