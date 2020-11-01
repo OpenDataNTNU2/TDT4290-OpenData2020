@@ -85,7 +85,10 @@ namespace OpenData.API.Services
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 if (gitlabProjectResponse.Success) {
-                    // TODO: noe med oppdatering av coordination.gitlab_link
+                    coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.full_path;
+                    _coordinationRepository.Update(coordination);
+                    await _unitOfWork.CompleteAsync();
                     return new CoordinationResponse(coordination);
                 } else {
                     // TODO: hvis opprettelse av prosjekt i gitlab feiler bør coordination fjernes fra databasen

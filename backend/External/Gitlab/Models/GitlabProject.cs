@@ -5,6 +5,9 @@ namespace OpenData.External.Gitlab.Models
     public class GitlabProject
     {
         // from https://docs.gitlab.com/ee/api/projects.html#create-project-for-user
+        public int? id { get; set; }
+        public string web_url { get; set; }
+        public string full_path { get; set; }
         public int user_id {get; set; } // 	yes 	The user ID of the project owner
         public string name {get; set; } // 	yes 	The name of the new project
         public string path {get; set; } // 	no 	Custom repository name for new project. By default generated based on name

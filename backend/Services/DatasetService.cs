@@ -103,7 +103,7 @@ namespace OpenData.API.Services
                     var dataset = antecedent.Result;
 
                     // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
-                    // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig
+                    // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
                     // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
                     // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
                     if (dataset.Publisher.GitlabGroupNamespaceId == null) {
@@ -125,7 +125,10 @@ namespace OpenData.API.Services
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 if (gitlabProjectResponse.Success) {
-                    // TODO: dataset.gitlab_link = gitlabProject.path elns
+                    dataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                    dataset.GitlabProjectPath = gitlabProjectResponse.Resource.full_path;
+                    _datasetRepository.Update(dataset);
+                    await _unitOfWork.CompleteAsync();
                     return new DatasetResponse(dataset);
                 } else {
                     // TODO: hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
