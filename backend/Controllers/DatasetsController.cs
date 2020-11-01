@@ -33,7 +33,8 @@ namespace OpenData.API.Controllers
         /// <summary>
         /// Lists all datasets.
         /// </summary>
-        /// <returns>List os datasets.</returns>
+        /// <param name="query">Query containing search, filters and page.</param>
+        /// <returns>List of datasets.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(QueryResultResource<DatasetResource>), 200)]
         public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
@@ -83,6 +84,12 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Imports a new dataset.
+        /// </summary>
+        /// <param name="url">URL to import from.</param>
+        /// <param name="categoryId">Category Id to put the Dataset in.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("import")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -99,6 +106,11 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Populates the database with datasets from Fellesdatakatlog, data.norge.no
+        /// </summary>
+        /// <param name="numberOfDatasets">Number of datasets.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("populate")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -133,6 +145,12 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Updates an existing dataset according to an identifier.
+        /// </summary>
+        /// <param name="id">Dataset identifier.</param>
+        /// <param name="patch">What attribute should be changed and the value.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(DatasetResource), 200)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
