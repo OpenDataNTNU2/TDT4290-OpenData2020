@@ -8,6 +8,7 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using OpenData.External.Gitlab.Services;
 using Microsoft.AspNetCore.JsonPatch;
 
 
@@ -21,8 +22,15 @@ namespace OpenData.API.Services
         private readonly ITagsRepository _tagsRepository;
         private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGitlabService _gitlabService;
 
-        public CoordinationService(ICoordinationRepository coordinationRepository, INotificationService notificationService, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
+        public CoordinationService(ICoordinationRepository coordinationRepository,
+                                   INotificationService notificationService,
+                                   IPublisherRepository publisherRepository,
+                                   ICategoryRepository categoryRepository,
+                                   ITagsRepository tagsRepository,
+                                   IUnitOfWork unitOfWork,
+                                   IGitlabService gitlabService)
         {
             _coordinationRepository = coordinationRepository;
             _publisherRepository = publisherRepository;
@@ -30,6 +38,7 @@ namespace OpenData.API.Services
             _tagsRepository = tagsRepository;
             _notificationService = notificationService;
             _unitOfWork = unitOfWork;
+            _gitlabService = gitlabService;
         }
         public async Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query)
         {
@@ -63,19 +72,31 @@ namespace OpenData.API.Services
                 }
                 coordination.DatePublished = DateTime.Now;
                 coordination.DateLastUpdated = DateTime.Now;
-                await _coordinationRepository.AddAsync(coordination);
-                await _unitOfWork.CompleteAsync();
-                
-                await addTags(coordination);
 
-                return new CoordinationResponse(coordination);
+                var createCoordinationTask = Task.Run(async() => {
+                    coordination = await _coordinationRepository.AddAsync(coordination);
+                    await _unitOfWork.CompleteAsync();
+                    await addTags(coordination);
+                    return coordination;
+                });
+
+                var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
+                    return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                if (gitlabProjectResponse.Success) {
+                    // TODO: noe med oppdatering av coordination.gitlab_link
+                    return new CoordinationResponse(coordination);
+                } else {
+                    // TODO: hvis opprettelse av prosjekt i gitlab feiler bør coordination fjernes fra databasen
+                    return new CoordinationResponse(gitlabProjectResponse.Message);
+                }
             }
             catch(Exception ex)
             {
                 return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
             }
         }
-
 
         public async Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination)
         {

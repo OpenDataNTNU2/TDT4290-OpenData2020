@@ -6,15 +6,17 @@ namespace OpenData.External.Gitlab
     {
         public readonly int open_data_user_id;
         public readonly int open_data_namespace_id;
+        public readonly int open_data_coordinations_namespace_id;
         
         public GitlabProjectConfiguration()
         {
             // TODO: hent dette fra config
             open_data_user_id = 5;
             open_data_namespace_id = 7;
+            open_data_coordinations_namespace_id = 9;
         }
 
-        public GitlabProject generateDefaultGitlabProject()
+        public GitlabProject GenerateDefaultGitlabProject()
         {
             GitlabProject gitlabProject = new GitlabProject();
             gitlabProject.user_id = open_data_user_id;
@@ -30,6 +32,13 @@ namespace OpenData.External.Gitlab
             gitlabProject.pages_access_level = "enabled";
             gitlabProject.visibility = "public";
 
+            return gitlabProject;
+        }
+
+        public GitlabProject GenerateDefaultCoordinationGitlabProject()
+        {
+            GitlabProject gitlabProject = GenerateDefaultGitlabProject();
+            gitlabProject.namespace_id = open_data_coordinations_namespace_id;
             return gitlabProject;
         }
     }

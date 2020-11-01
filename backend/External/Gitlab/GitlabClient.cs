@@ -13,7 +13,6 @@ namespace OpenData.External.Gitlab
     {
         private readonly HttpClient _gitlabApiHttpClient;
         private readonly GitlabProjectConfiguration _gitlabProjectConfig;
-
         private readonly JsonSerializerOptions _jsonSerializerOptions;
         public GitlabClient(GitlabProjectConfiguration gitlabProjectConfiguration, IHttpClientFactory httpClientFactory)
         {
@@ -68,4 +67,3 @@ namespace OpenData.External.Gitlab
         }
     }
 }
-

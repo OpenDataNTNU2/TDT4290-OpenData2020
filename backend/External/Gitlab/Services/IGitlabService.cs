@@ -9,5 +9,6 @@ namespace OpenData.External.Gitlab.Services
     {
          Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset);
          Task<GitlabResponse<GitlabGroup>> CreateGitlabGroupForPublisher(Publisher publisher);
+         Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination);
     }
 }

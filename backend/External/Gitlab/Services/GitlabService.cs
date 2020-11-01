@@ -23,13 +23,7 @@ namespace OpenData.External.Gitlab.Services
 
         public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
         {
-            GitlabProject gitlabProject = _gitlabProjectConfig.generateDefaultGitlabProject();
-            /*if (dataset.Publisher.GitlabGroupNamespaceId.HasValue) {
-                gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
-            } else {
-                var gitlabResponse = await CreateGitlabGroupForPublisher(dataset.Publisher);
-            }*/
-
+            GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
             _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
             return _gitlabClient.CreateGitlabProject(gitlabProject);
         }
@@ -39,6 +33,14 @@ namespace OpenData.External.Gitlab.Services
             GitlabGroup gitlabGroup = _gitlabGroupConfig.generateDefaultGitlabGroup();
             _PopulateGitlabGroupWithPublisherInformation(gitlabGroup, publisher);
             return _gitlabClient.CreateGitlabGroup(gitlabGroup);
+        }
+
+        public Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
+        {
+            GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultCoordinationGitlabProject();
+            gitlabProject.name = coordination.Title;
+            gitlabProject.description = coordination.Description;
+            return _gitlabClient.CreateGitlabProject(gitlabProject);
         }
 
         private void _PopulateGitlabProjectWithDataset(GitlabProject gitlabProject, Dataset dataset)
