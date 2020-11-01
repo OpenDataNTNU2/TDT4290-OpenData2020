@@ -8,7 +8,7 @@ namespace OpenData.API.Domain.Repositories
     public interface IDatasetRepository
     {
         Task<QueryResult<Dataset>> ListAsync(DatasetQuery query);
-        Task AddAsync(Dataset dataset);
+        Task<Dataset> AddAsync(Dataset dataset);
         Task<Dataset> FindByIdAsync(int id);
         void Update(Dataset dataset);
         void Remove(Dataset dataset);

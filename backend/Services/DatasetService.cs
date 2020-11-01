@@ -9,6 +9,8 @@ using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
 using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab.Services.Communication;
+using OpenData.External.Gitlab.Models;
 using Microsoft.AspNetCore.JsonPatch;
 
 namespace OpenData.API.Services
@@ -82,19 +84,44 @@ namespace OpenData.API.Services
                 dataset.DateLastUpdated = DateTime.Now;
 
                 var createDatasetTask = Task.Run(async() => {
-                    await _datasetRepository.AddAsync(dataset);
-                    await _unitOfWork.CompleteAsync();
+                    dataset = await _datasetRepository.AddAsync(dataset);
                     await addTags(dataset);
+                    // NOTE: TODO: (Digresjon) dette må da kunne gjøres på en annen måte?
+                    // Både med tanke på host, men også id.
+                    // Dette bør være en del av resource men ikke selve datamodellen.
                     dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
                     _datasetRepository.Update(dataset);
+                    await _unitOfWork.CompleteAsync();
+                    return dataset;
                 });
 
                 // NOTE: TODO: her venter jeg på at datasettet skal opprettes uten feil,
                 // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
                 // i gitlab.
                 // Dette kan kanskje gjøres smoothere.
-                var gitlabProjectResponse = await await createDatasetTask.ContinueWith((antecedent) => {
-                    return _gitlabService.CreateDatasetProject(dataset);
+                var gitlabProjectResponse = await await createDatasetTask.ContinueWith(async(antecedent) => {
+                    var dataset = antecedent.Result;
+
+                    // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
+                    // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig
+                    // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
+                    // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
+                    if (dataset.Publisher.GitlabGroupNamespaceId == null) {
+                        var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(dataset.Publisher);
+                        if (gitlabGroupResponse.Success) {
+                            dataset.Publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                            dataset.Publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+                            _publisherRepository.Update(dataset.Publisher);
+                            await _unitOfWork.CompleteAsync();
+                        } else {
+                            // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
+                            // typisk skjer dette hvis det allerede eksisterer en gruppe i gitlab for publisher,
+                            // men dette er ikke reflektert i databasen.
+                            return new GitlabResponse<GitlabProject>(gitlabGroupResponse.Message + " ======> Noe har gått veldig galt med sære ting: Nei, vil ikke (Erna Solberg, 2018)");
+                        }
+                    }
+
+                    return await _gitlabService.CreateDatasetProject(dataset);
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 if (gitlabProjectResponse.Success) {

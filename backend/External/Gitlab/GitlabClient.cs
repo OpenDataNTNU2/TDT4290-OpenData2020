@@ -47,14 +47,16 @@ namespace OpenData.External.Gitlab
 
         private async Task<GitlabResponse<T>> _PostGitlabObject<T>(T gitlabObject, string endpoint)
         {
-            var gitlabGroupJson = new StringContent(
+            var gitlabObjectJson = new StringContent(
                     JsonSerializer.Serialize(gitlabObject, _jsonSerializerOptions),
                     Encoding.UTF8,
                     "application/json");
 
             try {
-                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabGroupJson);
+                // Console.WriteLine("\n" + (await gitlabObjectJson.ReadAsStringAsync()) + "\n");
+                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabObjectJson);
                 var content = await httpResponse.Content.ReadAsStringAsync();
+                // Console.WriteLine("\n" + content + "\n");
                 if (httpResponse.IsSuccessStatusCode) {
                     return new GitlabResponse<T>(JsonSerializer.Deserialize<T>(content));
                 } else {

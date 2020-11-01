@@ -52,8 +52,14 @@ namespace OpenData.API.Services
                 }, TaskContinuationOptions.OnlyOnRanToCompletion);
 
                 if (gitlabGroupResponse.Success) {
-                    // TODO: publisher.gitlab_group_namespace_id = smth
-                    // TODO: publisher.gitlab_group_link = smth
+                    // NOTE: bruker full_path her i stedet for web_url.
+                    // full web url (med hostname) lages ved opprettelse av resource. (TODO: faktisk gjøre dette)
+                    publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                    publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+
+                    _publisherRepository.Update(publisher);
+                    await _unitOfWork.CompleteAsync();
+
                     return new PublisherResponse(publisher);
                 } else {
                     // TODO: hvis opprettelse av gruppe i gitlab feiler bør publisher fjernes fra databasen
