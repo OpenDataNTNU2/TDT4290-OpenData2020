@@ -88,14 +88,14 @@ export function mapResponseToPublishers(res, type) {
       let count;
       switch (type) {
         case 'datasets':
-          count = entry.datasets.length;
+          count = entry.datasetsCount;
           break;
         case 'coordinations':
-          count = entry.coordinations.length;
+          count = entry.coordinationsCount;
           break;
         case 'both':
         default:
-          count = entry.datasets.length + entry.coordinations.length;
+          count = entry.datasetsCount + entry.coordinationsCount;
       }
       return {
         name: entry.name.split(' ')[0],
