@@ -28,5 +28,6 @@ namespace OpenData.API.Domain.Models
         public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
         public int? GitlabProjectId { get; set; }
         public string GitlabProjectPath { get; set; }
+        public int? GitlabDiscussionBoardId { get; set; }
     }
 }

@@ -86,7 +86,7 @@ namespace OpenData.API.Services
 
                 if (gitlabProjectResponse.Success) {
                     coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.full_path;
+                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
                     _coordinationRepository.Update(coordination);
                     await _unitOfWork.CompleteAsync();
                     return new CoordinationResponse(coordination);

@@ -126,7 +126,7 @@ namespace OpenData.API.Services
 
                 if (gitlabProjectResponse.Success) {
                     dataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    dataset.GitlabProjectPath = gitlabProjectResponse.Resource.full_path;
+                    dataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
                     _datasetRepository.Update(dataset);
                     await _unitOfWork.CompleteAsync();
                     return new DatasetResponse(dataset);
