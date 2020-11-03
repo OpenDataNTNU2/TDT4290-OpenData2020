@@ -62,11 +62,17 @@ export default function Login({
         },
         body: JSON.stringify(data),
       })
-        .then((response) => response.json())
+        .then(
+          (response) => response.json(),
+          (reject) => console.log('Error: ', reject)
+        )
         .then((resData) => {
-          console.log(resData);
+          console.log('resData', resData);
           setUserId(resData.id);
           setPublisherId(resData.publisherId);
+        })
+        .catch(function (error) {
+          console.log('hallo', error);
         });
       return true;
     } catch (_) {
@@ -106,7 +112,7 @@ export default function Login({
 
   function enterClick(e) {
     if (e.keyCode === 13) {
-      console.log('enter');
+      e.preventDefault();
       handleLoginClick();
     }
   }
@@ -126,7 +132,7 @@ export default function Login({
         <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
       )}
       {loggedIn ? null : (
-        <form noValidate autoComplete="off" style={{ width: '50vh' }}>
+        <form noValidate autoComplete="off" style={{ width: '50vw' }}>
           <TextField
             id="username"
             label="Brukernavn"
@@ -135,8 +141,9 @@ export default function Login({
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            onKeyDown={enterClick}
+            onKeyDown={(e) => enterClick(e)}
           />
+          {/* <input id="username" lable="brukernavn" size="medium" variant="outlined" value={username} onKeyDown={(e) => enterClick(e)} onChange={(e) => setUsername(e.target.value)}/> */}
         </form>
       )}
       <br />
