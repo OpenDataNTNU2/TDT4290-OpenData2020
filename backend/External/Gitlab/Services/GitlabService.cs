@@ -8,17 +8,16 @@ namespace OpenData.External.Gitlab.Services
 {
     public class GitlabService : IGitlabService
     {
-        private readonly GitlabClient _gitlabClient;
+        private readonly IGitlabClient _gitlabClient;
         private readonly GitlabProjectConfiguration _gitlabProjectConfig;
         private readonly GitlabGroupConfiguration _gitlabGroupConfig;
 
-        public GitlabService(IHttpClientFactory clientFactory)
+        public GitlabService(IGitlabClient gitlabClient)
         {
             _gitlabProjectConfig = new GitlabProjectConfiguration();
             _gitlabGroupConfig = new GitlabGroupConfiguration();
 
-            // TODO: litt stygt å bare sende denne videre sånn men who cares
-            _gitlabClient = new GitlabClient(_gitlabProjectConfig, clientFactory);
+            _gitlabClient = gitlabClient;
         }
 
         public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)

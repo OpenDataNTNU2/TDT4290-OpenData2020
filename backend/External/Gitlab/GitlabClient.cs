@@ -9,14 +9,12 @@ using System.Text;
 
 namespace OpenData.External.Gitlab
 {
-    public class GitlabClient
+    public class GitlabClient : IGitlabClient
     {
         private readonly HttpClient _gitlabApiHttpClient;
-        private readonly GitlabProjectConfiguration _gitlabProjectConfig;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        public GitlabClient(GitlabProjectConfiguration gitlabProjectConfiguration, IHttpClientFactory httpClientFactory)
+        public GitlabClient(IHttpClientFactory httpClientFactory)
         {
-            _gitlabProjectConfig = gitlabProjectConfiguration;
             HttpClient client = httpClientFactory.CreateClient();
 
             // TODO: hent inn på en smart måte fra config elns
@@ -33,7 +31,7 @@ namespace OpenData.External.Gitlab
         public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject)
         {
             // api endpoint: POST /projects/user/:user_id
-            var endpoint = "projects/user/" + _gitlabProjectConfig.open_data_user_id;
+            var endpoint = "projects/user/" + gitlabProject.user_id;
             return _PostGitlabObject(gitlabProject, endpoint);
         }
 

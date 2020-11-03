@@ -13,6 +13,7 @@ using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
 using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -50,6 +51,7 @@ namespace OpenData.API
             services.AddCustomSwagger();
 
             services.AddHttpClient();
+            services.AddSingleton<IGitlabClient, GitlabClient>();
 
             services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
