@@ -1,4 +1,6 @@
-const PostApi = async (url, data, func) => {
+import Router from 'next/router';
+
+const PostApi = async (url, data, func, path = null) => {
   try {
     fetch(url, {
       method: 'POST',
@@ -11,6 +13,7 @@ const PostApi = async (url, data, func) => {
       .then((response) => {
         try {
           func(response.id);
+          path ? Router.push(path + response.id) : null;
         } catch (_) {
           console.log(_);
         }

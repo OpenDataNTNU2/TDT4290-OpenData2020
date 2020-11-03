@@ -87,7 +87,7 @@ export default function CreateCoordination(props) {
       accessLevel: parseInt(accessLevel),
     };
     if (title !== '' && description !== '') {
-      PostApi(`${host}/api/coordinations`, data, submitPostReq);
+      PostApi(`${host}/api/coordinations`, data, submitPostReq, '/DetailedCoordination/');
     } else {
       setOpenFailedFeedback(true);
     }

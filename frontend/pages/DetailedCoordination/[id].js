@@ -11,6 +11,7 @@ import DistributionCard from '../DetailedDataset/DistributionCard';
 import UseCaseCard from '../DetailedDataset/UseCaseCard';
 import EditTextFieldComp from '../DetailedDataset/EditTextFieldComp';
 import AddTagsComp from '../DetailedDataset/AddTagsComp';
+import RequestMunicipalityComp from './RequestMunicipalityComp';
 
 import DatasetCard from '../../Components/DatasetCard';
 import Input from '../../Components/Forms/Input';
@@ -397,6 +398,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {parseInt(prevPublisherId) === coordinationData.publisher.id && <Divider variant="fullWidth" />}
 
+      {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== coordinationData.publisher.id && (
+        <Grid style={{ padding: '3% 0 3% 0' }}>
+          <RequestMunicipalityComp coordination={coordinationData} />
+        </Grid>
+      )}
       {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== coordinationData.publisher.id && (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <SubscribeComp onClick={subscribe} subscribed={subscribed} />

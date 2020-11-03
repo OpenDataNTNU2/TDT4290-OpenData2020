@@ -43,10 +43,12 @@ export default function Home() {
 
   const [sortType, setSortType] = useState('title_asc');
   const [page, setPage] = useState(1);
+  const [coordinationPage, setCoordinationPage] = useState(1);
 
   const [totalItemsDatasets, setTotalItemsDatasets] = useState(0);
   const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0);
-  const [hasMore, setHasMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const [coordinationHasMore, setCoordinationHasMore] = useState(true);
 
   const [datasets, setDatasets] = useState([]);
   const [coordinations, setCoordinations] = useState([]);
@@ -65,7 +67,7 @@ export default function Home() {
     setCoordinations(response.items);
     setTotalItemsCoordinations(response.totalItems);
     if (response.totalItems > response.items.length) {
-      setHasMore(true);
+      setCoordinationHasMore(true);
     }
   };
 
@@ -80,7 +82,7 @@ export default function Home() {
       setCoordinations(response.items);
       setTotalItemsCoordinations(response.totalItems);
       if (response.totalItems > response.items.length) {
-        setHasMore(true);
+        setCoordinationHasMore(true);
       }
     }
   };
@@ -124,6 +126,7 @@ export default function Home() {
       setSearchUrl(value);
     }
     setPage(1);
+    setCoordinationPage(1);
     if (urlType === 'both') {
       GetApi(
         url +
@@ -209,56 +212,11 @@ export default function Home() {
     );
   };
 
-  const fetchNextPage = async () => {
-    if (urlType === 'both') {
-      if (totalItemsDatasets >= datasets.length) {
-        GetApi(
-          url +
-            'datasets' +
-            sUrl +
-            searchUrl +
-            fUrl +
-            filterPublishersUrl +
-            fcUrl +
-            filterCategoriesUrl +
-            fpStatus +
-            filterPublishStatus +
-            faLevel +
-            filterAccessLevel +
-            pUrl +
-            page +
-            items +
-            sortUrl +
-            sortType,
-          addDatasetsToExisting
-        );
-      }
-      if (totalItemsCoordinations >= coordinations.length) {
-        GetApi(
-          url +
-            'coordinations' +
-            sUrl +
-            searchUrl +
-            fUrl +
-            filterPublishersUrl +
-            fcUrl +
-            filterCategoriesUrl +
-            fpStatus +
-            filterPublishStatus +
-            faLevel +
-            filterAccessLevel +
-            pUrl +
-            page +
-            items +
-            sortUrl +
-            sortType,
-          addCoordinationsToExisting
-        );
-      }
-    } else if (urlType === 'datasets' && totalItemsDatasets >= datasets.length) {
+  const fetchNextDatasetPage = async () => {
+    if (totalItemsDatasets >= datasets.length) {
       GetApi(
         url +
-          urlType +
+          'datasets' +
           sUrl +
           searchUrl +
           fUrl +
@@ -276,32 +234,11 @@ export default function Home() {
           sortType,
         addDatasetsToExisting
       );
-    } else if (urlType === 'coordinations' && totalItemsCoordinations >= coordinations.length) {
-      GetApi(
-        url +
-          urlType +
-          sUrl +
-          searchUrl +
-          fUrl +
-          filterPublishersUrl +
-          fcUrl +
-          filterCategoriesUrl +
-          fpStatus +
-          filterPublishStatus +
-          faLevel +
-          filterAccessLevel +
-          pUrl +
-          page +
-          items +
-          sortUrl +
-          sortType,
-        addCoordinationsToExisting
-      );
     }
     console.log(
       'Fetching from url: ' +
         url +
-        urlType +
+        'datasets' +
         sUrl +
         searchUrl +
         fUrl +
@@ -320,12 +257,79 @@ export default function Home() {
     );
   };
 
-  useEffect(() => {
-    if (coordinations.length < totalItemsCoordinations || datasets.length < totalItemsDatasets) {
-      setHasMore(true);
-      fetchNextPage();
+  const fetchNextCoordinationPage = async () => {
+    if (totalItemsCoordinations >= coordinations.length) {
+      GetApi(
+        url +
+          'coordinations' +
+          sUrl +
+          searchUrl +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          coordinationPage +
+          items +
+          sortUrl +
+          sortType,
+        addCoordinationsToExisting
+      );
+      console.log(
+        'Fetching from url: ' +
+          url +
+          'coordinations' +
+          sUrl +
+          searchUrl +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          coordinationPage +
+          items +
+          sortUrl +
+          sortType
+      );
     }
-  }, [page]);
+  };
+
+  useEffect(() => {
+    switch (urlType) {
+      case 'both': {
+        if (coordinations.length < totalItemsCoordinations) {
+          setCoordinationHasMore(true);
+          fetchNextCoordinationPage();
+        } else if (datasets.length < totalItemsDatasets) {
+          setHasMore(true);
+          fetchNextDatasetPage();
+        }
+        break;
+      }
+      case 'datasets': {
+        if (datasets.length < totalItemsDatasets) {
+          setHasMore(true);
+          fetchNextDatasetPage();
+        }
+        break;
+      }
+      case 'coordinations': {
+        if (coordinations.length < totalItemsCoordinations) {
+          setCoordinationHasMore(true);
+          fetchNextCoordinationPage();
+        }
+        break;
+      }
+    }
+  }, [page, coordinationPage]);
 
   useEffect(() => {
     setDatasets([]);
@@ -362,6 +366,7 @@ export default function Home() {
     setCoordinations([]);
     setSortType(type);
     setPage(1);
+    setCoordinationPage(coordinationPage + 1);
     fetchContent();
   };
 
@@ -432,21 +437,90 @@ export default function Home() {
   };
 
   const checkIsMore = () => {
-    if (
-      urlType === 'both' &&
-      (totalItemsDatasets > datasets.length || totalItemsCoordinations > coordinations.length)
-    ) {
-      setPage(page + 1);
-      setHasMore(true);
+    if (urlType === 'both') {
+      if (totalItemsCoordinations > coordinations.length) {
+        setCoordinationPage(coordinationPage + 1);
+        setCoordinationHasMore(true);
+      } else if (totalItemsDatasets > datasets.length) {
+        setPage(page + 1);
+        setHasMore(true);
+      }
     } else if (urlType === 'datasets' && totalItemsDatasets > datasets.length) {
       setPage(page + 1);
       setHasMore(true);
     } else if (urlType === 'coordinations' && totalItemsCoordinations > coordinations.length) {
-      setPage(page + 1);
-      setHasMore(true);
+      setCoordinationPage(coordinationPage + 1);
+      setCoordinationHasMore(true);
     } else {
       setHasMore(false);
+      setCoordinationHasMore(false);
     }
+  };
+
+  const coordinationInfiniteScroll = () => {
+    return (
+      <InfiniteScroll
+        dataLength={coordinationPage * 10}
+        next={checkIsMore}
+        hasMore={coordinationHasMore}
+        loader={<h4>{loader}</h4>}
+      >
+        <div>
+          {coordinations && coordinations != [] && (
+            <h2 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Samordninger: </h2>
+          )}
+          {coordinations && coordinations.length !== 0 ? (
+            Object.values(coordinations).map(
+              (c, index) =>
+                c && (
+                  <CoordinationCard
+                    key={'coordinationBoth' + c.id + index}
+                    id={c.id}
+                    coordination={c}
+                    onClick={() => onClick('/DetailedCoordination/', c.id)}
+                  />
+                )
+            )
+          ) : (
+            <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen samordninger</h3>
+          )}
+        </div>
+      </InfiniteScroll>
+    );
+  };
+
+  const datasetInfiniteScroll = () => {
+    return (
+      <InfiniteScroll dataLength={page * 10} next={checkIsMore} hasMore={hasMore} loader={<h4>{loader}</h4>}>
+        <div>
+          <br />
+          {datasets && datasets != [] && <h2 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Datasett: </h2>}
+          {datasets && datasets.length !== 0 ? (
+            Object.values(datasets).map(
+              (d, index) =>
+                d && (
+                  <DatasetCard
+                    key={'datasetBoth' + d.id + index}
+                    dataset={d}
+                    onClick={() => onClick('/DetailedDataset/', d.id)}
+                  />
+                )
+            )
+          ) : (
+            <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen datasett</h3>
+          )}
+        </div>
+      </InfiniteScroll>
+    );
+  };
+
+  const bothInfiniteScroll = () => {
+    return (
+      <div>
+        {coordinationInfiniteScroll()}
+        {datasetInfiniteScroll()}
+      </div>
+    );
   };
 
   return (
@@ -501,75 +575,15 @@ export default function Home() {
           >
             {getSortButtons()}
           </div>
-          <InfiniteScroll dataLength={page * 10} next={checkIsMore} hasMore={hasMore} loader={<h4>{loader}</h4>}>
-            {urlType === 'both' ? (
-              <div>
-                {coordinations && coordinations != [] && (
-                  <h2 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Samordninger: </h2>
-                )}
-                {coordinations && coordinations.length !== 0 ? (
-                  Object.values(coordinations).map(
-                    (c) =>
-                      c && (
-                        <CoordinationCard
-                          key={'coordinationBoth' + c.id}
-                          id={c.id}
-                          coordination={c}
-                          onClick={() => onClick('/DetailedCoordination/', c.id)}
-                        />
-                      )
-                  )
-                ) : (
-                  <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen samordninger</h3>
-                )}
-                <br />
-                {datasets && datasets != [] && (
-                  <h2 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Datasett: </h2>
-                )}
-                {datasets && datasets.length !== 0 ? (
-                  Object.values(datasets).map(
-                    (d) =>
-                      d && (
-                        <DatasetCard
-                          key={'datasetBoth' + d.id}
-                          dataset={d}
-                          onClick={() => onClick('/DetailedDataset/', d.id)}
-                        />
-                      )
-                  )
-                ) : (
-                  <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen datasett</h3>
-                )}
-              </div>
-            ) : urlType === 'datasets' && datasets && datasets !== [] ? (
-              Object.values(datasets).map(
-                (d) =>
-                  d && (
-                    <DatasetCard
-                      key={'dataset' + d.id}
-                      dataset={d}
-                      onClick={() => onClick('/DetailedDataset/', d.id)}
-                    />
-                  )
-              )
-            ) : (
-              urlType === 'coordinations' &&
-              coordinations &&
-              coordinations !== [] &&
-              Object.values(coordinations).map(
-                (c) =>
-                  c && (
-                    <CoordinationCard
-                      key={'coordination' + c.id}
-                      id={c.id}
-                      coordination={c}
-                      onClick={() => onClick('/DetailedCoordination/', c.id)}
-                    />
-                  )
-              )
-            )}
-            {loader === 'No items found' ? <h4>Søket ga dessverre ingen treff</h4> : null}
-          </InfiniteScroll>
+          {urlType === 'both'
+            ? totalItemsCoordinations > coordinations.length
+              ? coordinationInfiniteScroll()
+              : bothInfiniteScroll()
+            : urlType === 'datasets'
+            ? datasetInfiniteScroll()
+            : urlType === 'coordinations'
+            ? coordinationInfiniteScroll()
+            : 'TOMT'}
         </Grid>
       </Grid>
     </div>

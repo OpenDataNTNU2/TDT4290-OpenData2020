@@ -20,6 +20,9 @@ import EditCategoryComp from './EditCategoryComp';
 import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
+import Cookie from 'js-cookie';
+
+
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -34,6 +37,8 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   let publishedStatus;
   const distributionCards = [];
   let cardOrNoCard;
+
+
 
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
@@ -54,6 +59,14 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setOpen(true);
     PatchApi(uri, data2);
     console.log('Requests er oppdatert!');
+
+    let newArr = Cookie.get('userHaveRequested')
+    if (newArr === 'false') {
+      Cookie.set('userHaveRequested', data.id + '|')
+    }
+    else {
+      Cookie.set('userHaveRequested', newArr + data.id + '|')
+    }
   };
 
   // puts data into the api with datasets
@@ -66,6 +79,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   };
 
   const ifPublished = (pub) => {
+
     if (pub === 'Published') {
       requestButton = null;
       publishedStatus = 'Publisert';
@@ -89,7 +103,17 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         });
       }
     } else {
-      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
+      let dis = false;
+      if (typeof Cookie.get('userHaveRequested') !== "undefined") {
+        let newArr = Cookie.get('userHaveRequested')
+        let splitArr = newArr.split('|')
+        for (let i = 0; i < splitArr.length; i++) {
+          if (parseInt(splitArr[i]) === data.id) {
+            dis = true
+          }
+        }
+      }
+      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={dis} />;
       publishedStatus = 'Ikke publisert';
       cardOrNoCard = 'Dette datasettet har ingen distribusjoner ennå.';
     }
@@ -130,15 +154,20 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           </div>
         ) : null}
 
-        {data.coordination ? (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
+        {data.coordination ? data.coordination.underCoordination ? (
+          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-            Ikke samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )
+          : (
+            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+              Ikke samordnet
+            </div>
+          )}
       </div>
     );
   };
@@ -170,6 +199,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
     }
   }, [data, subscribed]);
+
 
   function checkUserSubscription(response) {
     for (let i = 0; i < response.subscriptions.length; i++) {
@@ -217,6 +247,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           padding: '5% 10% 5% 10%',
           backgroundColor: 'white',
         }}
+
       >
         {getChips()}
 
@@ -276,7 +307,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           path="/tagsIds"
         />
 
-        <p className={styles.attributes}>
+        <div className={styles.attributes}>
           <span>Eier: </span>
           {capitalize(data.publisher.name)}
           <br />
@@ -294,30 +325,36 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 : 'Samordnet'}
             </div>
           )}
-        </p>
+        </div>
         <br />
 
-        <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
-        <span>{cardOrNoCard}</span>
-        <br />
-        <span>
-          <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
-        </span>
+        <Grid>
+          <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
+          <Grid>{cardOrNoCard}</Grid>
+          <br />
+          <Grid>
+            <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
+            <br />
+          </Grid>
 
-        <br />
-        <Divider variant="fullWidth" />
-        <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
-        {Object.values(data.subscriptions).length == 0 ? (
-          <div>
-            Dette datasettet har ingen usecase enda. <br />
-          </div>
-        ) : (
-          Object.values(data.subscriptions).map((sub) => {
-            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-          })
-        )}
-        <br />
 
+
+          <Grid>
+            <br />
+            <Divider variant="fullWidth" />
+            <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
+            {Object.values(data.subscriptions).length == 0 ? (
+              <div>
+                Dette datasettet har ingen usecase enda. <br />
+              </div>
+            ) : (
+                Object.values(data.subscriptions).map((sub) => {
+                  return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+                })
+              )}
+            <br />
+          </Grid>
+        </Grid>
         {/* Request dataset & subscribe only if it is not your dataset */}
         {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
           <div>

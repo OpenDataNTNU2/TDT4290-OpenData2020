@@ -136,7 +136,7 @@ export default function CreateDataset(props) {
     console.log(`data: ${data}`);
     console.log(data);
     if (checkRequiredVariables()) {
-      PostApi(`${host}/api/datasets`, data, addDistributions);
+      PostApi(`${host}/api/datasets`, data, addDistributions, '/DetailedDataset/');
       addTags();
     } else {
       setFeedbackRequired(true);
