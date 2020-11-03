@@ -1,4 +1,4 @@
-import { Grid, Snackbar, Divider } from '@material-ui/core';
+import { Grid, Snackbar, Divider, Button } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
@@ -367,6 +367,22 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             </span>
           </div>
         )}
+
+        <Divider />
+        <div>
+          <br />
+          {data.gitlabDiscussionBoardUrl && (
+            <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+              Diskuter dette datasettet
+            </Button>
+          )}
+          <br />
+          {data.gitlabCreateIssueUrl && (
+            <Button color="primary" href={data.gitlabCreateIssueUrl}>
+              Gi tilbakemeldinger på dette datasettet
+            </Button>
+          )}
+        </div>
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
           <Alert elevation={1} severity="info">

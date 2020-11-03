@@ -306,7 +306,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       )}
 
       <br />
-      <Divider variant="fullWidth" />
 
       {/* Send forespørsel om å bli med i samordningen */}
       {JSON.parse(prevPublisherId) === null ||
@@ -409,6 +408,22 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           <SubscribeComp onClick={subscribe} subscribed={subscribed} />
         </Grid>
       )}
+
+      <Divider />
+      <div>
+        <br />
+        {data.gitlabDiscussionBoardUrl && (
+          <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+            Diskuter denne samordningen
+          </Button>
+        )}
+        <br />
+        {data.gitlabCreateIssueUrl && (
+          <Button color="primary" href={data.gitlabCreateIssueUrl}>
+            Gi tilbakemeldinger på denne samordningen
+          </Button>
+        )}
+      </div>
 
       <Snackbar
         open={openCreateApplicationFeedback}

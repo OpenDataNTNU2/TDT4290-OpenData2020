@@ -204,10 +204,12 @@ namespace OpenData.API.Persistence.Repositories
                                 
                                 
         }
-        public async Task AddAsync(Coordination coordination)
+
+        public async Task<Coordination> AddAsync(Coordination coordination)
         {
-            await _context.Coordinations.AddAsync(coordination);
+            return (await _context.Coordinations.AddAsync(coordination)).Entity;
         }
+
         public void Update(Coordination coordination)
         {
             _context.Coordinations.Update(coordination);

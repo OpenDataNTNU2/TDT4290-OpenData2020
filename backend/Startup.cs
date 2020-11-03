@@ -12,11 +12,14 @@ using OpenData.API.Extensions;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System;
 
 namespace OpenData.API
 {
@@ -46,6 +49,9 @@ namespace OpenData.API
             services.AddMemoryCache();
 
             services.AddCustomSwagger();
+
+            services.AddHttpClient();
+            services.AddSingleton<IGitlabClient, GitlabClient>();
 
             services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
@@ -80,6 +86,7 @@ namespace OpenData.API
 
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IRdfService, RdfService>();
+            services.AddScoped<IGitlabService, GitlabService>();
             services.AddScoped<INotificationService, NotificationService>();
             services.AddScoped<INotificationRepository, NotificationRepository>();
 

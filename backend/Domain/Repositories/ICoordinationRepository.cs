@@ -9,7 +9,7 @@ namespace OpenData.API.Domain.Repositories
     {
         Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query);
         Task<Coordination> FindByIdAsync(int id);
-        Task AddAsync(Coordination coordination);
+        Task<Coordination> AddAsync(Coordination coordination);
         void Update(Coordination coordination);
     }
 }

@@ -21,5 +21,8 @@ namespace OpenData.API.Domain.Models
         public IList<CoordinationTags> CoordinationTags { get; set; } = new List<CoordinationTags>();
         public IList<Application> Applications { get; set; } = new List<Application>();
         public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public int? GitlabProjectId { get; set; }
+        public string GitlabProjectPath { get; set; }
+        public int? GitlabDiscussionBoardId { get; set; }
     }
 }
