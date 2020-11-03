@@ -20,6 +20,9 @@ import EditCategoryComp from './EditCategoryComp';
 import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
+import Cookie from 'js-cookie';
+
+
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -34,6 +37,8 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   let publishedStatus;
   const distributionCards = [];
   let cardOrNoCard;
+
+
 
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
@@ -54,6 +59,14 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setOpen(true);
     PatchApi(uri, data2);
     console.log('Requests er oppdatert!');
+
+    let newArr = Cookie.get('userHaveRequested')
+    if (newArr === 'false') {
+      Cookie.set('userHaveRequested', data.id + '|')
+    }
+    else {
+      Cookie.set('userHaveRequested', newArr + data.id + '|')
+    }
   };
 
   // puts data into the api with datasets
@@ -66,6 +79,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   };
 
   const ifPublished = (pub) => {
+
     if (pub === 'Published') {
       requestButton = null;
       publishedStatus = 'Publisert';
@@ -89,7 +103,17 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         });
       }
     } else {
-      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
+      let dis = false;
+      if (typeof Cookie.get('userHaveRequested') !== "undefined") {
+        let newArr = Cookie.get('userHaveRequested')
+        let splitArr = newArr.split('|')
+        for (let i = 0; i < splitArr.length; i++) {
+          if (parseInt(splitArr[i]) === data.id) {
+            dis = true
+          }
+        }
+      }
+      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={dis} />;
       publishedStatus = 'Ikke publisert';
       cardOrNoCard = 'Dette datasettet har ingen distribusjoner ennå.';
     }
@@ -135,10 +159,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             Samordnet
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-            Ikke samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+              Ikke samordnet
+            </div>
+          )}
       </div>
     );
   };
@@ -170,6 +194,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
     }
   }, [data, subscribed]);
+
 
   function checkUserSubscription(response) {
     for (let i = 0; i < response.subscriptions.length; i++) {
@@ -312,10 +337,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             Dette datasettet har ingen usecase enda. <br />
           </div>
         ) : (
-          Object.values(data.subscriptions).map((sub) => {
-            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-          })
-        )}
+            Object.values(data.subscriptions).map((sub) => {
+              return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+            })
+          )}
         <br />
 
         {/* Request dataset & subscribe only if it is not your dataset */}
