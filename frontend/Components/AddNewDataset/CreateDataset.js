@@ -116,7 +116,7 @@ export default function CreateDataset(props) {
         alert('failed to post dataset');
       }
     }
-    if (published === '1' && accessLevel === '1') {
+    if (published === '1' && accessLevel === '1' && wantToRequestCoordination === '2') {
       submitApplicationToJoinCoordination(dataId);
     }
 
