@@ -3,6 +3,8 @@ using OpenData.External.Gitlab.Models;
 using System.Threading.Tasks;
 using OpenData.External.Gitlab.Services.Communication;
 using System.Net.Http;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace OpenData.External.Gitlab.Services
 {
@@ -47,7 +49,7 @@ namespace OpenData.External.Gitlab.Services
             gitlabProject.name = dataset.Title;
             gitlabProject.description = dataset.Description;
             gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
-            // gitlabProject.tag_list = null; // TODO: her må det gå an å gjøre noe
+            gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
         }
 
         private void _PopulateGitlabGroupWithPublisherInformation(GitlabGroup gitlabGroup, Publisher publisher)

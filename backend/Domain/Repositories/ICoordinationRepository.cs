@@ -11,5 +11,6 @@ namespace OpenData.API.Domain.Repositories
         Task<Coordination> FindByIdAsync(int id);
         Task<Coordination> AddAsync(Coordination coordination);
         void Update(Coordination coordination);
+        void Remove(Coordination coordination);
     }
 }
