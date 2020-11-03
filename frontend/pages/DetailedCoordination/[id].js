@@ -362,34 +362,36 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <h1 style={{ fontWeight: 'normal' }}>Forespørsler om å bli med i samordningen</h1>
           {coordinationData.applications.length !== 0 ? (
-            Object.values(coordinationData.applications).map(
-              (application) =>
-                applicationsToJoin && (
-                  <div style={{ paddingBottom: '5%' }}>
-                    <p>
-                      <b>Utgiver:</b> {application.dataset.publisher.name}
-                    </p>
-                    <p>
-                      <b>Begrunnelse for forespørsel:</b> {application.reason}
-                    </p>
-                    <DatasetCard
-                      dataset={application.dataset}
-                      onClick={() => onClick('/DetailedDataset/', application.dataset.id)}
-                      pathName="/DetailedCoordination"
-                    />
-                    <Button variant="contained" color="secondary">
-                      Avslå forespørsel
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => approveApplication(application.dataset.id, application.id)}
-                    >
-                      Godta forespørsel
-                    </Button>
-                  </div>
-                )
-            )
+            Object.values(coordinationData.applications)
+              .filter((a) => a.datasetId)
+              .map(
+                (application) =>
+                  applicationsToJoin && (
+                    <div style={{ paddingBottom: '5%' }}>
+                      <p>
+                        <b>Utgiver:</b> {application.dataset.publisher.name}
+                      </p>
+                      <p>
+                        <b>Begrunnelse for forespørsel:</b> {application.reason}
+                      </p>
+                      <DatasetCard
+                        dataset={application.dataset}
+                        onClick={() => onClick('/DetailedDataset/', application.dataset.id)}
+                        pathName="/DetailedCoordination"
+                      />
+                      <Button variant="contained" color="secondary">
+                        Avslå forespørsel
+                      </Button>
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={() => approveApplication(application.dataset.id, application.id)}
+                      >
+                        Godta forespørsel
+                      </Button>
+                    </div>
+                  )
+              )
           ) : (
             <p>Ingen forespørsler</p>
           )}
