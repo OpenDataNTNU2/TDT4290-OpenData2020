@@ -154,11 +154,16 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           </div>
         ) : null}
 
-        {data.coordination ? (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
+        {data.coordination ? data.coordination.underCoordination ? (
+          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            Under samordning
           </div>
         ) : (
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )
+          : (
             <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
               Ikke samordnet
             </div>
@@ -242,6 +247,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           padding: '5% 10% 5% 10%',
           backgroundColor: 'white',
         }}
+
       >
         {getChips()}
 
@@ -322,27 +328,33 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         </div>
         <br />
 
-        <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
-        <span>{cardOrNoCard}</span>
-        <br />
-        <span>
-          <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
-        </span>
+        <Grid>
+          <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
+          <Grid>{cardOrNoCard}</Grid>
+          <br />
+          <Grid>
+            <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
+            <br />
+          </Grid>
 
-        <br />
-        <Divider variant="fullWidth" />
-        <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
-        {Object.values(data.subscriptions).length == 0 ? (
-          <div>
-            Dette datasettet har ingen usecase enda. <br />
-          </div>
-        ) : (
-            Object.values(data.subscriptions).map((sub) => {
-              return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-            })
-          )}
-        <br />
 
+
+          <Grid>
+            <br />
+            <Divider variant="fullWidth" />
+            <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
+            {Object.values(data.subscriptions).length == 0 ? (
+              <div>
+                Dette datasettet har ingen usecase enda. <br />
+              </div>
+            ) : (
+                Object.values(data.subscriptions).map((sub) => {
+                  return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+                })
+              )}
+            <br />
+          </Grid>
+        </Grid>
         {/* Request dataset & subscribe only if it is not your dataset */}
         {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
           <div>

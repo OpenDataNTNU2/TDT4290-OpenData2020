@@ -51,10 +51,10 @@ const AddDistributionsComp = (props) => {
         </Button>
       </div>
     ) : (
-      <Button variant="contained" color="primary" onClick={() => setEditBool(true)}>
-        Legg til ny distribusjon
-      </Button>
-    )
+        <Button variant="contained" color="primary" onClick={() => setEditBool(true)}>
+          Legg til ny distribusjon
+        </Button>
+      )
   ) : null;
 };
 
