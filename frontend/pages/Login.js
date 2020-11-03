@@ -10,7 +10,7 @@ export default function Login({
   prevLoggedUsername = false,
   prevPublisherId = '-1',
   prevUserId = '-1',
-  prevUserHaveRequested = false
+  prevUserHaveRequested = false,
 }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -21,7 +21,7 @@ export default function Login({
   const [loggedUsername, setLoggedUsername] = useState(() => JSON.parse(prevLoggedUsername));
   const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId));
   const [userId, setUserId] = useState(() => JSON.parse(prevUserId));
-  const [userHaveRequested, setUserHaveRequested] = useState(prevUserHaveRequested)
+  const [userHaveRequested, setUserHaveRequested] = useState(prevUserHaveRequested);
 
   const [username, setUsername] = useState('');
 
@@ -87,7 +87,7 @@ export default function Login({
           setOpen(true);
           setNotEligUsername(false);
           setUserHaveRequested(false);
-          Cookie.set('userHaveRequested', false)
+          Cookie.set('userHaveRequested', false);
         }
       } else setNotEligUsername(true);
     }
@@ -101,8 +101,15 @@ export default function Login({
     setLoggedIn(false);
     setUsername('');
     setOpen(false);
-    Cookie.set('userHaveRequested', false)
+    Cookie.set('userHaveRequested', false);
   };
+
+  function enterClick(e) {
+    if (e.keyCode === 13) {
+      console.log('enter');
+      handleLoginClick();
+    }
+  }
 
   return (
     <Grid
@@ -116,8 +123,8 @@ export default function Login({
       {loggedIn ? (
         <h2 style={{ fontWeight: 'normal' }}>Logget inn som {loggedUsername}</h2>
       ) : (
-          <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
-        )}
+        <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
+      )}
       {loggedIn ? null : (
         <form noValidate autoComplete="off" style={{ width: '50vh' }}>
           <TextField
@@ -128,6 +135,7 @@ export default function Login({
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={enterClick}
           />
         </form>
       )}
@@ -137,10 +145,10 @@ export default function Login({
           Logg ut
         </Button>
       ) : (
-          <Button variant="contained" color="primary" onClick={handleLoginClick}>
-            Logg inn
-          </Button>
-        )}
+        <Button variant="contained" color="primary" onClick={handleLoginClick}>
+          Logg inn
+        </Button>
+      )}
       <br />
 
       {loggedIn ? null : (
@@ -175,6 +183,6 @@ Login.getInitialProps = ({ req }) => {
     prevLoggedUsername: cookies.prevLoggedUsername,
     prevPublisherId: cookies.prevPublisherId,
     prevUserId: cookies.prevUserId,
-    prevUserHaveRequested: cookies.userHaveRequested
+    prevUserHaveRequested: cookies.userHaveRequested,
   };
 };
