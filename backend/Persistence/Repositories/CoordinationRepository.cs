@@ -214,5 +214,10 @@ namespace OpenData.API.Persistence.Repositories
         {
             _context.Coordinations.Update(coordination);
         }
+
+        public void Remove(Coordination coordination)
+        {
+            _context.Coordinations.Remove(coordination);
+        }
     }
 }

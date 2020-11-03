@@ -86,16 +86,14 @@ namespace OpenData.API.Services
                 var createDatasetTask = Task.Run(async() => {
                     dataset = await _datasetRepository.AddAsync(dataset);
                     await addTags(dataset);
-                    // NOTE: TODO: (Digresjon) dette må da kunne gjøres på en annen måte?
-                    // Både med tanke på host, men også id.
-                    // Dette bør være en del av resource men ikke selve datamodellen.
+                    // NOTE: TODO: Config
                     dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
                     _datasetRepository.Update(dataset);
                     await _unitOfWork.CompleteAsync();
                     return dataset;
                 });
 
-                // NOTE: TODO: her venter jeg på at datasettet skal opprettes uten feil,
+                // NOTE: Her venter jeg på at datasettet skal opprettes uten feil,
                 // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
                 // i gitlab.
                 // Dette kan kanskje gjøres smoothere.
@@ -131,7 +129,9 @@ namespace OpenData.API.Services
                     await _unitOfWork.CompleteAsync();
                     return new DatasetResponse(dataset);
                 } else {
-                    // TODO: hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                    // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                    _datasetRepository.Remove(dataset);
+                    await _unitOfWork.CompleteAsync();
                     return new DatasetResponse(gitlabProjectResponse.Message);
                 }
             }

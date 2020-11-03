@@ -91,7 +91,9 @@ namespace OpenData.API.Services
                     await _unitOfWork.CompleteAsync();
                     return new CoordinationResponse(coordination);
                 } else {
-                    // TODO: hvis opprettelse av prosjekt i gitlab feiler bør coordination fjernes fra databasen
+                    // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
+                    _coordinationRepository.Remove(coordination);
+                    await _unitOfWork.CompleteAsync();
                     return new CoordinationResponse(gitlabProjectResponse.Message);
                 }
             }

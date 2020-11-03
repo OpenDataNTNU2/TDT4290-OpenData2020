@@ -357,7 +357,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       )}
 
       {/* Forespørsler om å bli med i samordningen */}
-      {/* TODO: Nå kan kommuner legge til flere datasett til samme samordning, bør dette endres? */}
       {parseInt(prevPublisherId) === coordinationData.publisher.id ? (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <h1 style={{ fontWeight: 'normal' }}>Forespørsler om å bli med i samordningen</h1>

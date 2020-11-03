@@ -53,7 +53,7 @@ namespace OpenData.API.Services
 
                 if (gitlabGroupResponse.Success) {
                     // NOTE: bruker full_path her i stedet for web_url.
-                    // full web url (med hostname) lages ved opprettelse av resource. (TODO: faktisk gjøre dette)
+                    // full web url (med hostname) lages ved opprettelse av resource.
                     publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
                     publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
 
@@ -62,7 +62,9 @@ namespace OpenData.API.Services
 
                     return new PublisherResponse(publisher);
                 } else {
-                    // TODO: hvis opprettelse av gruppe i gitlab feiler bør publisher fjernes fra databasen
+                    // Hvis opprettelse av gruppe i gitlab feiler bør publisher fjernes fra databasen
+                    _publisherRepository.Remove(publisher);
+                    await _unitOfWork.CompleteAsync();
                     return new PublisherResponse(gitlabGroupResponse.Message);
                 }
             }
