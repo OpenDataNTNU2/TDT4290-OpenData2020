@@ -1,4 +1,4 @@
-import { Grid, Snackbar, Divider } from '@material-ui/core';
+import { Grid, Snackbar, Divider, Button } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
@@ -317,19 +317,35 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           })
         )}
         <br />
-        <Divider variant="fullWidth" />
 
-        {/* Request dataset */}
-        <span>
-          {ifPublished(data.publicationStatus)}
-          {requestButton}
-        </span>
-
+        {/* Request dataset & subscribe only if it is not your dataset */}
         {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
-          <span>
-            <SubscribeComp onClick={subscribe} subscribed={subscribed} />
-          </span>
+          <div>
+            <span>
+              {ifPublished(data.publicationStatus)}
+              {requestButton}
+            </span>
+            <span>
+              <SubscribeComp onClick={subscribe} subscribed={subscribed} />
+            </span>
+          </div>
         )}
+
+        <Divider />
+        <div>
+          <br />
+          {data.gitlabDiscussionBoardUrl && (
+            <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+              Diskuter dette datasettet
+            </Button>
+          )}
+          <br />
+          {data.gitlabCreateIssueUrl && (
+            <Button color="primary" href={data.gitlabCreateIssueUrl}>
+              Gi tilbakemeldinger på dette datasettet
+            </Button>
+          )}
+        </div>
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
           <Alert elevation={1} severity="info">
