@@ -29,9 +29,11 @@ namespace OpenData.API.Mapping
 
             CreateMap<SaveCategoryResource, Category>();
 
-            CreateMap<SaveCoordinationResource, Coordination>();
+            CreateMap<SaveCoordinationResource, Coordination>()
+                    .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => (EAccessLevel)src.AccessLevel));
             CreateMap<CoordinationQueryResource, CoordinationQuery>();
             CreateMap<SaveApplicationResource, Application>();
+            CreateMap<SaveSubscriptionResource, Subscription>();
 
         }
     }

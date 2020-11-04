@@ -5,7 +5,7 @@ namespace OpenData.API.Infrastructure
         DatasetList,
         DistributionList,
         UserList,
-
         PublisherList,
+        CategoryList,
     }
 }

@@ -9,7 +9,7 @@ namespace OpenData.API.Resources
         public string Reason { get; set; }
         [Required]
         public int? CoordinationId { get; set; }
-        [Required]
         public int? DatasetId { get; set; }
+        public int? PublisherId { get; set; }
     }
 }

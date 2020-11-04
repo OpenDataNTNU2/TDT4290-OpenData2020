@@ -21,6 +21,7 @@ namespace OpenData.API.Persistence.Repositories
                             .Include(d => d.Category)
                             .Include(d => d.Distributions)
                             .Include(d => d.Coordination)
+                            .Include(d => d.Subscriptions)
                             .Include(d => d.DatasetTags)
                                 .ThenInclude(d => d.Tags)
                             .AsNoTracking();
@@ -60,6 +61,35 @@ namespace OpenData.API.Persistence.Repositories
             }
 
 
+            // Filter on Access Level
+            if (!String.IsNullOrEmpty(query.AccessLevels))
+            {
+                // Parses the list of Access levels from string to list of EAccessLevels
+                List<EAccessLevel> accessLevels = new List<EAccessLevel>();
+                foreach (string accessLevel in query.AccessLevels.Split(','))
+                {
+                    if (accessLevel == null || accessLevel == "") continue;
+                    Enum.TryParse(accessLevel.Trim(), out EAccessLevel aLevel);
+                    accessLevels.Add(aLevel);
+                }
+                queryable = queryable.Where(d => accessLevels.Contains(d.AccessLevel));
+            }
+
+            // Filter on Publication status
+            if (!String.IsNullOrEmpty(query.PublicationStatuses))
+            {
+                // Parses the list of Publications statuses from string to list of EPublicationStatus
+                List<EPublicationStatus> pubStatuses = new List<EPublicationStatus>();
+                foreach (string pubStatus in query.PublicationStatuses.Split(','))
+                {
+                    if (pubStatus == null || pubStatus == "") continue;
+                    Enum.TryParse(pubStatus.Trim(), out EPublicationStatus status);
+                    pubStatuses.Add(status);
+                }
+                queryable = queryable.Where(d => pubStatuses.Contains(d.PublicationStatus));
+            }
+
+
             // Checks if the search string is in the title, description, publisher name, and tags of the dataset
             if (!String.IsNullOrEmpty(query.Search))
             {
@@ -69,6 +99,27 @@ namespace OpenData.API.Persistence.Repositories
                    d.Publisher.Name.ToLower().Contains(query.Search.Trim().ToLower()) ||
                    d.DatasetTags.Any(dt => dt.Tags.Name.ToLower().Contains(query.Search.Trim().ToLower())
                    ));
+            }
+
+            // Sorts the datasets. Default order by date ascending
+            string sortOrder = String.IsNullOrEmpty(query.SortOrder) ? "date_asc" : query.SortOrder.Trim().ToLower();
+            switch (sortOrder)
+            {
+                case "title_desc":
+                    queryable = queryable.OrderByDescending(d => d.Title);
+                    break;
+                case "title_asc":
+                    queryable = queryable.OrderBy(d => d.Title);
+                    break;
+                case "date_desc":
+                     queryable = queryable.OrderByDescending(d => d.DatePublished);
+                    break;
+                case "date_asc":
+                    queryable = queryable.OrderBy(d => d.DatePublished);
+                    break;
+                default:
+                    queryable = queryable.OrderBy(d => d.DatePublished);
+                    break;
             }
 
             // Here I count all items present in the database for the given query, to return as part of the pagination data.
@@ -104,29 +155,41 @@ namespace OpenData.API.Persistence.Repositories
         {
             Category cat = await _context.Categories
                         .Include(c => c.Narrower)
+                        .Include(p => p.Narrower).ThenInclude(c => c.Datasets)
+                        .Include(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
+                        .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
                         .FirstOrDefaultAsync(c => c.Id == id);
-            for (var i = 0; i < cat.Narrower.Count; i++)
-            {
-                if (cat.Narrower[i] != null)
-                {
-                    cat.Narrower[i] = await getCategoryWithNarrowers(cat.Narrower[i].Id);
-                }
-            }
+            // for (var i = 0; i < cat.Narrower.Count; i++)
+            // {
+            //     if (cat.Narrower[i] != null)
+            //     {
+            //         cat.Narrower[i] = await getCategoryWithNarrowers(cat.Narrower[i].Id);
+            //     }
+            // }
             return cat;
         }
 
-        public async Task AddAsync(Dataset dataset)
+        public async Task<Dataset> AddAsync(Dataset dataset)
         {
-            await _context.Datasets.AddAsync(dataset);
+            return (await _context.Datasets.AddAsync(dataset)).Entity;
         }
 
         public async Task<Dataset> FindByIdAsync(int id)
         {
             return await _context.Datasets
                                 .Include(d => d.Publisher)
+                                    .ThenInclude(d => d.Users)
                                 .Include(d => d.Category)
                                 .Include(d => d.Distributions)
                                 .Include(d => d.Coordination)
+                                .Include(d => d.Subscriptions)
                                 .Include(d => d.DatasetTags)
                                     .ThenInclude(d => d.Tags)
                                 .FirstOrDefaultAsync(i => i.Id == id);
@@ -140,6 +203,11 @@ namespace OpenData.API.Persistence.Repositories
         public void Remove(Dataset dataset)
         {
             _context.Datasets.Remove(dataset);
+        }
+
+        public async Task AddNotificationAsync(Notification notification)
+        {
+            await _context.Notifications.AddAsync(notification);
         }
     }
 }

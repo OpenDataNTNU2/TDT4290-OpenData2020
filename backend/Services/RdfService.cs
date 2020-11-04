@@ -2,6 +2,7 @@
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Repositories;
+using OpenData.API.Domain.Services.Communication;
 using System;
 using System.Collections.Generic;
 using VDS.RDF;
@@ -29,38 +30,45 @@ namespace OpenData.API.Services
         // TODO: De fra data.norge.no har flere format på en distribution?? Skal vi støtte det? :o
         // RART: Finner ikke kategori kobling i rdfene
         // Import dataset from link containing rdf schema. 
-        public async Task<Dataset> import(String url, int categoryId)
+        public async Task<DatasetResponse> import(String url, int categoryId)
         {   
             Graph g;
-            // Guess the url is actually an url.
-            if (url.Contains("/"))
-            {   
-                // If it is in fellesdatakatalog API we need to request with headers to get on rdf format
-                if (url.Contains("fellesdatakatalog.digdir.no"))
-                {
-                    g = NetworkHandling.LoadFromUriWithHeadersTurtle(url);
+            try 
+            {
+                // Guess the url is actually an url.
+                if (url.Contains("/"))
+                {   
+                    // If it is in fellesdatakatalog API we need to request with headers to get on rdf format
+                    if (url.Contains("fellesdatakatalog.digdir.no"))
+                    {
+                        g = NetworkHandling.LoadFromUriWithHeadersTurtle(url);
+                    }
+                    // If the url is directly to the page on data.norge.no fetch with the id
+                    else if (url.Contains("data.norge.no")){
+                        g = NetworkHandling.LoadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url.Substring(url.LastIndexOf("/")+1));
+                    }
+                    // Otherwise hope the url is directly to a rdf file location on XML format
+                    else 
+                    {
+                        g = NetworkHandling.LoadFromUriXml(url);
+                    }
                 }
-                // If the url is directly to the page on data.norge.no fetch with the id
-                else if (url.Contains("data.norge.no")){
-                    g = NetworkHandling.LoadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url.Substring(url.LastIndexOf("/")+1));
-                }
-                // Otherwise hope the url is directly to a rdf file location on XML format
+                // Guess it is not an url, and instead ID to some dataset in data.norge.no
                 else 
                 {
-                    g = NetworkHandling.LoadFromUriXml(url);
+                    g = NetworkHandling.LoadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url);
                 }
-            }
-            // Guess it is not an url, and instead ID to some dataset in data.norge.no
-            else 
+            } 
+            catch (Exception ex)
             {
-                g = NetworkHandling.LoadFromUriWithHeadersTurtle("https://fellesdatakatalog.digdir.no/api/datasets/" + url);
+                return new DatasetResponse($"Invalid import url. {ex.Message}");
             }
 
             // Try to parse the dataset and save it in the database
             Dataset dataset = await _graphService.AddDataset(g, categoryId);
 
             // return dataset;
-            return dataset;
+            return new DatasetResponse(dataset);
         }
 
         // Import categories
@@ -70,14 +78,11 @@ namespace OpenData.API.Services
             return await _graphService.AddCategory(g, null);
         }
 
-
-        // "https://fellesdatakatalog.digdir.no/api/datasets/e26c5150-7f66-4b0e-a086-27c10f42800f",
-        // "https://opencom.no/dataset/58f23dea-ab22-4c68-8c3b-1f602ded6d3e.rdf",
         // Populate the database with datasets from fellesdatakatalog
-        public async Task<Dataset> populate(int numberOfDatasets) 
+        public async Task<DatasetResponse> populate(int numberOfDatasets) 
         {
             List<string> urls = findUrlsFromFellesKatalogen(numberOfDatasets);
-            Dataset dataset = new Dataset();
+            DatasetResponse dataset = new DatasetResponse("");
 
             List<Category> categories = (List<Category>)await _categoryRepository.FlatListAsync();
             

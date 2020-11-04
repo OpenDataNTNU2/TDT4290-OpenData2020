@@ -8,6 +8,9 @@ namespace OpenData.API.Resources
     {
         public int Id { get; set; }
         public string Identifier { get; set; }
+        public string GitlabProjectUrl { get; set; }
+        public string GitlabDiscussionBoardUrl { get; set; }
+        public string GitlabCreateIssueUrl { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public DateTime DateLastUpdated {get; set; }
@@ -21,6 +24,6 @@ namespace OpenData.API.Resources
         public CategoryResource Category { get; set; }
         public int InterestCounter { get; set; }
         public CoordinationResource Coordination { get; set; }
-
+        public IList<SubscriptionResource> Subscriptions { get; set; } = new List<SubscriptionResource>();
     }
 }

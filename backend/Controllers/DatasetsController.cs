@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Cors;
 using OpenData.API;
 using System;
 using Microsoft.AspNetCore.JsonPatch;
-using OpenData.API.Domain.Repositories;
 
 
 namespace OpenData.API.Controllers
@@ -23,20 +22,19 @@ namespace OpenData.API.Controllers
         private readonly IDatasetService _datasetService;
         private readonly IMapper _mapper;
         private readonly IRdfService _rdfService;
-        private readonly IUnitOfWork _unitOfWork;
 
-        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper, IUnitOfWork unitOfWork)
+        public DatasetsController(IRdfService rdfService, IDatasetService datasetService, IMapper mapper)
         {
             _rdfService = rdfService;
             _datasetService = datasetService;
             _mapper = mapper;
-            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
         /// Lists all datasets.
         /// </summary>
-        /// <returns>List os datasets.</returns>
+        /// <param name="query">Query containing search, filters and page.</param>
+        /// <returns>List of datasets.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(QueryResultResource<DatasetResource>), 200)]
         public async Task<QueryResultResource<DatasetResource>> ListAsync([FromQuery] DatasetQueryResource query)
@@ -86,25 +84,41 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Imports a new dataset.
+        /// </summary>
+        /// <param name="url">URL to import from.</param>
+        /// <param name="categoryId">Category Id to put the Dataset in.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("import")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostImportAsync(string url, int categoryId)
         {   
-            Dataset datatset = await _rdfService.import(url, categoryId);
+            var result = await _rdfService.import(url, categoryId);
 
-            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorResource(result.Message));
+            }
+
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(result.Resource);
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Populates the database with datasets from Fellesdatakatlog, data.norge.no
+        /// </summary>
+        /// <param name="numberOfDatasets">Number of datasets.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost("populate")]
         [ProducesResponseType(typeof(DatasetResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
         public async Task<IActionResult> PostPopulate(int numberOfDatasets)
         {   
-            Dataset datatset = await _rdfService.populate(numberOfDatasets);
+            var datatset = await _rdfService.populate(numberOfDatasets);
 
-            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset);
+            var datasetResource = _mapper.Map<Dataset, DatasetResource>(datatset.Resource);
             return Ok(datasetResource);
         }
 
@@ -131,6 +145,12 @@ namespace OpenData.API.Controllers
             return Ok(datasetResource);
         }
 
+        /// <summary>
+        /// Updates an existing dataset according to an identifier.
+        /// </summary>
+        /// <param name="id">Dataset identifier.</param>
+        /// <param name="patch">What attribute should be changed and the value.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPatch("{id}")]
         [ProducesResponseType(typeof(DatasetResource), 200)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -138,18 +158,14 @@ namespace OpenData.API.Controllers
         {
             if (patch != null)
             {
-                var datasetResponse = await _datasetService.FindByIdAsync(id);
-                Dataset dataset = datasetResponse.Resource;
-                patch.ApplyTo(dataset, ModelState);
-
-                await _unitOfWork.CompleteAsync();
+                var datasetResponse = await _datasetService.UpdateAsync(id, patch);
 
                 if (!ModelState.IsValid)
                 {
                     return BadRequest(ModelState);
                 }
-
-                var datasetResource = _mapper.Map<Dataset, DatasetResource>(dataset);
+                
+                var datasetResource = _mapper.Map<Dataset, DatasetResource>(datasetResponse.Resource);
                 return Ok(datasetResource);
             }
             return BadRequest(ModelState);

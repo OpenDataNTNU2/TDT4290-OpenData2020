@@ -3,7 +3,7 @@ using System;
 
 namespace OpenData.API.Domain.Models
 {
-    public class Dataset
+    public class Dataset : ICatalogueItem
     {
         public int Id { get; set; }
         public string Identifier { get; set; }
@@ -25,6 +25,9 @@ namespace OpenData.API.Domain.Models
         public Coordination Coordination { get; set; }
         public int InterestCounter { get; set;}
         public IList<Application> Applications { get; set; } = new List<Application>();
-
+        public IList<Subscription> Subscriptions { get; set; } = new List<Subscription>();
+        public int? GitlabProjectId { get; set; }
+        public string GitlabProjectPath { get; set; }
+        public int? GitlabDiscussionBoardId { get; set; }
     }
 }

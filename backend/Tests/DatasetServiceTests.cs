@@ -5,6 +5,10 @@ using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using OpenData.External.Gitlab;
+using OpenData.External.Gitlab.Models;
+using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab.Services.Communication;
 using System;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
@@ -20,6 +24,11 @@ namespace Tests
         protected DatasetResponse Res { get; set; }
         protected Dataset ExampleV { get; set; }
 
+        // det burde da ikke være nøvdendig å lage noe sånt ...
+        public class SoullessGitlabCLient : IGitlabClient {
+            public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabProject>(gitlabProject)); }
+            public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup) { return Task.Run(() => new GitlabResponse<GitlabGroup>(gitlabGroup)); }
+        }
 
         [SetUp]
         public void Setup()
@@ -29,12 +38,20 @@ namespace Tests
             Context.AddTestData();
             DS = new DatasetService(
                 new DatasetRepository(Context),
+                new NotificationService(new NotificationRepository(Context), new UnitOfWork(Context)),
                 new PublisherRepository(Context),
                 new CategoryRepository(Context),
                 new CoordinationRepository(Context),
                 new TagsRepository(Context),
                 new UnitOfWork(Context),
-                new MemoryCache(new MemoryCacheOptions()));
+                new MemoryCache(new MemoryCacheOptions()),
+                new GitlabService(new SoullessGitlabCLient()) /*
+                fuck C# som ikke har anonyme implementasjoner av interfaces (wtf liksom? vi lever i en sivilisert verden, ikke koding anno 1999)
+                og hele dette clusterfucket av dependency injections som er totalt uegnet både på kort og lang sikt ...
+                Til og med singletons - eller gud forby - statiske klassemetoder, hadde vært mer oversiktlig og lettere å implementere enn dette
+                stakkarslige systemet med services som later som om de kan genereres automagisk med dependency injection, men likevel
+                må initialiseres med andre services ... som igjen må initialiseres ...
+                Hva er grunnen til å skrive "objektorientert" igjen??? Ett av verdens største mysterier ... */);
             ExampleV = new Dataset
             {
                 Id = 104,

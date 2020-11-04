@@ -61,7 +61,7 @@ namespace OpenData.API.Services
             await _datasetRepository.AddAsync(dataset);
             await _unitOfWork.CompleteAsync();
             
-            AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
+            await AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
             await AddDistribution(g, dataset.Id);
             return dataset;
         }
@@ -124,7 +124,7 @@ namespace OpenData.API.Services
             Dictionary<string,string> attributes = getAttributesFromSubject(g, publisherUri[0]);
             String publisherName = attributes.GetValueOrDefault("name", "Ukjent");
             
-            // Check if the publisher  already exists
+            // Check if the publisher already exists
             IEnumerable<Publisher> existingPublishers = await _publisherRepository.ListAsync();
             foreach (Publisher pub in existingPublishers)
             {
@@ -136,7 +136,7 @@ namespace OpenData.API.Services
 
             // If it doesn't exist, add relevant attributes to a new publisher
             Publisher publisher = new Publisher {
-                Name = publisherName, 
+                Name = FirstCharToUpper(publisherName), 
             };
 
             // Add the dataset to the publisher
@@ -145,8 +145,15 @@ namespace OpenData.API.Services
             return publisher;
         }
 
+        public static string FirstCharToUpper(string input)
+        {
+            if (String.IsNullOrEmpty(input))
+                throw new ArgumentException("Input value null or empty!");
+            return input.First().ToString().ToUpper() + input.Substring(1).ToLower();
+        }
+
         // Add tags in a graph to the database
-        public async void AddTags(Graph g, String keywords, Dataset dataset)
+        public async Task AddTags(Graph g, String keywords, Dataset dataset)
         {
             String[] keywordsList = keywords.Split(",");
             IEnumerable<Tags> existingTags = await _tagsRepository.ListAsync();

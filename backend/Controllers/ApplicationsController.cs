@@ -23,6 +23,10 @@ namespace OpenData.API.Controllers
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// Lists all existing applications.
+        /// </summary>
+        /// <returns>List of applications.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<ApplicationResource>), 200)]
         public async Task<IEnumerable<ApplicationResource>> GetAllAsync()
@@ -33,6 +37,11 @@ namespace OpenData.API.Controllers
             return resources;
         }
 
+        /// <summary>
+        /// Find one application by id.
+        /// </summary>
+        /// <param name="id">Application identifier.</param>
+        /// <returns>Application found by id.</returns>
         [HttpGet("{id}")]
         [ProducesResponseType(typeof(ApplicationResource), 200)]
         public async Task<ApplicationResource> FindByIdAsync(int id)
@@ -43,6 +52,11 @@ namespace OpenData.API.Controllers
             return resource;
         }
 
+        /// <summary>
+        /// Saves a new application.
+        /// </summary>
+        /// <param name="resource">Application data.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(ApplicationResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -61,6 +75,12 @@ namespace OpenData.API.Controllers
             return Ok(applicationResource);
         }
 
+        /// <summary>
+        /// Updates an existing application according to an identifier.
+        /// </summary>
+        /// <param name="id">Application identifier.</param>
+        /// <param name="resource">Application data.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(ApplicationResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -79,6 +99,11 @@ namespace OpenData.API.Controllers
             return Ok(applicationResource);
         }
 
+        /// <summary>
+        /// Deletes a given application according to an identifier.
+        /// </summary>
+        /// <param name="id">Application identifier.</param>
+        /// <returns>Response for the request.</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(ApplicationResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]

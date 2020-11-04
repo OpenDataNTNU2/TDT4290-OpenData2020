@@ -8,6 +8,9 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using OpenData.External.Gitlab.Services;
+using Microsoft.AspNetCore.JsonPatch;
+
 
 namespace OpenData.API.Services
 {
@@ -17,15 +20,25 @@ namespace OpenData.API.Services
         private readonly IPublisherRepository _publisherRepository;
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagsRepository _tagsRepository;
+        private readonly INotificationService _notificationService;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IGitlabService _gitlabService;
 
-        public CoordinationService(ICoordinationRepository coordinationRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
+        public CoordinationService(ICoordinationRepository coordinationRepository,
+                                   INotificationService notificationService,
+                                   IPublisherRepository publisherRepository,
+                                   ICategoryRepository categoryRepository,
+                                   ITagsRepository tagsRepository,
+                                   IUnitOfWork unitOfWork,
+                                   IGitlabService gitlabService)
         {
             _coordinationRepository = coordinationRepository;
             _publisherRepository = publisherRepository;
             _categoryRepository = categoryRepository;
             _tagsRepository = tagsRepository;
+            _notificationService = notificationService;
             _unitOfWork = unitOfWork;
+            _gitlabService = gitlabService;
         }
         public async Task<QueryResult<Coordination>> ListAsync(CoordinationQuery query)
         {
@@ -57,20 +70,38 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
+                coordination.DatePublished = DateTime.Now;
+                coordination.DateLastUpdated = DateTime.Now;
 
-                await _coordinationRepository.AddAsync(coordination);
-                await _unitOfWork.CompleteAsync();
-                
-                await addTags(coordination);
+                var createCoordinationTask = Task.Run(async() => {
+                    coordination = await _coordinationRepository.AddAsync(coordination);
+                    await _unitOfWork.CompleteAsync();
+                    await addTags(coordination);
+                    return coordination;
+                });
 
-                return new CoordinationResponse(coordination);
+                var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
+                    return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                if (gitlabProjectResponse.Success) {
+                    coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                    _coordinationRepository.Update(coordination);
+                    await _unitOfWork.CompleteAsync();
+                    return new CoordinationResponse(coordination);
+                } else {
+                    // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
+                    _coordinationRepository.Remove(coordination);
+                    await _unitOfWork.CompleteAsync();
+                    return new CoordinationResponse(gitlabProjectResponse.Message);
+                }
             }
             catch(Exception ex)
             {
                 return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
             }
         }
-
 
         public async Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination)
         {
@@ -94,15 +125,17 @@ namespace OpenData.API.Services
                 existingCoordination.StatusDescription = coordination.StatusDescription;
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
+                existingCoordination.DateLastUpdated = DateTime.Now;
+                existingCoordination.AccessLevel = coordination.AccessLevel;
 
-
-                // This doesnt work to remove and gets an error when adding already added tags.
                 existingCoordination.CoordinationTags.Clear();
                 await addTags(existingCoordination);
 
                 _coordinationRepository.Update(existingCoordination);
-                await _unitOfWork.CompleteAsync();
 
+                await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
+                await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
+                await _unitOfWork.CompleteAsync();
 
                 return new CoordinationResponse(existingCoordination);
             }
@@ -111,6 +144,52 @@ namespace OpenData.API.Services
                 // Do some logging stuff
                 return new CoordinationResponse($"An error occurred when updating the coordination: {ex.Message}");
             }
+        }
+
+        public async Task<CoordinationResponse> UpdateAsync(int id, JsonPatchDocument<Coordination> patch)
+        {
+            var coordination = await _coordinationRepository.FindByIdAsync(id);
+
+            patch.ApplyTo(coordination);
+            coordination.DateLastUpdated = DateTime.Now;
+
+            switch(patch.Operations[0].path)
+            {
+                case "/title":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordning du følger har endret tittel til '" + coordination.Title + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En samordningen du eier har endret tittel til '" + coordination.Title + "'.");
+                    break;
+                case "/description":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret beskrivelse.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret beskrivelse.");
+                    break;
+                case "/underCoordination":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret publiseringsstatus.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret publiseringsstatus.");
+                    break;
+                case "/categoryId":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret kategori.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret kategori.");
+                    break;
+                case "/tagsIds":
+                    coordination.CoordinationTags.Clear();
+                    await addTags(coordination);
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tags.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tags.");
+                    break;
+                case "/accessLevel":
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har endret tilgangsnivå til '" + coordination.AccessLevel + "'.");
+                    break;
+                default:
+                    await _notificationService.AddUserNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen '" + coordination.Title + "' har blitt endret.");
+                    await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "Samordningen din '" + coordination.Title + "' har blitt endret.");
+                    break;
+            }
+
+            await _unitOfWork.CompleteAsync();
+            
+            return new CoordinationResponse(coordination);
         }
 
         private async Task<(Boolean success,String error)> idChecks(Coordination coordination)

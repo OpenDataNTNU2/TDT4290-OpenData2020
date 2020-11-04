@@ -5,20 +5,30 @@ using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services.Communication;
+using Microsoft.Extensions.Caching.Memory;
+using OpenData.API.Infrastructure;
+
 
 public class CategoryService : ICategoryService
 {
     private readonly ICategoryRepository _categoryRepository;
     private readonly IUnitOfWork _unitOfWork;
-    public CategoryService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork)
+    private readonly IMemoryCache _cache;
+
+    public CategoryService(ICategoryRepository categoryRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
     {
         _categoryRepository = categoryRepository;
         _unitOfWork = unitOfWork;
+        _cache = cache;
     }
 
     public async Task<IEnumerable<Category>> ListAsync()
     {
-        return await _categoryRepository.ListAsync();
+        var categories = await _cache.GetOrCreateAsync(CacheKeys.CategoryList, (entry) => {
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5);
+            return _categoryRepository.ListAsync();
+        });
+        return categories;
     }
 
 

@@ -1,0 +1,28 @@
+.cardContainer {
+  background-color: rgb(64, 69, 75);
+  width: 350px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 15px 20px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  border-radius: 0 0 5px 5px;
+  z-index: 100;
+  color: white;
+}
+.cardContainer h2 {
+  margin: 15px 0px 0px 2px;
+}
+
+.notification {
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+  margin: 10px 0;
+}
+.notification p {
+  margin: 0px 0px 7px 0px;
+}
+
+.notification:hover {
+  background-color: grey;
+}

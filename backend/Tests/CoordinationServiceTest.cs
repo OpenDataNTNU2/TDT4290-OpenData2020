@@ -5,6 +5,7 @@ using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using OpenData.External.Gitlab.Services;
 using System;
 using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
@@ -28,10 +29,12 @@ namespace Tests
             Context.AddTestData();
             CS = new CoordinationService(
                 new CoordinationRepository(Context),
+                new NotificationService(new NotificationRepository(Context), new UnitOfWork(Context)),
                 new PublisherRepository(Context),
                 new CategoryRepository(Context),
                 new TagsRepository(Context),
-                new UnitOfWork(Context));
+                new UnitOfWork(Context),
+                new GitlabService(new DatasetServiceTests.SoullessGitlabCLient()));
             ExampleV = new Coordination
             {
                 Id = 103,

@@ -12,11 +12,14 @@ using OpenData.API.Extensions;
 using OpenData.API.Persistence.Contexts;
 using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
+using OpenData.External.Gitlab.Services;
+using OpenData.External.Gitlab;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using System.Linq;
+using System;
 
 namespace OpenData.API
 {
@@ -47,6 +50,9 @@ namespace OpenData.API
 
             services.AddCustomSwagger();
 
+            services.AddHttpClient();
+            services.AddSingleton<IGitlabClient, GitlabClient>();
+
             services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
                 // Adds a custom error response factory when ModelState is invalid
@@ -55,7 +61,8 @@ namespace OpenData.API
 
             services.AddDbContext<AppDbContext>(options =>
             {
-                options.UseInMemoryDatabase(Configuration.GetConnectionString("memory"));
+                // options.UseInMemoryDatabase(Configuration.GetConnectionString("memory"));
+                options.UseNpgsql(Configuration.GetConnectionString("PostgreSQL"));
             });
 
             services.AddScoped<IDatasetRepository, DatasetRepository>();
@@ -79,6 +86,9 @@ namespace OpenData.API
 
             services.AddScoped<IGraphService, GraphService>();
             services.AddScoped<IRdfService, RdfService>();
+            services.AddScoped<IGitlabService, GitlabService>();
+            services.AddScoped<INotificationService, NotificationService>();
+            services.AddScoped<INotificationRepository, NotificationRepository>();
 
 
             services.AddAutoMapper(typeof(Startup));

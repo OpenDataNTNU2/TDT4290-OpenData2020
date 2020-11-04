@@ -38,6 +38,21 @@ namespace OpenData.API.Controllers
         }
 
         /// <summary>
+        /// Find one user by id.
+        /// </summary>
+        /// <param name="username">Username.</param>
+        /// <returns>User found by username.</returns>
+        [HttpGet("{username}")]
+        [ProducesResponseType(typeof(UserResource), 200)]
+        public async Task<UserResource> FindByUsernameAsync(string username)
+        {
+            var user = await _userService.FindByUsernameAsync(username);
+            var resource = _mapper.Map<User, UserResource>(user.Resource);
+
+            return resource;
+        }
+
+        /// <summary>
         /// Saves a new user.
         /// </summary>
         /// <param name="resource">User data.</param>
@@ -72,6 +87,28 @@ namespace OpenData.API.Controllers
         {
             var user = _mapper.Map<SaveUserResource, User>(resource);
             var result = await _userService.UpdateAsync(username, user);
+
+            if (!result.Success)
+            {
+                return BadRequest(new ErrorResource(result.Message));
+            }
+
+            var userResource = _mapper.Map<User, UserResource>(result.Resource);
+            return Ok(userResource);
+        }
+
+        /// <summary>
+        /// Subscribes a user to a dataset og coordination
+        /// </summary>
+        /// <param name="resource">Subscription containing User Id and Dataset/Coordination Id.</param>
+        /// <returns>Response for the request.</returns>
+        [HttpPost("subscribe")]
+        [ProducesResponseType(typeof(DatasetResource), 201)]
+        [ProducesResponseType(typeof(ErrorResource), 400)]
+        public async Task<IActionResult> PostSubscribe([FromBody] SaveSubscriptionResource resource)
+        {   
+            var subscription = _mapper.Map<SaveSubscriptionResource, Subscription>(resource);
+            var result = await _userService.SubscribeAsync(subscription);
 
             if (!result.Success)
             {

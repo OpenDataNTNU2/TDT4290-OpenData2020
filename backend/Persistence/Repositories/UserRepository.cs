@@ -14,6 +14,8 @@ namespace OpenData.API.Persistence.Repositories
         public async Task<IEnumerable<User>> ListAsync()
         {
             return await _context.Users
+                                .Include(u => u.Subscriptions)
+                                .Include(u => u.Notifications)
                                 .AsNoTracking()
                                 .ToListAsync();
 
@@ -28,11 +30,17 @@ namespace OpenData.API.Persistence.Repositories
 
         public async Task<User> FindByIdAsync(int id)
         {
-            return await _context.Users.FindAsync(id);
+            return await _context.Users
+                                .Include(u => u.Subscriptions)
+                                .Include(u => u.Notifications)
+                                .FirstOrDefaultAsync(i => i.Id == id);
         }
         public async Task<User> FindByUsernameAsync(string username)
         {
-            return await _context.Users.SingleOrDefaultAsync(u => u.Username == username);
+            return await _context.Users
+                                .Include(u => u.Subscriptions)
+                                .Include(u => u.Notifications)
+                                .SingleOrDefaultAsync(u => u.Username == username);
         }
 
         public void Update(User user)
@@ -44,5 +52,11 @@ namespace OpenData.API.Persistence.Repositories
         {
             _context.Users.Remove(user);
         }
+
+        public async Task AddSubscriptionAsync(Subscription subscription)
+        {
+            await _context.Subscriptions.AddAsync(subscription);
+        }
+
     }
 }

@@ -21,6 +21,11 @@ namespace OpenData.API.Controllers
             _tagsService = tagsService;
             _mapper = mapper;
         }
+
+        /// <summary>
+        /// Lists all tags.
+        /// </summary>
+        /// <returns>List of tags.</returns>
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<TagsResource>), 200)]
         public async Task<IEnumerable<TagsResource>> GetAllAsync()
@@ -30,6 +35,12 @@ namespace OpenData.API.Controllers
             
             return resources;
         }
+
+        /// <summary>
+        /// Saves a new tag.
+        /// </summary>
+        /// <param name="resource">Tag data.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPost]
         [ProducesResponseType(typeof(TagsResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -48,6 +59,12 @@ namespace OpenData.API.Controllers
                 return Ok(tagsResource);
         }
 
+        /// <summary>
+        /// Updates an existing tag according to an identifier.
+        /// </summary>
+        /// <param name="id">Tag identifier.</param>
+        /// <param name="resource">Updated tag data.</param>
+        /// <returns>Response for the request.</returns>
         [HttpPut("{id}")]
         [ProducesResponseType(typeof(TagsResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]
@@ -65,6 +82,12 @@ namespace OpenData.API.Controllers
             var tagsResource = _mapper.Map<Tags, TagsResource>(result.Resource);
             return Ok(tagsResource);
         }
+
+        /// <summary>
+        /// Deletes a given tag according to an identifier.
+        /// </summary>
+        /// <param name="id">Tag identifier.</param>
+        /// <returns>Response for the request.</returns>
         [HttpDelete("{id}")]
         [ProducesResponseType(typeof(TagsResource), 201)]
         [ProducesResponseType(typeof(ErrorResource), 400)]

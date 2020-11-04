@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory.ValueGeneration.Internal;
 using OpenData.API.Domain.Models;
+using System;
 
 namespace OpenData.API.Persistence.Contexts
 {
@@ -16,6 +17,8 @@ namespace OpenData.API.Persistence.Contexts
         public DbSet<Coordination> Coordinations { get; set; }
         public DbSet<CoordinationTags> CoordinationTags { get; set; }
         public DbSet<Application> Applications { get; set; }
+        public DbSet<Subscription> Subscriptions { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
@@ -30,35 +33,39 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Publisher>().Property(p => p.Name).IsRequired();
             builder.Entity<Publisher>().HasMany(p => p.Datasets).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
             builder.Entity<Publisher>().HasMany(p => p.Coordinations).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Users).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
+            builder.Entity<Publisher>().HasMany(p => p.Applications).WithOne(p => p.Publisher).HasForeignKey(p => p.PublisherId);
 
             builder.Entity<User>().ToTable("Users");
             builder.Entity<User>().HasKey(p => p.Id);
             builder.Entity<User>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<User>().Property(p => p.Username).IsRequired();
+            builder.Entity<User>().HasMany(p => p.Subscriptions).WithOne(p => p.User).HasForeignKey(p => p.UserId);
+            builder.Entity<User>().HasMany(p => p.Notifications).WithOne(p => p.User).HasForeignKey(p => p.UserId);
+
 
             builder.Entity<Category>().ToTable("Categories");
             builder.Entity<Category>().HasKey(p => p.Id);
             builder.Entity<Category>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-            builder.Entity<Category>().Property(p => p.Name).IsRequired().HasMaxLength(60);
+            builder.Entity<Category>().Property(p => p.Name).IsRequired();
             builder.Entity<Category>().HasMany(p => p.Datasets).WithOne(p => p.Category).HasForeignKey(p => p.CategoryId);
 
             builder.Entity<Dataset>().ToTable("Datasets");
             builder.Entity<Dataset>().HasKey(p => p.Id);
             builder.Entity<Dataset>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();//.HasValueGenerator<InMemoryIntegerValueGenerator<int>>();
             builder.Entity<Dataset>().Property(p => p.Identifier).IsRequired();
-            builder.Entity<Dataset>().Property(p => p.Title).IsRequired().HasMaxLength(60);
+            builder.Entity<Dataset>().Property(p => p.Title).IsRequired();
             builder.Entity<Dataset>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Dataset>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Dataset>().HasMany(p => p.Distributions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
-            builder.Entity<Dataset>()
-            .HasMany(p => p.Applications)
-            .WithOne(p => p.Dataset)
-            .HasForeignKey(p => p.DatasetId);
+            builder.Entity<Dataset>().HasMany(p => p.Applications).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
+            builder.Entity<Dataset>().HasMany(p => p.Subscriptions).WithOne(p => p.Dataset).HasForeignKey(p => p.DatasetId);
+
 
             builder.Entity<Distribution>().ToTable("Distributions");
             builder.Entity<Distribution>().HasKey(p => p.Id);
             builder.Entity<Distribution>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
-            builder.Entity<Distribution>().Property(p => p.Title).IsRequired().HasMaxLength(60);
+            builder.Entity<Distribution>().Property(p => p.Title).IsRequired();
             builder.Entity<Distribution>().Property(p => p.DatasetId).IsRequired();
 
             builder.Entity<Tags>().ToTable("Tags");
@@ -99,6 +106,7 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Coordination>().Property(p => p.PublisherId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.CategoryId).IsRequired();
             builder.Entity<Coordination>().Property(p => p.UnderCoordination).HasDefaultValue(false);
+            builder.Entity<Coordination>().HasMany(p => p.Subscriptions).WithOne(p => p.Coordination).HasForeignKey(p => p.CoordinationId);
             builder.Entity<Coordination>()
             .HasMany(p => p.Datasets)
             .WithOne(p => p.Coordination)
@@ -112,8 +120,29 @@ namespace OpenData.API.Persistence.Contexts
             builder.Entity<Application>().HasKey(p => p.Id);
             builder.Entity<Application>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<Application>().Property(p => p.Reason).IsRequired();
-            builder.Entity<Application>().Property(p => p.DatasetId).IsRequired();
             builder.Entity<Application>().Property(p => p.CoordinationId).IsRequired();
+
+            builder.Entity<Subscription>().ToTable("Subscriptions");
+            builder.Entity<Subscription>().HasKey(p => p.Id);
+            builder.Entity<Subscription>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Subscription>()
+                .HasOne(s => s.Dataset)
+                .WithMany(d => d.Subscriptions)
+                .HasForeignKey(s => s.DatasetId);
+            builder.Entity<Subscription>()
+                .HasOne(s => s.User)
+                .WithMany(u => u.Subscriptions)
+                .HasForeignKey(s => s.UserId);
+            builder.Entity<Subscription>()
+                .HasOne(s => s.Coordination)
+                .WithMany(u => u.Subscriptions)
+                .HasForeignKey(s => s.CoordinationId);
+
+            builder.Entity<Notification>().ToTable("Notification");
+            builder.Entity<Notification>().HasKey(p => p.Id);
+            builder.Entity<Notification>().Property(p => p.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<Notification>().Property(p => p.UserId).IsRequired();
+            builder.Entity<Notification>().HasOne(dt => dt.User).WithMany(d => d.Notifications).HasForeignKey(dt => dt.UserId);
         }
 
         public void AddTestData()
@@ -253,7 +282,10 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Bicycle coordination",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 101,
-                CategoryId = 101
+                CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
+                AccessLevel = EAccessLevel.green
             };
 
             Coordination beachCoordination = new Coordination
@@ -262,9 +294,61 @@ namespace OpenData.API.Persistence.Contexts
                 Title = "Strand samordning",
                 Description = "Dette er en samordning av datasett om strender",
                 PublisherId = 100,
-                CategoryId = 101
+                CategoryId = 101,
+                DateLastUpdated = DateTime.Now,
+                DatePublished = DateTime.Now,
+                AccessLevel = EAccessLevel.yellow
             };
             AddRange(bicycleCoordination, beachCoordination);
+
+            Subscription sub1 = new Subscription
+            {
+                Id = 100,
+                DatasetId = 100,
+                UserId = 100,
+            };
+            Subscription sub2 = new Subscription
+            {
+                Id = 101,
+                DatasetId = 101,
+                UserId = 101
+            };
+            Subscription sub3 = new Subscription
+            {
+                Id = 102,
+                CoordinationId = 101,
+                UserId = 101
+            };
+            AddRange(sub1, sub2, sub3);
+
+            Notification not1 = new Notification
+            {
+                Id = 100,
+                DatasetId = 100,
+                UserId = 100,
+                Title = "Strand - Trondheim kommune",
+                Description = "Datasett 'Strand' har blitt oppdatert.",
+                TimeOfCreation = DateTime.Now
+            };
+            Notification not2 = new Notification
+            {
+                Id = 101,
+                DatasetId = 101,
+                UserId = 100,
+                Title = "Sykkel - Bodø kommune",
+                Description = "Datasett 'Sykkel' har blitt oppdatert.",
+                TimeOfCreation = DateTime.Now
+            };
+            AddRange(not1, not2);
+
+            Application app = new Application
+            {
+                Id = 100,
+                DatasetId = 100,
+                CoordinationId = 100,
+                Reason = "Kan vi verme?"
+            };
+            AddRange(app);
 
             SaveChanges();
         }
