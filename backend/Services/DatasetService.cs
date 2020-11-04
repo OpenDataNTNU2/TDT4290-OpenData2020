@@ -113,8 +113,6 @@ namespace OpenData.API.Services
 
                 var publisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
 
-                Console.WriteLine("1================");
-                Console.WriteLine("Publisher: " + publisher.Name);
                 // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
                 // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
                 // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
