@@ -92,53 +92,62 @@ namespace OpenData.API.Services
                     await _unitOfWork.CompleteAsync();
                     return dataset;
                 });
-
-                // NOTE: Her venter jeg på at datasettet skal opprettes uten feil,
-                // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
-                // i gitlab.
-                // Dette kan kanskje gjøres smoothere.
-                var gitlabProjectResponse = await await createDatasetTask.ContinueWith(async(antecedent) => {
-                    var dataset = antecedent.Result;
-
-                    // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
-                    // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
-                    // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
-                    // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
-                    if (dataset.Publisher.GitlabGroupNamespaceId == null) {
-                        var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(dataset.Publisher);
-                        if (gitlabGroupResponse.Success) {
-                            dataset.Publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
-                            dataset.Publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
-                            _publisherRepository.Update(dataset.Publisher);
-                            await _unitOfWork.CompleteAsync();
-                        } else {
-                            // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
-                            // typisk skjer dette hvis det allerede eksisterer en gruppe i gitlab for publisher,
-                            // men dette er ikke reflektert i databasen.
-                            return new GitlabResponse<GitlabProject>(gitlabGroupResponse.Message + " ======> Noe har gått veldig galt med sære ting: Nei, vil ikke (Erna Solberg, 2018)");
-                        }
-                    }
-
-                    return await _gitlabService.CreateDatasetProject(dataset);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-
-                if (gitlabProjectResponse.Success) {
-                    dataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    dataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
-                    _datasetRepository.Update(dataset);
-                    await _unitOfWork.CompleteAsync();
-                    return new DatasetResponse(dataset);
-                } else {
-                    // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
-                    _datasetRepository.Remove(dataset);
-                    await _unitOfWork.CompleteAsync();
-                    return new DatasetResponse(gitlabProjectResponse.Message);
-                }
+                
+                return await CreateGitLabProject(createDatasetTask, dataset);
             }
             catch (Exception ex)
             {
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when saving the dataset: {ex.Message}");
+            }
+        }
+
+        public async Task<DatasetResponse> CreateGitLabProject(Task<Dataset> createDatasetTask, Dataset exsistingDataset)
+        {
+            // NOTE: Her venter jeg på at datasettet skal opprettes uten feil,
+            // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
+            // i gitlab.
+            // Dette kan kanskje gjøres smoothere.
+            var gitlabProjectResponse = await await createDatasetTask.ContinueWith(async(antecedent) => {
+                var dataset = antecedent.Result;
+
+                var publisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
+
+                Console.WriteLine("1================");
+                Console.WriteLine("Publisher: " + publisher.Name);
+                // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
+                // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
+                // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
+                // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
+                if (dataset.Publisher.GitlabGroupNamespaceId == null) {
+                    var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(dataset.Publisher);
+                    if (gitlabGroupResponse.Success) {
+                        dataset.Publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                        dataset.Publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+                        _publisherRepository.Update(dataset.Publisher);
+                        await _unitOfWork.CompleteAsync();
+                    } else {
+                        // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
+                        // typisk skjer dette hvis det allerede eksisterer en gruppe i gitlab for publisher,
+                        // men dette er ikke reflektert i databasen.
+                        return new GitlabResponse<GitlabProject>(gitlabGroupResponse.Message + " ======> Noe har gått veldig galt med sære ting: Nei, vil ikke (Erna Solberg, 2018)");
+                    }
+                }
+
+                return await _gitlabService.CreateDatasetProject(dataset);
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            if (gitlabProjectResponse.Success) {
+                exsistingDataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                exsistingDataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                _datasetRepository.Update(exsistingDataset);
+                await _unitOfWork.CompleteAsync();
+                return new DatasetResponse(exsistingDataset);
+            } else {
+                // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                _datasetRepository.Remove(exsistingDataset);
+                await _unitOfWork.CompleteAsync();
+                return new DatasetResponse(gitlabProjectResponse.Message);
             }
         }
 

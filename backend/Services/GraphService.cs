@@ -1,15 +1,13 @@
 using System;
 using VDS.RDF;
-using VDS.RDF.Writing;
-using VDS.RDF.Parsing;
 using System.Threading.Tasks;
 using OpenData.API.Domain.Models;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Repositories;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using OpenData.API.Util;
+using OpenData.API.Domain.Services.Communication;
 
 
 namespace OpenData.API.Services
@@ -22,8 +20,9 @@ namespace OpenData.API.Services
         private readonly ICategoryRepository _categoryRepository;
         private readonly ITagsRepository _tagsRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDatasetService _datasetService;
 
-        public GraphService(IDatasetRepository datasetRepository, IDistributionRepository distributionRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
+        public GraphService(IDatasetRepository datasetRepository, IDatasetService datasetService, IDistributionRepository distributionRepository, IPublisherRepository publisherRepository, ICategoryRepository categoryRepository, ITagsRepository tagsRepository, IUnitOfWork unitOfWork)
         {
             _datasetRepository = datasetRepository;
             _distributionRepository = distributionRepository;
@@ -31,13 +30,15 @@ namespace OpenData.API.Services
             _categoryRepository = categoryRepository;
             _tagsRepository = tagsRepository;
             _unitOfWork = unitOfWork;
+            _datasetService = datasetService;
         }
 
         // Add a dataset in a graph to the database
-        public async Task<Dataset> AddDataset(Graph g, int categoryId) 
+        public async Task<DatasetResponse> AddDataset(Graph g, int categoryId) 
         {
             // Find publisher id
             Publisher publisher = await AddPublisher(g);
+            await _unitOfWork.CompleteAsync();
 
             // Find the dataset subject uri 
             IUriNode dcatDataset = g.CreateUriNode("dcat:Dataset");
@@ -57,13 +58,16 @@ namespace OpenData.API.Services
                 AccessLevel = EAccessLevel.green,  
             };
 
-            // Add the dataset to the database
-            await _datasetRepository.AddAsync(dataset);
-            await _unitOfWork.CompleteAsync();
-            
-            await AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
-            await AddDistribution(g, dataset.Id);
-            return dataset;
+            var createDatasetTask = Task.Run(async() => {
+                // Add the dataset to the database
+                dataset = await _datasetRepository.AddAsync(dataset);
+                await _unitOfWork.CompleteAsync();
+                
+                await AddTags(g, attributes.GetValueOrDefault("keyword", ""), dataset);
+                await AddDistribution(g, dataset.Id);
+                return dataset;
+            });
+            return await _datasetService.CreateGitLabProject(createDatasetTask, dataset);
         }
 
         private DateTime getDateOrNow(String stringDate)
