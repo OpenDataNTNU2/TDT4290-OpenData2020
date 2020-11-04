@@ -119,12 +119,12 @@ namespace OpenData.API.Services
                 // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
                 // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
                 // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
-                if (dataset.Publisher.GitlabGroupNamespaceId == null) {
-                    var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(dataset.Publisher);
+                if (publisher.GitlabGroupNamespaceId == null) {
+                    var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(publisher);
                     if (gitlabGroupResponse.Success) {
-                        dataset.Publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
-                        dataset.Publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
-                        _publisherRepository.Update(dataset.Publisher);
+                        publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                        publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+                        _publisherRepository.Update(publisher);
                         await _unitOfWork.CompleteAsync();
                     } else {
                         // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
@@ -147,7 +147,7 @@ namespace OpenData.API.Services
                 // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
                 _datasetRepository.Remove(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
-                return new DatasetResponse(gitlabProjectResponse.Message);
+                return new DatasetResponse("GitLab project response failed:" + gitlabProjectResponse.Message);
             }
         }
 
