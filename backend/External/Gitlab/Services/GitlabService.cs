@@ -22,11 +22,25 @@ namespace OpenData.External.Gitlab.Services
             _gitlabClient = gitlabClient;
         }
 
-        public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
+        public async Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
             _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
-            return _gitlabClient.CreateGitlabProject(gitlabProject);
+            return await await _gitlabClient.CreateGitlabProject(gitlabProject)
+                    .ContinueWith(async (antecedent) => {
+                if (antecedent.Result.Success) {
+                    var createdGitlabProject = antecedent.Result.Resource;
+                    var issueBoardCreationResponse = await _gitlabClient.SetUpIssueDiscussionBoardForGitlabProject(createdGitlabProject);
+                    if (issueBoardCreationResponse.Success) {
+                        createdGitlabProject.defaultGitlabIssueBoardId = issueBoardCreationResponse.Resource.id;
+                        return GitlabResponse<GitlabProject>.Successful(createdGitlabProject);
+                    } else {
+                        // TODO: fjerne gitlab-prosjektet når opprettelse feiler
+                        return GitlabResponse<GitlabProject>.Error("Failed to set up gitlab issue board: " + issueBoardCreationResponse.Message);
+                    }
+                }
+                return antecedent.Result;
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroupForPublisher(Publisher publisher)
