@@ -4,6 +4,8 @@ namespace OpenData.External.Gitlab.Models
 {
     public class GitlabProject
     {
+        public int? defaultGitlabIssueBoardId { get; set; }
+
         // from https://docs.gitlab.com/ee/api/projects.html#create-project-for-user
         public int? id { get; set; }
         public string web_url { get; set; }

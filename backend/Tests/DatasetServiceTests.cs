@@ -29,6 +29,7 @@ namespace Tests
             public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabProject>(gitlabProject)); }
             public Task<GitlabResponse<GitlabProject>> UpdateGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabProject>(gitlabProject)); }
             public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup) { return Task.Run(() => new GitlabResponse<GitlabGroup>(gitlabGroup)); }
+            public Task<GitlabResponse<GitlabIssueBoard>> SetUpIssueDiscussionBoardForGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabIssueBoard>(new GitlabIssueBoard())); }
         }
 
         [SetUp]
