@@ -147,11 +147,11 @@ namespace OpenData.API.Services
                 if (coordination.GitlabProjectId == null)
                 {
                     var createCoordinationTask = Task.Run(() => {
-                        return coordination;
+                        return existingCoordination;
                     });
-                    await CreateGitLabProject(createCoordinationTask, coordination);
+                    await CreateGitLabProject(createCoordinationTask, existingCoordination);
                 }
-                await _gitlabService.UpdateProject(coordination);
+                await _gitlabService.UpdateProject(existingCoordination);
 
                 return new CoordinationResponse(existingCoordination);
             }

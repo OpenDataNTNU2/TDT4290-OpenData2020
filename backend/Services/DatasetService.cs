@@ -188,11 +188,11 @@ namespace OpenData.API.Services
 
                 if (dataset.GitlabProjectId == null) {
                     var createDatasetTask = Task.Run(() => {
-                        return dataset;
+                        return existingDataset;
                     });
-                    await CreateGitLabProject(createDatasetTask, dataset);
+                    await CreateGitLabProject(createDatasetTask, existingDataset);
                 }
-                await _gitlabService.UpdateProject(dataset);
+                await _gitlabService.UpdateProject(existingDataset);
 
                 return new DatasetResponse(existingDataset);
             }
