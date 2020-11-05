@@ -30,6 +30,16 @@ namespace OpenData.External.Gitlab.Services
             return _gitlabClient.CreateGitlabProject(gitlabProject);
         }
 
+        public Task<GitlabResponse<GitlabProject>> UpdateDatasetProject(Dataset dataset)
+        {
+            GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
+            _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
+            gitlabProject.id = dataset.GitlabProjectId;
+            // TODO: Usikker på om pathen burde endres eller ikke. Kjipt med urler som endres og rart med urler som ikke gjenspeiler innholdet o.O
+            // gitlabProject.path = dataset.Title.ToLower().Trim().Replace(' ', '-').Replace("æ", "ae").Replace("ø", "o").Replace("å", "aa"); 
+            return _gitlabClient.UpdateGitlabProject(gitlabProject);
+        }
+
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroupForPublisher(Publisher publisher)
         {
             GitlabGroup gitlabGroup = _gitlabGroupConfig.generateDefaultGitlabGroup();

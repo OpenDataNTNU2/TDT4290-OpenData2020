@@ -185,6 +185,14 @@ namespace OpenData.API.Services
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
 
+                if (dataset.GitlabProjectId == null) {
+                    var createDatasetTask = Task.Run(() => {
+                        return dataset;
+                    });
+                    await CreateGitLabProject(createDatasetTask, dataset);
+                }
+                await _gitlabService.UpdateDatasetProject(dataset);
+
                 return new DatasetResponse(existingDataset);
             }
             catch (Exception ex)
@@ -241,8 +249,16 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt endret.");
                     break;
             }
-            
+
             await _unitOfWork.CompleteAsync();
+
+            if (dataset.GitlabProjectId == null) {
+                var createDatasetTask = Task.Run(() => {
+                    return dataset;
+                });
+                await CreateGitLabProject(createDatasetTask, dataset);
+            }
+            await _gitlabService.UpdateDatasetProject(dataset);
             
             return new DatasetResponse(dataset);
         }
