@@ -143,6 +143,7 @@ namespace OpenData.API.Services
                 return new DatasetResponse(exsistingDataset);
             } else {
                 // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                // Denne kan nå også potensielt fjerne eksisterende datasett som ikke enda har fått en gitlab tilknytting om det oppstår en feil
                 _datasetRepository.Remove(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
                 return new DatasetResponse("GitLab project response failed:" + gitlabProjectResponse.Message);
@@ -191,7 +192,7 @@ namespace OpenData.API.Services
                     });
                     await CreateGitLabProject(createDatasetTask, dataset);
                 }
-                await _gitlabService.UpdateDatasetProject(dataset);
+                await _gitlabService.UpdateProject(dataset);
 
                 return new DatasetResponse(existingDataset);
             }
@@ -252,13 +253,14 @@ namespace OpenData.API.Services
 
             await _unitOfWork.CompleteAsync();
 
-            if (dataset.GitlabProjectId == null) {
+            if (dataset.GitlabProjectId == null) 
+            {
                 var createDatasetTask = Task.Run(() => {
                     return dataset;
                 });
                 await CreateGitLabProject(createDatasetTask, dataset);
             }
-            await _gitlabService.UpdateDatasetProject(dataset);
+            await _gitlabService.UpdateProject(dataset);
             
             return new DatasetResponse(dataset);
         }
