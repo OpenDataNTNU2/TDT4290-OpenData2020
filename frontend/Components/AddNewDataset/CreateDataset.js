@@ -14,7 +14,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import { useEffect, useState } from 'react';
 
-// import forms
+// import form components
 import Distribution from '../Forms/Distribution';
 import Input from '../Forms/Input';
 import RadioInput from '../Forms/RadioInput';
@@ -27,25 +27,28 @@ import PostApi from '../ApiCalls/PostApi';
 export default function CreateDataset(props) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-  // variables/states for "main data", will add more here
+  // variables/states for "main data"
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [published, setPublished] = useState('1');
-
-  // accesslevel
   const [accessLevel, setAccessLevel] = useState('1');
 
   const date = new Date();
 
+  /**
+ * Change the date to the format YYYY MM DD
+ * @param {Object} fixingDate - The current date from new Date()
+ */
   function fixDate(fixingDate) {
     const dd = fixingDate.getDate() < 10 ? `0${fixingDate.getDate()}` : fixingDate.getDate();
     let mm = fixingDate.getMonth() < 10 ? `0${fixingDate.getMonth()}` : fixingDate.getMonth();
-    // month is from 0-11 in javascript but 1-12 in html:)
+    // month is from 0-11 in javascript but 1-12 in html
     mm = parseInt(mm) + 1;
     const yyyy = fixingDate.getFullYear();
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  // current date
   const [startDate, setStartDate] = useState(fixDate(date));
 
   // variables/states for the distribution
@@ -93,15 +96,14 @@ export default function CreateDataset(props) {
 
   const setPublishedStatus = (value) => {
     setPublished(value);
-    if (value === '1') setStartDate('2020-10-12');
-    else if (value === '2') {
-      return null;
-    } else {
-      setStartDate('2020-10-12');
-    }
   };
 
-  // this is run inside of PostApi for datasets, adds distributions
+
+  /**
+* Maps through the distributions and posts them.
+* If there are a request to join a coordination it also sends a application to join.
+* @param {int} dataId - The id of the newly created dataset for which the coordinations are added to-
+*/
   const addDistributions = (dataId) => {
     for (let i = 0; i < distribution; i += 1) {
       const data2 = {
@@ -130,8 +132,10 @@ export default function CreateDataset(props) {
     newTags.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }, postDistributions));
   };
 
-  // posts data into the api with datasets
-  // and if successfull runs addDistributions
+  /** 
+  *  posts @const {Object} data into the api with datasets
+  *  and if successfull runs addDistributions
+  */
   const handleChange = async () => {
     console.log(`data: ${data}`);
     console.log(data);
@@ -143,6 +147,8 @@ export default function CreateDataset(props) {
     }
   };
 
+
+  // Checks if the required fields are filled out. 
   function checkRequiredVariables() {
     if (title !== '' && description !== '' && selectedCategory !== '') {
       if (wantToRequestCoordination === '2' && selectedCoordination !== '' && joinCoordinationReason !== '') {
@@ -155,13 +161,18 @@ export default function CreateDataset(props) {
     return false;
   }
 
-  // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
+  // runs when the components mounts, fetches tags, categories and coordinations
   useEffect(() => {
     GetApi(`${host}/api/tags`, setTags);
     GetApi(`${host}/api/categories`, setCategories);
     GetApi(`${host}/api/coordinations`, setCoordinations);
   }, [props.prevLoggedIn]);
 
+
+  /**
+  * Submits an application to join a coordination
+  * @param {int} id - The id of the dataset in the application
+  */
   function submitApplicationToJoinCoordination(id) {
     const d = {
       reason: joinCoordinationReason,
@@ -194,7 +205,6 @@ export default function CreateDataset(props) {
   };
 
   // resets all the states, this is executed after successfully submitting a dataset
-  // it is no restrictions for input fields missing etc, so in theory, it is successfull no matter what now..
   function clearStates() {
     setTitle('');
     setDescription('');
