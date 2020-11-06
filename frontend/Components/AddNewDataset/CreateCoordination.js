@@ -24,10 +24,10 @@ export default function CreateCoordination(props) {
   const [description, setDescription] = useState('');
 
   // radiobuttons, value can be "1" or "2"
-  const [datasetOption, setDatasetOption] = useState('0');
+  const [datasetOption, setDatasetOption] = useState('2');
 
   // radiobuttons for coordination status, true for ongoing and false for coordinated (samordnet)
-  const [coordinationStatus, setCoordinationStatus] = useState('true');
+  const [coordinationStatus, setCoordinationStatus] = useState('false');
 
   // description of the coordination status
   const [statusDescription, setStatusDescription] = useState('');
@@ -121,52 +121,92 @@ export default function CreateCoordination(props) {
       <Input
         id="titleCoordination"
         multiline={false}
-        label="Tittel på samordningen"
+        label="Tittel på samordning*"
         value={title}
         handleChange={setTitle}
       />
       <br />
-
       <Input
         id="descriptionCoordination"
         multiline
-        label="Beskrivelse på samordningen"
+        label="Beskrivelse av samordning*"
         value={description}
         handleChange={setDescription}
       />
       <br />
 
+      <SelectCategory
+        id="category"
+        mainLabel="Kategori*"
+        value={categories}
+        setSelectedCategory={setSelectedCategory}
+        selected={selectedCategory}
+      />
+      <br />
+
+      <SelectTags
+        mainLabel="Tags"
+        tags={tags}
+        setTags={setTags}
+        onChange={setSelectedTags}
+        selectedTags={selectedTags}
+        newTags={newTags}
+        setNewTags={setNewTags}
+      />
+      <br />
+      <br />
+
       <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Status for samordning</FormLabel>
+        <FormLabel component="legend">Tilgangsnivå*</FormLabel>
+        <RadioInput
+          id="accessLevel"
+          mainValue={accessLevel}
+          handleChange={setAccessLevel}
+          value={['1', '2', '3']}
+          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+          color={['green', 'yellow', 'red']}
+        />
+      </FormControl>
+      <br />
+      <br />
+
+      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
+        <FormLabel component="legend">Status for samordning*</FormLabel>
         <RadioInput
           id="statusForCoordination"
           mainValue={coordinationStatus}
           handleChange={setCoordinationStatus}
-          value={['true', 'false']}
-          label={['Pågående samordning', 'Samordnet']}
+          value={['false', 'true']}
+          label={['Samordning', 'Pågående samordning']}
           color={['normal', 'normal']}
         />
       </FormControl>
-
-      {coordinationStatus === 'true' ? (
-        <Input
-          id="coordinationStatusId"
-          multiline
-          label="Nåværende status for samordningen"
-          value={statusDescription}
-          handleChange={setStatusDescription}
-        />
-      ) : null}
       <br />
 
+      {coordinationStatus === 'true' ? (
+        <div>
+          <Input
+            id="coordinationStatusId"
+            multiline
+            label="Nåværende status for samordning"
+            value={statusDescription}
+            handleChange={setStatusDescription}
+          />
+          <br />
+          <br />
+          <br />
+        </div>
+      ) : null}
+
+      <br />
       <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Legg til dataset</FormLabel>
+        <FormLabel component="legend">Legg til datasett*</FormLabel>
         <RadioInput
           id="addDatasetToCoordination"
           mainValue={datasetOption}
           handleChange={setDatasetOption}
-          value={['1', '2']}
-          label={['Legg til dataset', 'Ikke legg til dataset']}
+          value={['2', '1']}
+          label={['Ikke legg til datasett', 'Legg til datasett']}
           color={['normal', 'normal']}
         />
       </FormControl>
@@ -175,7 +215,7 @@ export default function CreateCoordination(props) {
       {datasetOption === '1' ? (
         <div>
           <FormControl variant="outlined" style={{ width: '50vh' }}>
-            <InputLabel id="demo-simple-select-label">Velg dataset</InputLabel>
+            <InputLabel id="demo-simple-select-label">Velg datasett</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               label="Velg dataset"
@@ -193,41 +233,15 @@ export default function CreateCoordination(props) {
               )}
             </Select>
           </FormControl>
+          <br />
+          <br />
+          <br />
         </div>
       ) : null}
+
       <br />
-      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Tilgangsnivå</FormLabel>
-        <RadioInput
-          id="accessLevel"
-          mainValue={accessLevel}
-          handleChange={setAccessLevel}
-          value={['1', '2', '3']}
-          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
-          color={['green', 'yellow', 'red']}
-        />
-      </FormControl>
-      <br />
-      <SelectCategory
-        id="category"
-        mainLabel="Kategori"
-        value={categories}
-        setSelectedCategory={setSelectedCategory}
-        selected={selectedCategory}
-      />
-      <br />
-      <SelectTags
-        mainLabel="Tags"
-        tags={tags}
-        setTags={setTags}
-        onChange={setSelectedTags}
-        selectedTags={selectedTags}
-        newTags={newTags}
-        setNewTags={setNewTags}
-      />
-      <br />
-      <Button variant="contained" color="primary" onClick={handleChange}>
-        Opprett
+      <Button variant="contained" size="large" color="primary" onClick={handleChange} fullWidth>
+        Opprett samordning
       </Button>
 
       <Snackbar open={openFailedFeedback} autoHideDuration={5000} onClose={() => setOpenFailedFeedback(false)}>
