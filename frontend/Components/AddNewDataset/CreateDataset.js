@@ -369,7 +369,7 @@ export default function CreateDataset(props) {
         </FormControl>
       ) : null}
 
-      {distribution === 1 && published === '1' ? (
+      {distribution > 0 && published === '1' ? (
         <div>
           <FormControl variant="outlined" style={{ width: '50vh' }}>
             <FormLabel component="legend">Legg til distribusjon: </FormLabel>
