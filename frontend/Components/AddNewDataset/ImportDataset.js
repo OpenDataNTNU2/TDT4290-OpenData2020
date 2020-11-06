@@ -8,7 +8,7 @@ import GetApi from '../ApiCalls/GetApi';
 import SelectCategory from '../Forms/SelectCategory';
 import Input from '../Forms/Input';
 
-// TODO: Fikse feedback hvis en ugyldig link blir benyttet, ellers funker det :)
+
 export default function CreateDataset() {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -21,10 +21,12 @@ export default function CreateDataset() {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('');
 
+  // runs when component mounts, fetches categories
   useEffect(() => {
     GetApi(`${host}/api/categories`, setCategories);
   }, []);
 
+  // posts imported dataset 
   const importDataset = () => {
     if (selectedCategory === '' || importUrl === '') {
       setRequired(true);
@@ -40,6 +42,7 @@ export default function CreateDataset() {
     PostApi(`${host}/api/categories/import?url=${importUrl}`, { url: importUrl }, importPostReq);
   };
 
+  // checks if the imported dataset is valid
   function importPostReq(id) {
     if (id == null) {
       setInvalid(true);
