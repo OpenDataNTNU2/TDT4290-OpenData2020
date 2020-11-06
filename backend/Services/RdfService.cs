@@ -65,10 +65,9 @@ namespace OpenData.API.Services
             }
 
             // Try to parse the dataset and save it in the database
-            Dataset dataset = await _graphService.AddDataset(g, categoryId);
+            DatasetResponse dataset = await _graphService.AddDataset(g, categoryId);
 
-            // return dataset;
-            return new DatasetResponse(dataset);
+            return dataset;
         }
 
         // Import categories
