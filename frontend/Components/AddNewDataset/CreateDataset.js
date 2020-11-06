@@ -231,7 +231,6 @@ export default function CreateDataset(props) {
     >
       <Input id="title" label="Tittel (*)" value={title} handleChange={setTitle} multiline={false} />
       <br />
-      {/* Denne er basert på kundemail */}
       <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
         <FormLabel component="legend">Status for publisering</FormLabel>
         <RadioInput
@@ -244,7 +243,6 @@ export default function CreateDataset(props) {
         />
       </FormControl>
       <br />
-      {/* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis status er "publisering planlagt" */}
       {published === '2' ? (
         <FormControl variant="outlined" style={{ width: '50vh' }}>
           <TextField
@@ -309,7 +307,6 @@ export default function CreateDataset(props) {
           />
         </FormControl>
       ) : null}
-      {/* Send forespørsel om å bli med i samordningen */}
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
         <FormControl variant="outlined" style={{ width: '50vh' }}>
