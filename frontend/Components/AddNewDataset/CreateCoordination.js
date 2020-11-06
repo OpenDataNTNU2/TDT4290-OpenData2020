@@ -174,7 +174,6 @@ export default function CreateCoordination(props) {
 
       {datasetOption === '1' ? (
         <div>
-          {/* Midlertidig funk for å teste */}
           <FormControl variant="outlined" style={{ width: '50vh' }}>
             <InputLabel id="demo-simple-select-label">Velg dataset</InputLabel>
             <Select
