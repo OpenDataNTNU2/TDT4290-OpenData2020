@@ -48,6 +48,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   // logged in user are owner of coordination
   const [userAreOwner, setUserAreOwner] = useState(false);
 
+  /**
+   * runs when component mounts and when subscribed updates
+   * fetch datasets to choose from when creating an application
+   * fetch the logged in user, to check if there is already are a subscription
+   * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+   */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
@@ -69,6 +75,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setSubscribed(false);
   }
 
+  // submits a post req with application
   const submitApplicationToJoinCoordination = () => {
     const d = {
       reason: joinCoordinationReason,
@@ -85,6 +92,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setOpenCreateApplicationFeedback(true);
   }
 
+  /**
+   * adds dataset to coordination and deletes the application
+   * @param {int} datasetId - id of datasett in application 
+   * @param {int} applicationId - id of application
+   */
   const approveApplication = (datasetId, applicationId) => {
     const d = [
       {
@@ -101,8 +113,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   };
 
   const subscribe = (url, desc) => {
-    // gjør en sjekk her
-
     let d = {
       userId: prevUserId,
       coordinationId: data.id,
@@ -121,10 +131,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setSubscribed(true);
   }
 
+  // routes to path/id with dynamic routing from next.js
   const onClick = (path, id) => {
     router.push(path + id).then(() => window.scrollTo(0, 0));
   };
 
+  // get chips depending on coordination status and accesslevel
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -133,10 +145,10 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
             Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )}
         {coordinationData.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
             Kan deles offentlig
@@ -156,6 +168,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     );
   };
 
+  /**
+   * updates editPath in coordination with new value 
+   * @param {string} newValue - new value
+   * @param {string} editPath - what is changing
+   */
   const updateCoordination = (newValue, editPath) => {
     const d = [
       {
@@ -170,7 +187,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
   return (
     <Grid container direction="column" style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
-      {/* Tags og overskrift */}
+      {/* Tags and headline */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         {getChips()}
 
@@ -208,7 +225,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <Divider variant="fullWidth" />
       <br />
 
-      {/* Informasjon om samordningen */}
+      {/* Information about the coordination */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         <EditTextFieldComp
           value={coordinationData.description}
@@ -236,8 +253,8 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           {coordinationData.datasets.length === 0 ? (
             <i>Ingen deltakere med i samordningen</i>
           ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
-          )}
+              coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
+            )}
         </p>
         <br />
         <p>
@@ -260,10 +277,10 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                 />
               ))
             ) : (
-              <p>
-                <i>Ingen distribusjon i dette datasettet</i>
-              </p>
-            )}
+                <p>
+                  <i>Ingen distribusjon i dette datasettet</i>
+                </p>
+              )}
             <br />
           </div>
         ))}
@@ -272,7 +289,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <Divider variant="fullWidth" />
       <br />
 
-      {/* Datasettene som er med i samordningen */}
+      {/* The datasets which are part of the coordination */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         <h1 style={{ fontWeight: 'normal' }}>Samordnede data</h1>
         <p>Følgende datasett er med i samordningen</p>
@@ -300,63 +317,63 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           Denne samordningen har ingen usecase enda. <br />
         </div>
       ) : (
-        Object.values(coordinationData.subscriptions).map((sub) => {
-          return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-        })
-      )}
+          Object.values(coordinationData.subscriptions).map((sub) => {
+            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+          })
+        )}
 
       <br />
 
-      {/* Send forespørsel om å bli med i samordningen */}
+      {/* Send application to join coordination */}
       {JSON.parse(prevPublisherId) === null ||
-      parseInt(JSON.parse(prevPublisherId)) === -1 ||
-      parseInt(prevPublisherId) === data.publisher.id ? null : (
-        <Grid style={{ padding: '3% 0 3% 0' }}>
-          <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
-          <p>
-            Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
-            ønsker å være med.
+        parseInt(JSON.parse(prevPublisherId)) === -1 ||
+        parseInt(prevPublisherId) === data.publisher.id ? null : (
+          <Grid style={{ padding: '3% 0 3% 0' }}>
+            <h1 style={{ fontWeight: 'normal' }}>Bli med i denne samordningen</h1>
+            <p>
+              Velg hvilket datasett dere vil ha med i denne samordningen og skriv en liten begrunnelse av hvorfor dere
+              ønsker å være med.
           </p>
-          <br />
-          <Input
-            id="joinCoordinationId"
-            multiline
-            label="Begrunnelse for forespørsel"
-            value={joinCoordinationReason}
-            handleChange={setJoinCoordinationReason}
-          />
-          <br />
-          <br />
-          {datasets.length !== 0 ? (
-            <FormControl variant="outlined" style={{ width: '50vh' }}>
-              <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
-              <Select
-                labelId="requestToJoinCoordinationLabelID"
-                label="Velg dataset"
-                id="requestToJoinCoordinationID"
-                value={selectedDataset}
-                onChange={(event) => setSelectedDataset(event.target.value)}
-              >
-                {Object.values(datasets.items).map(
-                  (dataset) =>
-                    dataset && (
-                      <MenuItem value={dataset.id} key={dataset.id}>
-                        {dataset.title}
-                      </MenuItem>
-                    )
-                )}
-              </Select>
-            </FormControl>
-          ) : null}
-          <br />
-          <br />
-          <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
-            Send Forespørsel
+            <br />
+            <Input
+              id="joinCoordinationId"
+              multiline
+              label="Begrunnelse for forespørsel"
+              value={joinCoordinationReason}
+              handleChange={setJoinCoordinationReason}
+            />
+            <br />
+            <br />
+            {datasets.length !== 0 ? (
+              <FormControl variant="outlined" style={{ width: '50vh' }}>
+                <InputLabel id="requestToJoinCoordinationLabel">Velg dataset</InputLabel>
+                <Select
+                  labelId="requestToJoinCoordinationLabelID"
+                  label="Velg dataset"
+                  id="requestToJoinCoordinationID"
+                  value={selectedDataset}
+                  onChange={(event) => setSelectedDataset(event.target.value)}
+                >
+                  {Object.values(datasets.items).map(
+                    (dataset) =>
+                      dataset && (
+                        <MenuItem value={dataset.id} key={dataset.id}>
+                          {dataset.title}
+                        </MenuItem>
+                      )
+                  )}
+                </Select>
+              </FormControl>
+            ) : null}
+            <br />
+            <br />
+            <Button variant="contained" color="primary" onClick={submitApplicationToJoinCoordination}>
+              Send Forespørsel
           </Button>
-        </Grid>
-      )}
+          </Grid>
+        )}
 
-      {/* Forespørsler om å bli med i samordningen */}
+      {/* applications to join the coordination */}
       {parseInt(prevPublisherId) === coordinationData.publisher.id ? (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <h1 style={{ fontWeight: 'normal' }}>Forespørsler om å bli med i samordningen</h1>
@@ -392,8 +409,8 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
                   )
               )
           ) : (
-            <p>Ingen forespørsler</p>
-          )}
+              <p>Ingen forespørsler</p>
+            )}
         </Grid>
       ) : null}
 
