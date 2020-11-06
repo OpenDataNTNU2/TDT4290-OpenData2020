@@ -11,9 +11,8 @@
 }
 
 .tabsContainer {
-  background-color: #21254b;
-  color: white;
-  height: 70px;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.1);
+  background-color: #bdd8f0;
   width: 100%;
   margin: 0;
   display: flex;

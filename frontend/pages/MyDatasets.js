@@ -5,26 +5,23 @@ import GetApi from '../Components/ApiCalls/GetApi';
 import DatasetCard from '../Components/DatasetCard';
 import CoordinationCard from '../Components/CoordinationCard';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
-
+import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
 export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPublisherId = 0 }) {
   const router = useRouter();
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-
   // Pagination variables
   const [whatToShow, setWhatToShow] = useState('datasets');
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(1)
-  const loader = 'Loading...'
+  const [page, setPage] = useState(1);
+  const loader = 'Loading...';
 
   const [datasets, setDatasets] = useState([]);
   const [coordinations, setCoordinations] = useState([]);
 
-  const [totalItemsDatasets, setTotalItemsDatasets] = useState(0)
-  const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0)
-
+  const [totalItemsDatasets, setTotalItemsDatasets] = useState(0);
+  const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0);
 
   const setMyDatasets = (d) => {
     if (page !== 1) {
@@ -36,17 +33,16 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
           }
           setDatasets(newArr);
           if (newArr.length < d.totalItems) {
-            setHasMore(true)
+            setHasMore(true);
           }
         }
       }
       setTotalItemsDatasets(d.totalItems);
-    }
-    else {
+    } else {
       setDatasets(d.items);
-      setTotalItemsDatasets(d.totalItems)
+      setTotalItemsDatasets(d.totalItems);
       if (d.items.length < d.totalItems) {
-        setHasMore(true)
+        setHasMore(true);
       }
     }
   };
@@ -54,52 +50,45 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
   const setMyCoordinations = (c) => {
     if (page !== 1) {
       if (totalItemsCoordinations > coordinations.length) {
-        if (d.totalItems > 10) {
+        if (c.totalItems > 10) {
           const newArr = coordinations;
           for (let i = 0; i < 10; i += 1) {
             newArr.push(c.items[i]);
           }
           setCoordinations(newArr);
           if (newArr.length < c.totalItems) {
-            setHasMore(true)
+            setHasMore(true);
           }
         }
       }
       setTotalItemsCoordinations(c.totalItems);
-    }
-    else {
+    } else {
       setCoordinations(c.items);
-      setTotalItemsCoordinations(c.totalItems)
+      setTotalItemsCoordinations(c.totalItems);
       if (c.items.length < c.totalItems) {
-        setHasMore(true)
+        setHasMore(true);
       }
     }
-
   };
 
   const fetchContent = async () => {
     if (whatToShow === 'datasets') {
       GetApi(`${host}/api/datasets?PublisherIds=${prevPublisherId}&Page=${page}`, setMyDatasets);
-    }
-    else if (whatToShow === 'coordinations') {
+    } else if (whatToShow === 'coordinations') {
       GetApi(`${host}/api/coordinations?PublisherIds=${prevPublisherId}&Page=${page}`, setMyCoordinations);
     }
-  }
-
+  };
 
   useEffect(() => {
     if (whatToShow === 'datasets' && datasets.length < totalItemsDatasets) {
-      setHasMore(true)
+      setHasMore(true);
+    } else if (whatToShow === 'coordinations' && coordinations.length < totalItemsCoordinations) {
+      setHasMore(true);
+    } else {
+      setHasMore(false);
     }
-    else if (whatToShow === 'coordinations' && coordinations.length < totalItemsCoordinations) {
-      setHasMore(true)
-    }
-    else {
-      setHasMore(false)
-    }
-    fetchContent()
-  }, [page, prevPublisherId, whatToShow, prevLoggedIn])
-
+    fetchContent();
+  }, [page, prevPublisherId, whatToShow, prevLoggedIn]);
 
   const onClick = (path, id) => {
     router.push(path + id).then(() => window.scrollTo(0, 0));
@@ -111,12 +100,12 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
   };
 
   const changeWhatToShow = (value) => {
-    setWhatToShow(value)
-    setPage(1)
-    setHasMore(false)
-    setDatasets([])
-    setCoordinations([])
-  }
+    setWhatToShow(value);
+    setPage(1);
+    setHasMore(false);
+    setDatasets([]);
+    setCoordinations([]);
+  };
 
   const checkIsMore = () => {
     if (whatToShow === 'datasets' && totalItemsDatasets > datasets.length) {
@@ -127,7 +116,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     } else {
       setHasMore(false);
     }
-  }
+  };
 
   return (
     <div
@@ -138,15 +127,22 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
         margin: '50px 20vw',
       }}
     >
-
-
-      <div style={{
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-      }}>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
         {prevLoggedIn ? (
-          <h2 style={{ fontWeight: 500, margin: '30px 10px 50px 10px', fontWeight: 'normal' }}>{getUser()} sine {whatToShow === 'datasets' ? 'datasett:' : 'samordninger:'}</h2>
+          <h2
+            style={{
+              fontWeight: 500,
+              margin: '30px 10px 50px 10px',
+            }}
+          >
+            {getUser()} sine {whatToShow === 'datasets' ? 'datasett:' : 'samordninger:'}
+          </h2>
         ) : null}
 
         <div style={{ marginLeft: 'auto', marginRight: '10px' }}>
@@ -159,21 +155,14 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
               value={whatToShow}
               onChange={(event) => changeWhatToShow(event.target.value)}
             >
-              <MenuItem value="datasets">Dataset</MenuItem>
+              <MenuItem value="datasets">Datasett</MenuItem>
               <MenuItem value="coordinations">Samordning</MenuItem>
             </Select>
           </FormControl>
         </div>
-
       </div>
 
-
-      <InfiniteScroll
-        dataLength={page * 10}
-        next={checkIsMore}
-        hasMore={hasMore}
-        loader={<h4>{loader}</h4>}
-      >
+      <InfiniteScroll dataLength={page * 10} next={checkIsMore} hasMore={hasMore} loader={<h4>{loader}</h4>}>
         {whatToShow === 'datasets' &&
           Object.values(datasets).map(
             (d) =>
@@ -185,8 +174,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
                   pathName="/MyDatasets"
                 />
               )
-          )
-        }
+          )}
 
         {whatToShow === 'coordinations' &&
           Object.values(coordinations).map(
@@ -199,13 +187,12 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
                   onClick={() => onClick('/DetailedCoordination/', c.id)}
                 />
               )
-          )
-        }
+          )}
         {datasets.length === 0 && whatToShow === 'datasets' && <h3 style={{ fontWeight: 'normal' }}>Ingen datasett</h3>}
-        {coordinations.length === 0 && whatToShow === 'coordinations' && <h3 style={{ fontWeight: 'normal' }}>Ingen samordninger</h3>}
-
+        {coordinations.length === 0 && whatToShow === 'coordinations' && (
+          <h3 style={{ fontWeight: 'normal' }}>Ingen samordninger</h3>
+        )}
       </InfiniteScroll>
-
     </div>
   );
 }

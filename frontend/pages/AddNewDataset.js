@@ -28,10 +28,28 @@ export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
         <div className={styles.container}>
           <TabContext value={page}>
             <div className={styles.tabsContainer}>
-              <TabList onChange={handleChange} centered indicatorColor="primary">
-                <Tab value="1" label="Legg til datasett" disableFocusRipple disableRipple />
-                <Tab value="2" label="Legg til samordning" disableFocusRipple disableRipple />
-                <Tab value="3" label="Importer datasett" disableFocusRipple disableRipple />
+              <TabList onChange={handleChange} centered indicatorColor="primary" textColor="primary">
+                <Tab
+                  value="1"
+                  label="Legg til datasett"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
+                <Tab
+                  value="2"
+                  label="Legg til samordning"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
+                <Tab
+                  value="3"
+                  label="Importer datasett"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
               </TabList>
             </div>
 
