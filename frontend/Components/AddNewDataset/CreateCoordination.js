@@ -12,27 +12,27 @@ import SelectTags from '../Forms/SelectTags';
 
 import RadioInput from '../Forms/RadioInput';
 
-// TODO: Fikse feedback hvis en ugyldig link blir benyttet, ellers funker det :)
+
 export default function CreateCoordination(props) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-  // feedback til bruker, setter snackbars i bunn til true/false
+
   const [openSuccessFeedback, setOpenSuccessFeedback] = useState(false);
   const [openFailedFeedback, setOpenFailedFeedback] = useState(false);
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  // radioknapper, settes til verdier "1", "2" osv
+  // radiobuttons, value can be "1" or "2"
   const [datasetOption, setDatasetOption] = useState('0');
 
-  // radio knapper for coordination status, true for ongoing and false for coordinated (samordnet)
+  // radiobuttons for coordination status, true for ongoing and false for coordinated (samordnet)
   const [coordinationStatus, setCoordinationStatus] = useState('true');
 
-  // beskrivelse av hvor i samordningsprossessen man er
+  // description of the coordination status
   const [statusDescription, setStatusDescription] = useState('');
 
-  // hvis bruker trykker på legg til dataset, kommer datasettene de "eier" inn her
+  // All datasets the logged in user have/own
   const [datasets, setDatasets] = useState([]);
 
   // dataset to add to coordination
@@ -47,10 +47,13 @@ export default function CreateCoordination(props) {
   const [selectedTags, setSelectedTags] = useState('');
   const [newTags, setNewTags] = useState([]);
 
-  // accesslevel
+  // accesslevel, can be "1", "2" or "3"
   const [accessLevel, setAccessLevel] = useState('1');
 
-  // resetter alle feltene etter en submit, sender også inn coordination til det valgte datasettet hvis datasetOption = "1"
+  /**
+   * Patch the dataset with the new coordination, then resets the states
+   * @param {int} id - The id for added coordination
+   */
   const submitPostReq = (id) => {
     const data = [
       {
@@ -75,6 +78,9 @@ export default function CreateCoordination(props) {
     newTags.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }));
   };
 
+  /**
+   * Post the new coordination with @const {Object} data, then adds the new tags to the database
+   */
   const handleChange = () => {
     const data = {
       title,
@@ -94,7 +100,10 @@ export default function CreateCoordination(props) {
     addTags();
   };
 
-  // this should be fetched when clicking the radiobutton for choose existing
+
+  /**
+   * runs when the components mounts, fetches datasets, categories and tags
+   */
   useEffect(() => {
     GetApi(`${host}/api/datasets?PublisherIds=${props.publisherId}`, setDatasets);
     GetApi(`${host}/api/categories`, setCategories);
