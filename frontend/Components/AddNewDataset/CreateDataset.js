@@ -219,11 +219,55 @@ export default function CreateDataset(props) {
       alignItems="center"
       style={{ minHeight: '70vh', minWidth: '60vh', marginTop: '5vh' }}
     >
-      <Input id="title" label="Tittel (*)" value={title} handleChange={setTitle} multiline={false} />
+      <Input id="title" label="Tittel på datasett*" value={title} handleChange={setTitle} multiline={false} />
       <br />
+      <Input
+        id="description"
+        label="Beskrivelse av datasett*"
+        value={description}
+        handleChange={setDescription}
+        multiline
+      />
+      <br />
+      <SelectCategory
+        id="category"
+        mainLabel="Kategori*"
+        value={categories}
+        setSelectedCategory={setSelectedCategory}
+        selected={selectedCategory}
+        label={['Option 1', 'Option 2', 'Option 3']}
+      />
+      <br />
+      <SelectTags
+        mainLabel="Tags"
+        tags={tags}
+        setTags={setTags}
+        onChange={setSelectedTags}
+        selectedTags={selectedTags}
+        newTags={newTags}
+        setNewTags={setNewTags}
+      />
+      <br />
+      <br />
+
+      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
+        <FormLabel component="legend">Tilgangsnivå*</FormLabel>
+        <RadioInput
+          id="accessLevel"
+          mainValue={accessLevel}
+          handleChange={setAccessLevel}
+          value={['1', '2', '3']}
+          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+          color={['green', 'yellow', 'red']}
+        />
+      </FormControl>
+
+      <br />
+      <br />
+
       {/* Denne er basert på kundemail */}
       <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Status for publisering</FormLabel>
+        <FormLabel component="legend">Status for publisering*</FormLabel>
         <RadioInput
           id="publishStatus"
           mainValue={published}
@@ -252,43 +296,10 @@ export default function CreateDataset(props) {
         </FormControl>
       ) : null}
 
-      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Tilgangsnivå</FormLabel>
-        <RadioInput
-          id="accessLevel"
-          mainValue={accessLevel}
-          handleChange={setAccessLevel}
-          value={['1', '2', '3']}
-          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
-          color={['green', 'yellow', 'red']}
-        />
-      </FormControl>
-
-      <br />
-      <Input id="description" label="Beskrivelse (*)" value={description} handleChange={setDescription} multiline />
-      <br />
-      <SelectCategory
-        id="category"
-        mainLabel="Kategori (*)"
-        value={categories}
-        setSelectedCategory={setSelectedCategory}
-        selected={selectedCategory}
-        label={['Option 1', 'Option 2', 'Option 3']}
-      />
-      <br />
-      <SelectTags
-        mainLabel="Tags"
-        tags={tags}
-        setTags={setTags}
-        onChange={setSelectedTags}
-        selectedTags={selectedTags}
-        newTags={newTags}
-        setNewTags={setNewTags}
-      />
       <br />
       {published === '1' && accessLevel === '1' ? (
         <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-          <FormLabel component="legend">Forespørsel om å bli med i samordning</FormLabel>
+          <FormLabel component="legend">Forespørsel om å bli med i samordning*</FormLabel>
           <RadioInput
             id="joinCoordination"
             mainValue={wantToRequestCoordination}
@@ -303,10 +314,12 @@ export default function CreateDataset(props) {
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
         <FormControl variant="outlined" style={{ width: '50vh' }}>
-          <InputLabel id="requestToJoinCoordinationLabel">Velg samordning (*)</InputLabel>
+          <br />
+          <br />
+          <InputLabel id="requestToJoinCoordinationLabel">Velg samordning*</InputLabel>
           <Select
             labelId="requestToJoinCoordinationLabelID"
-            label="Velg samordning (*)"
+            label="Velg samordning*"
             id="requestToJoinCoordinationID"
             value={selectedCoordination}
             onChange={(event) => setSelectedCoordination(event.target.value)}
@@ -323,12 +336,13 @@ export default function CreateDataset(props) {
         </FormControl>
       ) : null}
       <br />
+      <br />
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
         <Input
           id="joinCoordinationId"
           multiline
-          label="Begrunnelse for forespørsel (*)"
+          label="Begrunnelse for forespørsel*"
           value={joinCoordinationReason}
           handleChange={setJoinCoordinationReason}
         />
@@ -336,7 +350,7 @@ export default function CreateDataset(props) {
       <br />
 
       {published === '1' && distribution === 0 ? (
-        <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>
+        <Button variant="outlined" color="primary" onClick={() => setDistribution(1)}>
           Legg til distribusjon
         </Button>
       ) : null}
@@ -373,8 +387,8 @@ export default function CreateDataset(props) {
         </div>
       ) : null}
       <br />
-      <Button variant="contained" color="primary" onClick={handleChange}>
-        Send inn
+      <Button variant="contained" size="large" color="primary" onClick={handleChange} fullWidth>
+        Opprett datasett
       </Button>
       <br />
       <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>

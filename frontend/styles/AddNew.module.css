@@ -1,0 +1,23 @@
+.container {
+  min-height: 70vh;
+  margin: 80px 15vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+  padding-bottom: 50px;
+}
+
+.tabsContainer {
+  background-color: #21254b;
+  color: white;
+  height: 70px;
+  width: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
