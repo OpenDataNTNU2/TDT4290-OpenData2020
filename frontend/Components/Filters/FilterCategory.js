@@ -9,8 +9,7 @@ import CheckboxInput from '../Forms/CheckboxInput';
 
 import styles from '../../styles/Filters.module.css';
 
-// NB: de ulike filter funksjonene er veldig like atm, dette blir kanskje endret, mtp at vi skal ha under kategorier og slikt
-// så ikke slå de sammen. Vi tar heller en vurdering på det senere.
+
 export default function FilterCategory(props) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -20,6 +19,10 @@ export default function FilterCategory(props) {
   const [shownSubItems, setShownSubItems] = useState({});
   const [res, setRes] = useState({});
 
+  /**
+ * Adds the category id of the selected category and sends it to props.setUrl
+ * @param {event} event - The id of the category checked
+ */
   const handleChange = (event) => {
     const newArr = addedFilters;
     newArr.push(event.target.value);
@@ -38,7 +41,10 @@ export default function FilterCategory(props) {
     props.setUrl(newUrlString);
   };
 
-  // fetches the categories and places all the top level categories into a list.
+  /** 
+  * runs when the components mounts
+  * fetches the categories and places all the top level categories into a list.
+  */
   useEffect(() => {
     GetApi(`${host}/api/categories`, setRes);
     const pub = [];
@@ -56,67 +62,67 @@ export default function FilterCategory(props) {
     }));
   };
 
-  // maps all the categories in the list sent in,
-  // then checks if an element in the list have elements in the narrower field
-  // if that is true, it runs this function again, but with the narrower list instead.
-
+  /** 
+   * maps all the categories in the list sent in,
+   * then checks if an element in the list have elements in the narrower field
+   * if that is true, it runs this function again, but with the narrower list instead.
+   * @param {Object} cats - a Object with categories
+  */
   const items = (cats) =>
     cats.map(
       (category) =>
         (props.type === 'both'
           ? category.datasetsCount + category.coordinationsCount
           : props.type === 'datasets'
-          ? category.datasetsCount
-          : category.coordinationsCount) > 0 && (
+            ? category.datasetsCount
+            : category.coordinationsCount) > 0 && (
           <div key={'mainDiv' + category.id}>
             {category.narrower.length === 0 ? (
               <CheckboxInput
                 key={category.id}
                 handleChange={handleChange}
                 id={category.id}
-                name={`${category.name} (${
-                  props.type === 'both'
-                    ? category.datasetsCount + category.coordinationsCount
-                    : props.type === 'datasets'
+                name={`${category.name} (${props.type === 'both'
+                  ? category.datasetsCount + category.coordinationsCount
+                  : props.type === 'datasets'
                     ? category.datasetsCount
                     : category.coordinationsCount
-                })`}
+                  })`}
               />
             ) : (
-              <div>
-                <CheckboxInput
-                  key={category.id}
-                  handleChange={handleChange}
-                  id={category.id}
-                  name={`${category.name} (${
-                    props.type === 'both'
+                <div>
+                  <CheckboxInput
+                    key={category.id}
+                    handleChange={handleChange}
+                    id={category.id}
+                    name={`${category.name} (${props.type === 'both'
                       ? category.datasetsCount + category.coordinationsCount
                       : props.type === 'datasets'
-                      ? category.datasetsCount
-                      : category.coordinationsCount
-                  })`}
-                />
-                {!shownSubItems[category.id] ? (
-                  <ExpandMoreIcon
-                    key={`More${toString(category.id)}`}
-                    style={{ cursor: 'pointer' }}
-                    fontSize="small"
-                    onClick={() => toggleShownSubItems(category.id)}
+                        ? category.datasetsCount
+                        : category.coordinationsCount
+                      })`}
                   />
-                ) : (
-                  <ExpandLessIcon
-                    key={`Less${toString(category.id)}`}
-                    style={{ cursor: 'pointer' }}
-                    fontSize="small"
-                    onClick={() => toggleShownSubItems(category.id)}
-                  />
-                )}
+                  {!shownSubItems[category.id] ? (
+                    <ExpandMoreIcon
+                      key={`More${toString(category.id)}`}
+                      style={{ cursor: 'pointer' }}
+                      fontSize="small"
+                      onClick={() => toggleShownSubItems(category.id)}
+                    />
+                  ) : (
+                      <ExpandLessIcon
+                        key={`Less${toString(category.id)}`}
+                        style={{ cursor: 'pointer' }}
+                        fontSize="small"
+                        onClick={() => toggleShownSubItems(category.id)}
+                      />
+                    )}
 
-                <div style={{ marginLeft: '2vh' }} hidden={!shownSubItems[category.id]} id={category.id}>
-                  {items(category.narrower)}
+                  <div style={{ marginLeft: '2vh' }} hidden={!shownSubItems[category.id]} id={category.id}>
+                    {items(category.narrower)}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </div>
         )
     );

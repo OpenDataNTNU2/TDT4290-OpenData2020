@@ -14,9 +14,7 @@ export default function Login({
 }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-  // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
-  // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
-
+  // sets initial states from cookies
   const [loggedIn, setLoggedIn] = useState(() => JSON.parse(prevLoggedIn));
   const [loggedUsername, setLoggedUsername] = useState(() => JSON.parse(prevLoggedUsername));
   const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId));
@@ -42,7 +40,7 @@ export default function Login({
     Router.push('/Login').then(() => window.scrollTo(0, 0));
   }, [loggedIn]);
 
-  // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.
+  // checks if the username is valid
   const checkUsernameElig = (u) => {
     if (u.length === 0) {
       return false;
@@ -50,6 +48,7 @@ export default function Login({
     return true;
   };
 
+  // sends a put request with username. if the username is new, it will just create a new user
   const sendLoginRequest = async () => {
     const data = {
       username,
@@ -82,7 +81,7 @@ export default function Login({
     }
   };
 
-  // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut.
+  // Update states when user logs in.
   const handleLoginClick = async () => {
     if (!loggedIn) {
       if (checkUsernameElig(username)) {
@@ -99,7 +98,7 @@ export default function Login({
     }
   };
 
-  // resetter alle statsene når bruker trykker på logg ut
+  // resets states when user logs out.
   const handleLogoutClick = () => {
     setLoggedUsername(false);
     setUserId('-1');
@@ -129,8 +128,8 @@ export default function Login({
       {loggedIn ? (
         <h2 style={{ fontWeight: 'normal' }}>Logget inn som {loggedUsername}</h2>
       ) : (
-        <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
-      )}
+          <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
+        )}
       {loggedIn ? null : (
         <form noValidate autoComplete="off" style={{ width: '50vw' }}>
           <TextField
@@ -143,7 +142,6 @@ export default function Login({
             onChange={(e) => setUsername(e.target.value)}
             onKeyDown={(e) => enterClick(e)}
           />
-          {/* <input id="username" lable="brukernavn" size="medium" variant="outlined" value={username} onKeyDown={(e) => enterClick(e)} onChange={(e) => setUsername(e.target.value)}/> */}
         </form>
       )}
       <br />
@@ -152,10 +150,10 @@ export default function Login({
           Logg ut
         </Button>
       ) : (
-        <Button variant="contained" color="primary" onClick={handleLoginClick}>
-          Logg inn
-        </Button>
-      )}
+          <Button variant="contained" color="primary" onClick={handleLoginClick}>
+            Logg inn
+          </Button>
+        )}
       <br />
 
       {loggedIn ? null : (

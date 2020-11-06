@@ -28,9 +28,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
+
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
 
+  // logged in user are owner of coordination
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   let requestButton;
@@ -38,14 +40,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   const distributionCards = [];
   let cardOrNoCard;
 
-
-
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
 
+  // increments the interestcounter by 1.  
   const updateData = async () => {
-    // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
-    // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
     const data2 = [
       {
         value: interestCounter + 1,
@@ -53,8 +52,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         op: 'replace',
       },
     ];
-    /* console.log("Interest counter FØR setInterestCounter: "+ interestCounter);
-      setInterestCounter(interestCounter + 1); */
     console.log(`Interest counter er nå: ${data2.interestCounter}`);
     setOpen(true);
     PatchApi(uri, data2);
@@ -71,13 +68,16 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
   // puts data into the api with datasets
   const handleChange = async () => {
-    // setInterestCounter brukes ikke i praksis, oppdaterer manuelt når jeg sender data i put.
     setInterestCounter(parseInt(interestCounter) + 1);
     setDisabled(!disabled);
     setOpen(true);
     updateData();
   };
 
+  /**
+   * if published show all distributions, else show the request button
+   * @param {string} pub - publication status 
+   */
   const ifPublished = (pub) => {
 
     if (pub === 'Published') {
@@ -119,6 +119,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     }
   };
 
+  // get chips based on publicationStatus, accessLevel and wheter or not the dataset is in a coordination
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -173,8 +174,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   };
 
   const subscribe = (url, desc) => {
-    // gjør en sjekk her
-
     let d = {
       userId: prevUserId,
       datasetId: data.id,
@@ -193,13 +192,17 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(true);
   }
 
+  /**
+  * runs when component mounts and when subscribed updates
+  * fetch the logged in user, to check if there is already are a subscription
+  * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+  */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
       if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
     }
   }, [data, subscribed]);
-
 
   function checkUserSubscription(response) {
     for (let i = 0; i < response.subscriptions.length; i++) {
@@ -211,6 +214,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(false);
   }
 
+  /**
+     * updates editPath in dataset with new value 
+     * @param {string} newValue - new value
+     * @param {string} editPath - what is changing
+     */
   const updateDataset = (newValue, editPath) => {
     const d = [
       {
@@ -223,7 +231,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     console.log('patched dataset');
   };
 
-  // fixing layour of date so it doesnt look so wiiiiierd
+  // changing format of date to dd mm yyyy
   function fixDate(date) {
     const fixing = new Date(date);
     const dd = fixing.getDate() < 10 ? `0${fixing.getDate()}` : fixing.getDate();
@@ -233,7 +241,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     return dd + '-' + mm + '-' + yyyy;
   }
 
-  console.log(data);
+
   ifPublished(data.publicationStatus);
 
   return (

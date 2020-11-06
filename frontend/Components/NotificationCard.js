@@ -5,6 +5,11 @@ import { useRouter } from 'next/router';
 export default function NotificationCard(props) {
   const router = useRouter();
 
+  /**
+   * calculates how long since the notification was created
+   * Returns a easy to read string for when how long since creation 
+   * @param {date} dateString - date for the creation of the notification
+   */
   function getDate(dateString) {
     let notificationDate = new Date(dateString);
     let now = new Date(Date.now());
@@ -23,6 +28,7 @@ export default function NotificationCard(props) {
     }
   }
 
+  // routes to dataset or coordination depenting on what the notification is about.
   function openCatalougeItem(item) {
     if (parseInt(item.datasetId) !== 0) {
       router.push('/DetailedDataset/' + item.datasetId).then(() => window.scrollTo(0, 0));
@@ -55,8 +61,8 @@ export default function NotificationCard(props) {
             </div>
           ))
       ) : (
-        <p>Ingen varsler</p>
-      )}
+          <p>Ingen varsler</p>
+        )}
     </div>
   );
 }

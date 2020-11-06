@@ -6,6 +6,10 @@ import capitalize from '../utils/helperFunctions';
 export default function DatasetCard({ dataset, onClick, pathName = '' }) {
   let reqCounter;
 
+  /**
+   * displays a request count if the dataset is published and the path is /MyDatasets
+   * @param {string} pub - publicationStatus 
+   */
   const ifPublished = (pub) => {
     if (pub === 'Published') {
       reqCounter = null;
@@ -16,6 +20,10 @@ export default function DatasetCard({ dataset, onClick, pathName = '' }) {
     }
   };
 
+  /**
+   * cuts the description if its too long to display everything.
+   * @param {string} string - description of the datasets
+   */
   const cutString = (string) => {
     if (string != null && string.length > 200) {
       return `${string.substr(0, 200)}\u2026`;
@@ -23,6 +31,10 @@ export default function DatasetCard({ dataset, onClick, pathName = '' }) {
     return string;
   };
 
+  /**
+   * Returns the information needed to create the coordination tags
+   * @param {Object} samordna - the coordination the dataset is part of, if it exists
+   */
   function setSamordna(samordna) {
     // checking if we have coordination information. If null it is not samordna
     if (pathName === '/DetailedCoordination') {
@@ -40,6 +52,9 @@ export default function DatasetCard({ dataset, onClick, pathName = '' }) {
     return null;
   }
 
+  /**
+  * Get chips depending on the status of the dataset
+  */
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
