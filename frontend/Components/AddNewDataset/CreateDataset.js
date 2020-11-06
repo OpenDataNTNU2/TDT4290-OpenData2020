@@ -316,10 +316,9 @@ export default function CreateDataset(props) {
         <FormControl variant="outlined" style={{ width: '50vh' }}>
           <br />
           <br />
-          <InputLabel id="requestToJoinCoordinationLabel">Velg samordning*</InputLabel>
+          <InputLabel id="requestToJoinCoordinationLabelID">Velg samordning*</InputLabel>
           <Select
             labelId="requestToJoinCoordinationLabelID"
-            label="Velg samordning*"
             id="requestToJoinCoordinationID"
             value={selectedCoordination}
             onChange={(event) => setSelectedCoordination(event.target.value)}
@@ -336,66 +335,92 @@ export default function CreateDataset(props) {
         </FormControl>
       ) : null}
       <br />
-      <br />
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
-        <Input
-          id="joinCoordinationId"
-          multiline
-          label="Begrunnelse for forespørsel*"
-          value={joinCoordinationReason}
-          handleChange={setJoinCoordinationReason}
-        />
+        <div>
+          <Input
+            id="joinCoordinationId"
+            multiline
+            label="Begrunnelse for forespørsel*"
+            value={joinCoordinationReason}
+            handleChange={setJoinCoordinationReason}
+          />
+          <br />
+          <br />
+          <br />
+        </div>
       ) : null}
       <br />
 
       {published === '1' && distribution === 0 ? (
-        <Button variant="outlined" color="primary" onClick={() => setDistribution(1)}>
-          Legg til distribusjon
-        </Button>
-      ) : null}
-      {distribution === 0 ? null : (
-        <Grid>
-          <br />
-          <h1 style={{ fontWeight: 'normal', textAlign: 'center' }}>Legg til distribusjon</h1>
-          {Array.from(Array(distribution), (e, i) => {
-            return (
-              <div key={`dist${i.toString()}`}>
-                <Divider variant="middle" />
-                <Distribution
-                  title={distTitle}
-                  setTitle={setDistTitle}
-                  uri={distUri}
-                  setUri={setDistUri}
-                  fileFormat={distFileFormat}
-                  setFileFormat={setDistFileFormat}
-                  number={i}
-                />
-              </div>
-            );
-          })}
-        </Grid>
-      )}
-      {distribution !== 0 && published === '1' ? (
-        <div>
-          <Button variant="contained" color="secondary" onClick={removeDistribution}>
-            Fjern
-          </Button>
-          <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>
+        <FormControl variant="outlined" style={{ width: '50vh' }}>
+          <FormLabel component="legend">Legg til distribusjon: </FormLabel>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={() => setDistribution(1)}
+            style={{ marginTop: '14px', width: '100px' }}
+          >
             Legg til
           </Button>
+          <br />
+          <br />
+        </FormControl>
+      ) : null}
+
+      {distribution === 1 && published === '1' ? (
+        <div>
+          <FormControl variant="outlined" style={{ width: '50vh' }}>
+            <FormLabel component="legend">Legg til distribusjon: </FormLabel>
+            <br />
+            {Array.from(Array(distribution), (e, i) => {
+              return (
+                <div key={`dist${i.toString()}`} style={{ marginTop: '6px' }}>
+                  <Divider variant="middle" />
+                  <Distribution
+                    title={distTitle}
+                    setTitle={setDistTitle}
+                    uri={distUri}
+                    setUri={setDistUri}
+                    fileFormat={distFileFormat}
+                    setFileFormat={setDistFileFormat}
+                    number={i}
+                  />
+                </div>
+              );
+            })}
+          </FormControl>
         </div>
       ) : null}
+
+      {distribution !== 0 && published === '1' ? (
+        <div>
+          <Button variant="outlined" style={{ marginRight: '15px' }} onClick={removeDistribution}>
+            Fjern
+          </Button>
+          <Button variant="outlined" color="primary" onClick={addNewMoreDistributions}>
+            Legg til
+          </Button>
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+      ) : null}
+
       <br />
       <Button variant="contained" size="large" color="primary" onClick={handleChange} fullWidth>
         Opprett datasett
       </Button>
+
       <br />
       <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
         <Alert elevation={1} severity="success">
           Datasett publisert
         </Alert>
       </Snackbar>
+
       <Snackbar open={feedbackRequired} autoHideDuration={5000} onClose={() => setFeedbackRequired(false)}>
         <Alert elevation={1} severity="error">
           Husk å fylle inn alle feltene som kreves (*)

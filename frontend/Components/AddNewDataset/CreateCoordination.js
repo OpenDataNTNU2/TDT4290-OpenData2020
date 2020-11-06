@@ -207,7 +207,7 @@ export default function CreateCoordination(props) {
         <div>
           {/* Midlertidig funk for å teste */}
           <FormControl variant="outlined" style={{ width: '50vh' }}>
-            <InputLabel id="demo-simple-select-label">Velg dataset</InputLabel>
+            <InputLabel id="demo-simple-select-label">Velg datasett</InputLabel>
             <Select
               labelId="demo-simple-select-label"
               label="Velg dataset"

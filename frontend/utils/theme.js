@@ -9,5 +9,8 @@ const theme = createMuiTheme({
       main: '#F2CE1B',
     },
   },
+  status: {
+    error: '#f44336',
+  },
 });
 export default theme;
