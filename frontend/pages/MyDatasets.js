@@ -25,7 +25,10 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
   const [totalItemsDatasets, setTotalItemsDatasets] = useState(0)
   const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0)
 
-
+  /**
+   * if page = 1 overwrite datasets, if its more add datasets to existing list
+   * @param {Object} d - response containing datasets 
+   */
   const setMyDatasets = (d) => {
     if (page !== 1) {
       if (totalItemsDatasets > datasets.length) {
@@ -51,6 +54,10 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     }
   };
 
+  /**
+   * if page = 1 overwrite coordinations, if its more add coordinations to existing list
+   * @param {Object} c - response containing coordinations 
+   */
   const setMyCoordinations = (c) => {
     if (page !== 1) {
       if (totalItemsCoordinations > coordinations.length) {
@@ -77,6 +84,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
 
   };
 
+  // fetch datasets og coordinations depending on whatToShow
   const fetchContent = async () => {
     if (whatToShow === 'datasets') {
       GetApi(`${host}/api/datasets?PublisherIds=${prevPublisherId}&Page=${page}`, setMyDatasets);
@@ -86,7 +94,11 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     }
   }
 
-
+  /**
+   * run when page mounts and when page or whatToShow updates
+   * sets setHasMore if there are more datasets or coordinations to be fetched with pagination
+   * run the function fetchContent 
+   */
   useEffect(() => {
     if (whatToShow === 'datasets' && datasets.length < totalItemsDatasets) {
       setHasMore(true)
@@ -118,6 +130,7 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
     setCoordinations([])
   }
 
+  // check if there are more content to be fetched, and if there are increments the page
   const checkIsMore = () => {
     if (whatToShow === 'datasets' && totalItemsDatasets > datasets.length) {
       setPage(page + 1);
@@ -138,7 +151,6 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
         margin: '50px 20vw',
       }}
     >
-
 
       <div style={{
         display: 'flex',
