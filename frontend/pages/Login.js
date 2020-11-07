@@ -173,8 +173,7 @@ export default function Login({
 
       <Snackbar open={open} autoHideDuration={6000}>
         <Alert elevation={1} severity="success">
-          Innlogging vellykket, velkommen
-          {loggedUsername}
+          Innlogging vellykket, velkommen {loggedUsername}
         </Alert>
       </Snackbar>
     </Grid>
