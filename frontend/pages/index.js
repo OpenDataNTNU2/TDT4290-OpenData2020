@@ -18,7 +18,6 @@ import FilterAccess from '../Components/Filters/FilterAccess';
 import { PageRender } from './api/serverSideProps';
 import GetApi from '../Components/ApiCalls/GetApi';
 
-
 export default function Home() {
   const router = useRouter();
 
@@ -57,7 +56,7 @@ export default function Home() {
 
   const [loader, setLoader] = useState('Loading...');
 
-  // add datasets from response to datasets and set totalItemsDatasets 
+  // add datasets from response to datasets and set totalItemsDatasets
   const addDatasets = (response) => {
     setDatasets(response.items);
     setTotalItemsDatasets(response.totalItems);
@@ -109,7 +108,7 @@ export default function Home() {
         setCoordinations(newArr);
       }
     }
-    setLoader('No more items');
+    setLoader('');
     setTotalItemsCoordinations(response.totalItems);
   };
 
@@ -130,7 +129,7 @@ export default function Home() {
         setDatasets(newArr);
       }
     }
-    setLoader('No more items');
+    setLoader('');
     setTotalItemsDatasets(response.totalItems);
   };
 
@@ -147,46 +146,68 @@ export default function Home() {
     if (urlType === 'both') {
       GetApi(
         url +
-        'datasets' +
-        sUrl +
-        value +
-        fUrl +
-        filterPublishersUrl +
-        fcUrl +
-        filterCategoriesUrl +
-        fpStatus +
-        filterPublishStatus +
-        faLevel +
-        filterAccessLevel +
-        pUrl +
-        '1' +
-        items +
-        sortUrl +
-        sortType,
+          'datasets' +
+          sUrl +
+          value +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          '1' +
+          items +
+          sortUrl +
+          sortType,
         addDatasets
       );
       GetApi(
         url +
-        'coordinations' +
-        sUrl +
-        value +
-        fUrl +
-        filterPublishersUrl +
-        fcUrl +
-        filterCategoriesUrl +
-        fpStatus +
-        filterPublishStatus +
-        faLevel +
-        filterAccessLevel +
-        pUrl +
-        '1' +
-        items +
-        sortUrl +
-        sortType,
+          'coordinations' +
+          sUrl +
+          value +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          '1' +
+          items +
+          sortUrl +
+          sortType,
         addCoordinations
       );
     } else {
       GetApi(
+        url +
+          urlType +
+          sUrl +
+          value +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          '1' +
+          items +
+          sortUrl +
+          sortType,
+        addToEmptyList
+      );
+    }
+    console.log(
+      'Fetching from url: ' +
         url +
         urlType +
         sUrl +
@@ -203,29 +224,7 @@ export default function Home() {
         '1' +
         items +
         sortUrl +
-        sortType,
-        addToEmptyList
-      );
-    }
-    console.log(
-      'Fetching from url: ' +
-      url +
-      urlType +
-      sUrl +
-      value +
-      fUrl +
-      filterPublishersUrl +
-      fcUrl +
-      filterCategoriesUrl +
-      fpStatus +
-      filterPublishStatus +
-      faLevel +
-      filterAccessLevel +
-      pUrl +
-      '1' +
-      items +
-      sortUrl +
-      sortType
+        sortType
     );
   };
 
@@ -233,6 +232,28 @@ export default function Home() {
   const fetchNextDatasetPage = async () => {
     if (totalItemsDatasets >= datasets.length) {
       GetApi(
+        url +
+          'datasets' +
+          sUrl +
+          searchUrl +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          page +
+          items +
+          sortUrl +
+          sortType,
+        addDatasetsToExisting
+      );
+    }
+    console.log(
+      'Fetching from url: ' +
         url +
         'datasets' +
         sUrl +
@@ -249,29 +270,7 @@ export default function Home() {
         page +
         items +
         sortUrl +
-        sortType,
-        addDatasetsToExisting
-      );
-    }
-    console.log(
-      'Fetching from url: ' +
-      url +
-      'datasets' +
-      sUrl +
-      searchUrl +
-      fUrl +
-      filterPublishersUrl +
-      fcUrl +
-      filterCategoriesUrl +
-      fpStatus +
-      filterPublishStatus +
-      faLevel +
-      filterAccessLevel +
-      pUrl +
-      page +
-      items +
-      sortUrl +
-      sortType
+        sortType
     );
   };
 
@@ -280,52 +279,52 @@ export default function Home() {
     if (totalItemsCoordinations >= coordinations.length) {
       GetApi(
         url +
-        'coordinations' +
-        sUrl +
-        searchUrl +
-        fUrl +
-        filterPublishersUrl +
-        fcUrl +
-        filterCategoriesUrl +
-        fpStatus +
-        filterPublishStatus +
-        faLevel +
-        filterAccessLevel +
-        pUrl +
-        coordinationPage +
-        items +
-        sortUrl +
-        sortType,
+          'coordinations' +
+          sUrl +
+          searchUrl +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          coordinationPage +
+          items +
+          sortUrl +
+          sortType,
         addCoordinationsToExisting
       );
       console.log(
         'Fetching from url: ' +
-        url +
-        'coordinations' +
-        sUrl +
-        searchUrl +
-        fUrl +
-        filterPublishersUrl +
-        fcUrl +
-        filterCategoriesUrl +
-        fpStatus +
-        filterPublishStatus +
-        faLevel +
-        filterAccessLevel +
-        pUrl +
-        coordinationPage +
-        items +
-        sortUrl +
-        sortType
+          url +
+          'coordinations' +
+          sUrl +
+          searchUrl +
+          fUrl +
+          filterPublishersUrl +
+          fcUrl +
+          filterCategoriesUrl +
+          fpStatus +
+          filterPublishStatus +
+          faLevel +
+          filterAccessLevel +
+          pUrl +
+          coordinationPage +
+          items +
+          sortUrl +
+          sortType
       );
     }
   };
 
   /**
-    * runs when page or coordination page changes
-    * page and coordination page changes with infinite scroll
-    * depending on wheter there are items on the next pages, it will fetch more
-  */
+   * runs when page or coordination page changes
+   * page and coordination page changes with infinite scroll
+   * depending on wheter there are items on the next pages, it will fetch more
+   */
   useEffect(() => {
     switch (urlType) {
       case 'both': {
@@ -512,8 +511,8 @@ export default function Home() {
                 )
             )
           ) : (
-              <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen samordninger</h3>
-            )}
+            <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen samordninger</h3>
+          )}
         </div>
       </InfiniteScroll>
     );
@@ -537,8 +536,8 @@ export default function Home() {
                 )
             )
           ) : (
-              <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen datasett</h3>
-            )}
+            <h3 style={{ marginLeft: '1.5vh', fontWeight: 'normal' }}>Fant ingen datasett</h3>
+          )}
         </div>
       </InfiniteScroll>
     );
@@ -609,10 +608,10 @@ export default function Home() {
               ? coordinationInfiniteScroll()
               : bothInfiniteScroll()
             : urlType === 'datasets'
-              ? datasetInfiniteScroll()
-              : urlType === 'coordinations'
-                ? coordinationInfiniteScroll()
-                : 'TOMT'}
+            ? datasetInfiniteScroll()
+            : urlType === 'coordinations'
+            ? coordinationInfiniteScroll()
+            : 'TOMT'}
         </Grid>
       </Grid>
     </div>
