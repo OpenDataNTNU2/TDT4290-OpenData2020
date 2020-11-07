@@ -22,7 +22,6 @@ import AddTagsComp from './AddTagsComp';
 
 import Cookie from 'js-cookie';
 
-
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
@@ -43,7 +42,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
 
-  // increments the interestcounter by 1.  
+  // increments the interestcounter by 1.
   const updateData = async () => {
     const data2 = [
       {
@@ -57,12 +56,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     PatchApi(uri, data2);
     console.log('Requests er oppdatert!');
 
-    let newArr = Cookie.get('userHaveRequested')
+    let newArr = Cookie.get('userHaveRequested');
     if (newArr === 'false') {
-      Cookie.set('userHaveRequested', data.id + '|')
-    }
-    else {
-      Cookie.set('userHaveRequested', newArr + data.id + '|')
+      Cookie.set('userHaveRequested', data.id + '|');
+    } else {
+      Cookie.set('userHaveRequested', newArr + data.id + '|');
     }
   };
 
@@ -76,10 +74,9 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
   /**
    * if published show all distributions, else show the request button
-   * @param {string} pub - publication status 
+   * @param {string} pub - publication status
    */
   const ifPublished = (pub) => {
-
     if (pub === 'Published') {
       requestButton = null;
       publishedStatus = 'Publisert';
@@ -104,12 +101,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       }
     } else {
       let dis = false;
-      if (typeof Cookie.get('userHaveRequested') !== "undefined") {
-        let newArr = Cookie.get('userHaveRequested')
-        let splitArr = newArr.split('|')
+      if (typeof Cookie.get('userHaveRequested') !== 'undefined') {
+        let newArr = Cookie.get('userHaveRequested');
+        let splitArr = newArr.split('|');
         for (let i = 0; i < splitArr.length; i++) {
           if (parseInt(splitArr[i]) === data.id) {
-            dis = true
+            dis = true;
           }
         }
       }
@@ -155,20 +152,21 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           </div>
         ) : null}
 
-        {data.coordination ? data.coordination.underCoordination ? (
-          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
-            Under samordning
-          </div>
-        ) : (
+        {data.coordination ? (
+          data.coordination.underCoordination ? (
+            <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+              Under samordning
+            </div>
+          ) : (
             <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
               Samordnet
             </div>
           )
-          : (
-            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-              Ikke samordnet
-            </div>
-          )}
+        ) : (
+          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+            Ikke samordnet
+          </div>
+        )}
       </div>
     );
   };
@@ -193,10 +191,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   }
 
   /**
-  * runs when component mounts and when subscribed updates
-  * fetch the logged in user, to check if there is already are a subscription
-  * also sets the userAreOwner if the logged in publisher are the creator of the coordination
-  */
+   * runs when component mounts and when subscribed updates
+   * fetch the logged in user, to check if there is already are a subscription
+   * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+   */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
@@ -215,10 +213,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   }
 
   /**
-     * updates editPath in dataset with new value 
-     * @param {string} newValue - new value
-     * @param {string} editPath - what is changing
-     */
+   * updates editPath in dataset with new value
+   * @param {string} newValue - new value
+   * @param {string} editPath - what is changing
+   */
   const updateDataset = (newValue, editPath) => {
     const d = [
       {
@@ -241,7 +239,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     return dd + '-' + mm + '-' + yyyy;
   }
 
-
   ifPublished(data.publicationStatus);
 
   return (
@@ -255,7 +252,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           padding: '5% 10% 5% 10%',
           backgroundColor: 'white',
         }}
-
       >
         {getChips()}
 
@@ -345,8 +341,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             <br />
           </Grid>
 
-
-
           <Grid>
             <br />
             <Divider variant="fullWidth" />
@@ -356,10 +350,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 Dette datasettet har ingen usecase enda. <br />
               </div>
             ) : (
-                Object.values(data.subscriptions).map((sub) => {
-                  return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-                })
-              )}
+              Object.values(data.subscriptions).map((sub) => {
+                return (
+                  <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />
+                );
+              })
+            )}
             <br />
           </Grid>
         </Grid>
@@ -380,13 +376,13 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <div>
           <br />
           {data.gitlabDiscussionBoardUrl && (
-            <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+            <Button color="primary" href={data.gitlabDiscussionBoardUrl} target="_blank">
               Diskuter dette datasettet
             </Button>
           )}
           <br />
           {data.gitlabCreateIssueUrl && (
-            <Button color="primary" href={data.gitlabCreateIssueUrl}>
+            <Button color="primary" href={data.gitlabCreateIssueUrl} target="_blank">
               Gi tilbakemeldinger på dette datasettet
             </Button>
           )}
