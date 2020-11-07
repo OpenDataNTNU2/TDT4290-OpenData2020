@@ -3,6 +3,10 @@ import styles from '../styles/CoordinationCard.module.css';
 import capitalize from '../utils/helperFunctions';
 
 export default function CoordinationCard(props) {
+  /**
+   * cuts the description if its too long to display everything.
+   * @param {string} string - description of the coordination
+   */
   const cutString = (string) => {
     if (string != null && string.length > 200) {
       return `${string.substr(0, 200)}\u2026`;
@@ -10,6 +14,9 @@ export default function CoordinationCard(props) {
     return string;
   };
 
+  /**
+   * Get chips depending on the status of the coordination
+   */
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -18,10 +25,10 @@ export default function CoordinationCard(props) {
             Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )}
         {props.coordination.accessLevel === 'Green' ? (
           <div className={styles.chip} style={{ backgroundColor: '#46D454' }}>
             Kan deles offentlig
@@ -41,7 +48,7 @@ export default function CoordinationCard(props) {
     );
   };
 
-  //   props.coordination.underCoordination
+
   return (
     <div key={props.id * 2} className={styles.cardContainer} onClick={props.onClick}>
       {getChips()}
@@ -57,8 +64,8 @@ export default function CoordinationCard(props) {
             {props.coordination.datasets.length !== 0 ? (
               props.coordination.datasets.map((dataset) => `${capitalize(dataset.publisher.name)}, `)
             ) : (
-              <i> Ingen deltagende kommuner</i>
-            )}
+                <i> Ingen deltagende kommuner</i>
+              )}
           </p>
         </Grid>
       </Grid>

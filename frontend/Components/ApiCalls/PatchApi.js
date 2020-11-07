@@ -1,5 +1,3 @@
-// Uvisst om denne fungerer per nå, men noe på plass
-
 const PatchApi = async (url, data) => {
   try {
     fetch(url, {

@@ -17,7 +17,7 @@ const AddDistributionsComp = (props) => {
 
   const addDistribution = () => {
     if (distTitle === '' || distUri === '') {
-      // ikke fylt inn riktig
+      console.log("Not filled in correctly")
     } else {
       const data2 = {
         title: distTitle[0],
@@ -51,10 +51,10 @@ const AddDistributionsComp = (props) => {
         </Button>
       </div>
     ) : (
-      <Button variant="contained" color="primary" onClick={() => setEditBool(true)}>
-        Legg til ny distribusjon
-      </Button>
-    )
+        <Button variant="contained" color="primary" onClick={() => setEditBool(true)}>
+          Legg til ny distribusjon
+        </Button>
+      )
   ) : null;
 };
 

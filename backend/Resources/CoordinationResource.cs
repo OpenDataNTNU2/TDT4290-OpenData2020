@@ -7,6 +7,9 @@ namespace OpenData.API.Resources
         public int Id { get; set; }
         public string Title {get; set; }
         public string Description { get; set; }
+        public string GitlabProjectUrl { get; set; }
+        public string GitlabDiscussionBoardUrl { get; set; }
+        public string GitlabCreateIssueUrl { get; set; }
         public bool UnderCoordination { get; set; }
         public string StatusDescription { get; set; }
         public string AccessLevel { get; set; }

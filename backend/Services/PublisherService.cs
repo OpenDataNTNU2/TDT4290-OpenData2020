@@ -7,6 +7,7 @@ using OpenData.API.Domain.Repositories;
 using OpenData.API.Domain.Services;
 using OpenData.API.Domain.Services.Communication;
 using OpenData.API.Infrastructure;
+using OpenData.External.Gitlab.Services;
 
 namespace OpenData.API.Services
 {
@@ -15,12 +16,14 @@ namespace OpenData.API.Services
         private readonly IPublisherRepository _publisherRepository;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMemoryCache _cache;
+        private readonly IGitlabService _gitlabService;
 
-        public PublisherService(IPublisherRepository publisherRepository, IUnitOfWork unitOfWork, IMemoryCache cache)
+        public PublisherService(IPublisherRepository publisherRepository, IUnitOfWork unitOfWork, IMemoryCache cache, IGitlabService gitlabService)
         {
             _publisherRepository = publisherRepository;
             _unitOfWork = unitOfWork;
             _cache = cache;
+            _gitlabService = gitlabService;
         }
 
         public async Task<IEnumerable<Publisher>> ListAsync()
@@ -39,10 +42,31 @@ namespace OpenData.API.Services
         {
             try
             {
-                await _publisherRepository.AddAsync(publisher);
-                await _unitOfWork.CompleteAsync();
+                var createPublisherTask = Task.Run(async() => {
+                    await _publisherRepository.AddAsync(publisher);
+                    await _unitOfWork.CompleteAsync();
+                });
 
-                return new PublisherResponse(publisher);
+                var gitlabGroupResponse = await await createPublisherTask.ContinueWith((antecedent) => {
+                    return _gitlabService.CreateGitlabGroupForPublisher(publisher);
+                }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+                if (gitlabGroupResponse.Success) {
+                    // NOTE: bruker full_path her i stedet for web_url.
+                    // full web url (med hostname) lages ved opprettelse av resource.
+                    publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                    publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+
+                    _publisherRepository.Update(publisher);
+                    await _unitOfWork.CompleteAsync();
+
+                    return new PublisherResponse(publisher);
+                } else {
+                    // Hvis opprettelse av gruppe i gitlab feiler bør publisher fjernes fra databasen
+                    _publisherRepository.Remove(publisher);
+                    await _unitOfWork.CompleteAsync();
+                    return new PublisherResponse(gitlabGroupResponse.Message);
+                }
             }
             catch (Exception ex)
             {

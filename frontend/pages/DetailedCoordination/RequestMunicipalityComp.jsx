@@ -11,10 +11,12 @@ const RequestMunicipalityComp = (props) => {
   const [missingPublishers, setMissingPublisers] = useState([]);
   const [selectedPublisher, setSelectedPublisher] = useState('');
 
+  // fetch all publishers when component mounts
   useEffect(() => {
     GetApi(`${host}/api/publishers`, findMissingPublishers);
   }, [props]);
 
+  // checks the response and adds all publishers who are not part of the coordination
   function findMissingPublishers(response) {
     let newArr = [];
     for (let i = 0; i < response.length; i++) {
@@ -29,6 +31,8 @@ const RequestMunicipalityComp = (props) => {
     setMissingPublisers(newArr);
   }
 
+  // posts application, this will notify the publisher that a user wants the 
+  // publisher to suport datasets like the once in this coordination
   function sendRequest() {
     const d = {
       reason: reason,
@@ -40,9 +44,9 @@ const RequestMunicipalityComp = (props) => {
   function successfullySentRequest() {
     console.log(
       'Successfully sent request to publisher id' +
-        selectedPublisher +
-        ' about joining the coordination ' +
-        props.coordination.title
+      selectedPublisher +
+      ' about joining the coordination ' +
+      props.coordination.title
     );
   }
 

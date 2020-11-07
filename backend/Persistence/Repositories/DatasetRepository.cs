@@ -176,9 +176,9 @@ namespace OpenData.API.Persistence.Repositories
             return cat;
         }
 
-        public async Task AddAsync(Dataset dataset)
+        public async Task<Dataset> AddAsync(Dataset dataset)
         {
-            await _context.Datasets.AddAsync(dataset);
+            return (await _context.Datasets.AddAsync(dataset)).Entity;
         }
 
         public async Task<Dataset> FindByIdAsync(int id)

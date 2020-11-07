@@ -1,4 +1,4 @@
-import { Grid, Snackbar, Divider } from '@material-ui/core';
+import { Grid, Snackbar, Divider, Button } from '@material-ui/core';
 import { useEffect, useState } from 'react';
 import Alert from '@material-ui/lab/Alert';
 import RequestButtonComp from './RequestButtonComp';
@@ -20,14 +20,19 @@ import EditCategoryComp from './EditCategoryComp';
 import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
+import Cookie from 'js-cookie';
+
+
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
+
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
 
+  // logged in user are owner of coordination
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   let requestButton;
@@ -38,9 +43,8 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
 
+  // increments the interestcounter by 1.  
   const updateData = async () => {
-    // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
-    // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
     const data2 = [
       {
         value: interestCounter + 1,
@@ -48,24 +52,34 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         op: 'replace',
       },
     ];
-    /* console.log("Interest counter FØR setInterestCounter: "+ interestCounter);
-      setInterestCounter(interestCounter + 1); */
     console.log(`Interest counter er nå: ${data2.interestCounter}`);
     setOpen(true);
     PatchApi(uri, data2);
     console.log('Requests er oppdatert!');
+
+    let newArr = Cookie.get('userHaveRequested')
+    if (newArr === 'false') {
+      Cookie.set('userHaveRequested', data.id + '|')
+    }
+    else {
+      Cookie.set('userHaveRequested', newArr + data.id + '|')
+    }
   };
 
   // puts data into the api with datasets
   const handleChange = async () => {
-    // setInterestCounter brukes ikke i praksis, oppdaterer manuelt når jeg sender data i put.
     setInterestCounter(parseInt(interestCounter) + 1);
     setDisabled(!disabled);
     setOpen(true);
     updateData();
   };
 
+  /**
+   * if published show all distributions, else show the request button
+   * @param {string} pub - publication status 
+   */
   const ifPublished = (pub) => {
+
     if (pub === 'Published') {
       requestButton = null;
       publishedStatus = 'Publisert';
@@ -89,12 +103,23 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         });
       }
     } else {
-      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={disabled} />;
+      let dis = false;
+      if (typeof Cookie.get('userHaveRequested') !== "undefined") {
+        let newArr = Cookie.get('userHaveRequested')
+        let splitArr = newArr.split('|')
+        for (let i = 0; i < splitArr.length; i++) {
+          if (parseInt(splitArr[i]) === data.id) {
+            dis = true
+          }
+        }
+      }
+      requestButton = <RequestButtonComp handleChange={() => handleChange()} disabled={dis} />;
       publishedStatus = 'Ikke publisert';
       cardOrNoCard = 'Dette datasettet har ingen distribusjoner ennå.';
     }
   };
 
+  // get chips based on publicationStatus, accessLevel and wheter or not the dataset is in a coordination
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -130,22 +155,25 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           </div>
         ) : null}
 
-        {data.coordination ? (
-          <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
-            Samordnet
+        {data.coordination ? data.coordination.underCoordination ? (
+          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            Under samordning
           </div>
         ) : (
-          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-            Ikke samordnet
-          </div>
-        )}
+            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+              Samordnet
+            </div>
+          )
+          : (
+            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+              Ikke samordnet
+            </div>
+          )}
       </div>
     );
   };
 
   const subscribe = (url, desc) => {
-    // gjør en sjekk her
-
     let d = {
       userId: prevUserId,
       datasetId: data.id,
@@ -164,6 +192,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(true);
   }
 
+  /**
+  * runs when component mounts and when subscribed updates
+  * fetch the logged in user, to check if there is already are a subscription
+  * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+  */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
@@ -181,6 +214,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(false);
   }
 
+  /**
+     * updates editPath in dataset with new value 
+     * @param {string} newValue - new value
+     * @param {string} editPath - what is changing
+     */
   const updateDataset = (newValue, editPath) => {
     const d = [
       {
@@ -193,7 +231,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     console.log('patched dataset');
   };
 
-  // fixing layour of date so it doesnt look so wiiiiierd
+  // changing format of date to dd mm yyyy
   function fixDate(date) {
     const fixing = new Date(date);
     const dd = fixing.getDate() < 10 ? `0${fixing.getDate()}` : fixing.getDate();
@@ -203,7 +241,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     return dd + '-' + mm + '-' + yyyy;
   }
 
-  console.log(data);
+
   ifPublished(data.publicationStatus);
 
   return (
@@ -217,6 +255,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           padding: '5% 10% 5% 10%',
           backgroundColor: 'white',
         }}
+
       >
         {getChips()}
 
@@ -297,27 +336,33 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         </div>
         <br />
 
-        <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
-        <span>{cardOrNoCard}</span>
-        <br />
-        <span>
-          <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
-        </span>
+        <Grid>
+          <h3 style={{ fontWeight: '600' }}>Distribusjoner:</h3>
+          <Grid>{cardOrNoCard}</Grid>
+          <br />
+          <Grid>
+            <AddDistributionsComp canEdit={userAreOwner} dataId={data.id} distributionCards={distributionCards} />
+            <br />
+          </Grid>
 
-        <br />
-        <Divider variant="fullWidth" />
-        <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
-        {Object.values(data.subscriptions).length == 0 ? (
-          <div>
-            Dette datasettet har ingen usecase enda. <br />
-          </div>
-        ) : (
-          Object.values(data.subscriptions).map((sub) => {
-            return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-          })
-        )}
-        <br />
 
+
+          <Grid>
+            <br />
+            <Divider variant="fullWidth" />
+            <h3 style={{ fontWeight: '600' }}>Datasettet blir brukt til:</h3>
+            {Object.values(data.subscriptions).length == 0 ? (
+              <div>
+                Dette datasettet har ingen usecase enda. <br />
+              </div>
+            ) : (
+                Object.values(data.subscriptions).map((sub) => {
+                  return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
+                })
+              )}
+            <br />
+          </Grid>
+        </Grid>
         {/* Request dataset & subscribe only if it is not your dataset */}
         {prevLoggedUsername !== 'false' && parseInt(prevPublisherId) !== data.publisher.id && (
           <div>
@@ -330,6 +375,22 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             </span>
           </div>
         )}
+
+        <Divider />
+        <div>
+          <br />
+          {data.gitlabDiscussionBoardUrl && (
+            <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+              Diskuter dette datasettet
+            </Button>
+          )}
+          <br />
+          {data.gitlabCreateIssueUrl && (
+            <Button color="primary" href={data.gitlabCreateIssueUrl}>
+              Gi tilbakemeldinger på dette datasettet
+            </Button>
+          )}
+        </div>
 
         <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
           <Alert elevation={1} severity="info">

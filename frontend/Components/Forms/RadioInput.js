@@ -2,13 +2,13 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Radio from '@material-ui/core/Radio';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { withStyles } from '@material-ui/core/styles';
-import { green, orange, red } from '@material-ui/core/colors';
+import { green, grey, orange, red, blue } from '@material-ui/core/colors';
 
 const GreenRadio = withStyles({
   root: {
-    color: green[400],
+    color: grey[400],
     '&$checked': {
-      color: green[600],
+      color: green[400],
     },
   },
   checked: {},
@@ -16,17 +16,17 @@ const GreenRadio = withStyles({
 
 const YellowRadio = withStyles({
   root: {
-    color: orange[400],
+    color: grey[400],
     '&$checked': {
       color: orange[600],
     },
   },
   checked: {},
-})((props) => <Radio color="default" {...props} />);
+})((props) => <Radio color="primary" {...props} />);
 
 const RedRadio = withStyles({
   root: {
-    color: red[400],
+    color: grey[400],
     '&$checked': {
       color: red[600],
     },
@@ -34,9 +34,23 @@ const RedRadio = withStyles({
   checked: {},
 })((props) => <Radio color="default" {...props} />);
 
+const DefaultRadio = withStyles({
+  root: {
+    color: grey[400],
+    '&$checked': {
+      color: blue[600],
+    },
+  },
+  checked: {},
+})((props) => <Radio color="default" {...props} />);
+
 const RadioInput = (props) => {
   return (
-    <RadioGroup value={props.mainValue} onChange={(e) => props.handleChange(e.target.value)}>
+    <RadioGroup
+      value={props.mainValue}
+      onChange={(e) => props.handleChange(e.target.value)}
+      style={{ margin: '12px 0 0 12px' }}
+    >
       {Array.from(Array(props.value.length), (e, i) => {
         return (
           <FormControlLabel
@@ -51,7 +65,7 @@ const RadioInput = (props) => {
               ) : props.color[i] === 'yellow' ? (
                 <YellowRadio />
               ) : (
-                <Radio />
+                <DefaultRadio />
               )
             }
             label={props.label[i]}

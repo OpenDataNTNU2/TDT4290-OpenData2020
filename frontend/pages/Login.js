@@ -10,16 +10,16 @@ export default function Login({
   prevLoggedUsername = false,
   prevPublisherId = '-1',
   prevUserId = '-1',
+  prevUserHaveRequested = false,
 }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-  // setter initial states, er garra en bedre måte å gjøre dette på, fremdeles et tidlig utkast
-  // sjekker etter bedre løsninger på local states og/eller global states med next atm (Håkon)
-
+  // sets initial states from cookies
   const [loggedIn, setLoggedIn] = useState(() => JSON.parse(prevLoggedIn));
   const [loggedUsername, setLoggedUsername] = useState(() => JSON.parse(prevLoggedUsername));
   const [publisherId, setPublisherId] = useState(() => JSON.parse(prevPublisherId));
   const [userId, setUserId] = useState(() => JSON.parse(prevUserId));
+  const [userHaveRequested, setUserHaveRequested] = useState(prevUserHaveRequested);
 
   const [username, setUsername] = useState('');
 
@@ -33,14 +33,14 @@ export default function Login({
     Cookie.set('prevLoggedUsername', JSON.stringify(loggedUsername));
     Cookie.set('prevPublisherId', JSON.stringify(publisherId));
     Cookie.set('prevUserId', JSON.stringify(userId));
-  }, [loggedIn, loggedUsername, publisherId, userId]);
+  }, [loggedIn, loggedUsername, publisherId, userId, userHaveRequested]);
 
   // refresh website when loggedIn changes, aka user logs in or out
   useEffect(() => {
     Router.push('/Login').then(() => window.scrollTo(0, 0));
   }, [loggedIn]);
 
-  // sjekker elig av brukernavn, må nok adde at den sjekker etter kommune bruker o.l, men vi kan vente litt med det.
+  // checks if the username is valid
   const checkUsernameElig = (u) => {
     if (u.length === 0) {
       return false;
@@ -48,6 +48,7 @@ export default function Login({
     return true;
   };
 
+  // sends a put request with username. if the username is new, it will just create a new user
   const sendLoginRequest = async () => {
     const data = {
       username,
@@ -60,11 +61,17 @@ export default function Login({
         },
         body: JSON.stringify(data),
       })
-        .then((response) => response.json())
+        .then(
+          (response) => response.json(),
+          (reject) => console.log('Error: ', reject)
+        )
         .then((resData) => {
-          console.log(resData);
+          console.log('resData', resData);
           setUserId(resData.id);
           setPublisherId(resData.publisherId);
+        })
+        .catch(function (error) {
+          console.log('hallo', error);
         });
       return true;
     } catch (_) {
@@ -74,7 +81,7 @@ export default function Login({
     }
   };
 
-  // Når brukere trykker login, endres statesene, dette skjer kun i login atm, så hvis man refresher/bytter page, blir man logget ut.
+  // Update states when user logs in.
   const handleLoginClick = async () => {
     if (!loggedIn) {
       if (checkUsernameElig(username)) {
@@ -84,12 +91,14 @@ export default function Login({
           setLoggedIn(true);
           setOpen(true);
           setNotEligUsername(false);
+          setUserHaveRequested(false);
+          Cookie.set('userHaveRequested', false);
         }
       } else setNotEligUsername(true);
     }
   };
 
-  // resetter alle statsene når bruker trykker på logg ut
+  // resets states when user logs out.
   const handleLogoutClick = () => {
     setLoggedUsername(false);
     setUserId('-1');
@@ -97,7 +106,15 @@ export default function Login({
     setLoggedIn(false);
     setUsername('');
     setOpen(false);
+    Cookie.set('userHaveRequested', false);
   };
+
+  function enterClick(e) {
+    if (e.keyCode === 13) {
+      e.preventDefault();
+      handleLoginClick();
+    }
+  }
 
   return (
     <Grid
@@ -111,10 +128,10 @@ export default function Login({
       {loggedIn ? (
         <h2 style={{ fontWeight: 'normal' }}>Logget inn som {loggedUsername}</h2>
       ) : (
-        <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
-      )}
+          <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
+        )}
       {loggedIn ? null : (
-        <form noValidate autoComplete="off" style={{ width: '50vh' }}>
+        <form noValidate autoComplete="off" style={{ width: '50vw' }}>
           <TextField
             id="username"
             label="Brukernavn"
@@ -123,6 +140,7 @@ export default function Login({
             fullWidth
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            onKeyDown={(e) => enterClick(e)}
           />
         </form>
       )}
@@ -132,10 +150,10 @@ export default function Login({
           Logg ut
         </Button>
       ) : (
-        <Button variant="contained" color="primary" onClick={handleLoginClick}>
-          Logg inn
-        </Button>
-      )}
+          <Button variant="contained" color="primary" onClick={handleLoginClick}>
+            Logg inn
+          </Button>
+        )}
       <br />
 
       {loggedIn ? null : (
@@ -170,5 +188,6 @@ Login.getInitialProps = ({ req }) => {
     prevLoggedUsername: cookies.prevLoggedUsername,
     prevPublisherId: cookies.prevPublisherId,
     prevUserId: cookies.prevUserId,
+    prevUserHaveRequested: cookies.userHaveRequested,
   };
 };

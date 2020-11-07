@@ -7,6 +7,10 @@ export default function FilterAccess(props) {
   const [addedAccessFilters, setAddedAccessFilters] = useState([]);
   const [addedPulishStatusFilters, setAddedPulishStatusFilters] = useState([]);
 
+  /**
+  * Adds the value of the checkbox to the added filters, and sends it to props.setFilterAccessLevel
+  * @param {event} event - The event with value from the checkbox, "1", "2" or "3"
+  */
   const handleChangeAccess = (event) => {
     const newArr = addedAccessFilters;
     newArr.push(event.target.value);
@@ -25,6 +29,10 @@ export default function FilterAccess(props) {
     props.setFilterAccessLevel(newUrlString);
   };
 
+  /**
+   * Adds the value of the checkbox to the added filters, and sends it to props.setFilterPublishStatus
+   * @param {event} event - The event with value from the checkbox, "1", "2" or "3"
+   */
   const handleChangePublished = (event) => {
     const newArr = addedPulishStatusFilters;
     newArr.push(event.target.value);

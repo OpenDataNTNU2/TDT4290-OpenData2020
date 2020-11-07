@@ -17,7 +17,6 @@ const SelectTags = (props) => {
     setId(lastId + 1);
 
     if (
-      // this check does not work
       !props.newTags.includes(newTag.newTagId) ||
       !props.newTags.includes(newTag.newTagName)
     ) {
