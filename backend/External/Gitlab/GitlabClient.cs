@@ -6,6 +6,7 @@ using System;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Text;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab
 {
@@ -13,14 +14,16 @@ namespace OpenData.External.Gitlab
     {
         private readonly HttpClient _gitlabApiHttpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        public GitlabClient(IHttpClientFactory httpClientFactory)
+        public GitlabClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             HttpClient client = httpClientFactory.CreateClient();
 
-            // TODO: hent inn på en smart måte fra config elns
-            client.BaseAddress = new Uri("http://gitlab.potrik.com/api/v4/");
+            string gitlabUrl = configuration["gitlabUrl"];
+            string bearerToken = configuration["gitlabToken"];
+
+            client.BaseAddress = new Uri(gitlabUrl + "api/v4/");
             client.DefaultRequestHeaders.Add("Accept", "application/json");
-            client.DefaultRequestHeaders.Add("Authorization", "Bearer hqU-vAW9x3" + "nLGqLi5zbZ"); // delt i to for å unngå skumle bots som søker etter api-keys #much-securiti
+            client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
 
             _gitlabApiHttpClient = client;
 
