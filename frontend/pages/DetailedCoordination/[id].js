@@ -185,6 +185,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     console.log('patched dataset');
   };
 
+  function fixDate(date) {
+    let notificationDate = new Date(date);
+    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let result = notificationDate.toLocaleDateString('no', options);
+    return result.substr(0, 1).toUpperCase() + result.substr(1);
+  }
+
   return (
     <Grid container direction="column" style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
       {/* Tags and headline */}
@@ -226,7 +233,15 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <br />
 
       {/* Information about the coordination */}
-      <Grid style={{ padding: '3% 0 3% 0' }}>
+      <Grid style={{ padding: '3% 0 3% 0' }} className={styles.attributes}>
+        <span>Utgiver av samordning: </span>
+        {data.publisher.name}
+        <br />
+        <span>Dato publisert: </span>
+        {fixDate(data.datePublished)}
+        <br />
+        <span>Sist oppdatert: </span>
+        {fixDate(data.dateLastUpdated)}
         <EditTextFieldComp
           value={coordinationData.description}
           styles={styles.attributes}
@@ -237,6 +252,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           multiline={true}
           staticText="Beskrivelse: "
         />
+
         <AddTagsComp
           value={coordinationData.coordinationTags}
           styles={styles.attributes}
@@ -244,18 +260,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           updateDataset={updateCoordination}
           path="/tagsIds"
         />
-        <p>
-          <b>Utgiver av samordning: </b>
-          {data.publisher.name}
-        </p>
-        <p>
-          <b>Deltakere i samordningen: </b>
-          {coordinationData.datasets.length === 0 ? (
-            <i>Ingen deltakere med i samordningen</i>
-          ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
-          )}
-        </p>
+
+        <span>Deltakere i samordningen: </span>
+        {coordinationData.datasets.length === 0 ? (
+          <i>Ingen deltakere med i samordningen</i>
+        ) : (
+          coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
+        )}
         <br />
         <p>
           <b>Distribusjonene i samordningen: </b>

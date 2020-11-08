@@ -245,12 +245,10 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
   // changing format of date to dd mm yyyy
   function fixDate(date) {
-    const fixing = new Date(date);
-    const dd = fixing.getDate() < 10 ? `0${fixing.getDate()}` : fixing.getDate();
-    let mm = fixing.getMonth();
-    mm = mm < 10 ? `0${parseInt(mm) + 1}` : parseInt(mm) + 1;
-    const yyyy = fixing.getFullYear();
-    return dd + '-' + mm + '-' + yyyy;
+    let notificationDate = new Date(date);
+    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let result = notificationDate.toLocaleDateString('no', options);
+    return result.substr(0, 1).toUpperCase() + result.substr(1);
   }
 
   ifPublished(data.publicationStatus);
@@ -289,60 +287,64 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <Divider variant="fullWidth" />
         <br />
 
-        <EditTextFieldComp
-          value={data.description}
-          styles={styles.attributes}
-          type="span"
-          staticText="Beskrivelse: "
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/description"
-          multiline={true}
-        />
-
-        <EditPublishedStatusComp
-          value={publishedStatus}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/publicationStatus"
-        />
-
-        <EditCategoryComp
-          value={data.category.name}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          categoryId={data.category.id}
-          updateDataset={updateDataset}
-          path="/categoryId"
-        />
-
-        <AddTagsComp
-          value={data.datasetTags}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/tagsIds"
-        />
-
         <div className={styles.attributes}>
-          <span>Eier: </span>
+          <span>Utgiver: </span>
           {capitalize(data.publisher.name)}
           <br />
-          <span>Dato publisert: </span>
-          {fixDate(data.datePublished)}
-          <br />
-          <span>Sist oppdatert: </span>
-          {fixDate(data.dateLastUpdated)}
-          <br />
-          {data.coordination && (
+
+          {userAreOwner && (
+            <EditPublishedStatusComp
+              value={publishedStatus}
+              styles={styles.attributes}
+              canEdit={userAreOwner}
+              updateDataset={updateDataset}
+              path="/publicationStatus"
+            />
+          )}
+
+          {/* {data.coordination && (
             <div>
               <span className={styles.attributeTitle}>Samordningsstatus: </span>{' '}
               {data.coordination.underCoordination
                 ? `Pågående samordning - ${data.coordination.statusDescription}`
                 : 'Samordnet'}
             </div>
-          )}
+          )} */}
+
+          <span>Dato publisert: </span>
+          {fixDate(data.datePublished)}
+          <br />
+          <span>Sist oppdatert: </span>
+          {fixDate(data.dateLastUpdated)}
+          <br />
+
+          <EditCategoryComp
+            value={data.category.name}
+            styles={styles.attributes}
+            canEdit={userAreOwner}
+            categoryId={data.category.id}
+            updateDataset={updateDataset}
+            path="/categoryId"
+          />
+
+          <EditTextFieldComp
+            value={data.description}
+            styles={styles.attributes}
+            type="span"
+            staticText="Beskrivelse: "
+            canEdit={userAreOwner}
+            updateDataset={updateDataset}
+            path="/description"
+            multiline={true}
+          />
+
+          <AddTagsComp
+            value={data.datasetTags}
+            styles={styles.attributes}
+            canEdit={userAreOwner}
+            updateDataset={updateDataset}
+            path="/tagsIds"
+          />
         </div>
         <br />
 
