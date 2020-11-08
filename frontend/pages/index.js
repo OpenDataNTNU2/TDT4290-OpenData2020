@@ -588,7 +588,7 @@ export default function Home() {
                 onChange={(event) => changeUrl(event.target.value)}
               >
                 <MenuItem value="both">Alle</MenuItem>
-                <MenuItem value="datasets">Dataset</MenuItem>
+                <MenuItem value="datasets">Datasett</MenuItem>
                 <MenuItem value="coordinations">Samordning</MenuItem>
               </Select>
             </FormControl>
