@@ -377,9 +377,9 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       {parseInt(prevPublisherId) === coordinationData.publisher.id ? (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <h1 style={{ fontWeight: 'normal' }}>Forespørsler om å bli med i samordningen</h1>
-          {coordinationData.applications.length !== 0 ? (
+          {Object.values(coordinationData.applications).filter((a) => a.dataset).length !== 0 ? (
             Object.values(coordinationData.applications)
-              .filter((a) => a.datasetId)
+              .filter((a) => a.dataset)
               .map(
                 (application) =>
                   applicationsToJoin && (
