@@ -132,7 +132,7 @@ export default function Login({
         <h2 style={{ fontWeight: 'normal' }}>Logg inn</h2>
       )}
       {loggedIn ? null : (
-        <form noValidate autoComplete="off" style={{ width: '50vw' }}>
+        <form noValidate autoComplete="off" style={{ width: '40vw' }}>
           <TextField
             id="username"
             label="Brukernavn"
@@ -155,10 +155,11 @@ export default function Login({
           Logg inn
         </Button>
       )}
+
       <br />
 
       {loggedIn ? null : (
-        <Alert elevation={1} severity="info">
+        <Alert elevation={1} severity="info" style={{ width: '40vw' }}>
           For å logge inn med kommune, velg et brukernavn på formen [Ditt navn]_[Din kommune]_kommune
         </Alert>
       )}
@@ -173,8 +174,7 @@ export default function Login({
 
       <Snackbar open={open} autoHideDuration={6000}>
         <Alert elevation={1} severity="success">
-          Innlogging vellykket, velkommen
-          {loggedUsername}
+          Innlogging vellykket, velkommen {loggedUsername}
         </Alert>
       </Snackbar>
     </Grid>
