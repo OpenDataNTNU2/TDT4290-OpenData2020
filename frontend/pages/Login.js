@@ -96,6 +96,7 @@ export default function Login({
         }
       } else setNotEligUsername(true);
     }
+    Router.push('/');
   };
 
   // resets states when user logs out.
@@ -154,7 +155,7 @@ export default function Login({
           Logg inn
         </Button>
       )}
-      <br />
+
       <br />
 
       {loggedIn ? null : (
