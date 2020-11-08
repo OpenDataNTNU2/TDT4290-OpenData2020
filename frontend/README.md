@@ -1,8 +1,10 @@
+# Welcome to FRONTEND
+
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+## Before running frontend
 
-Frontend may not run unless a backend is running or available.
+Frontend might not run unless a backend is running or available.
 
 First, open a console in the frontend folder, then install the dependencies:
 
@@ -10,7 +12,12 @@ First, open a console in the frontend folder, then install the dependencies:
 npm install
 ```
 
-Then, run the development server:
+If you are running frontend locally, you may find a configuration file `../config/frontend/.env.local`, which you can copy to this frontend folder and change at will to ensure your settings are not tied to the git repository.  
+You can change the DOTNET_HOST variable to the actual backend (`http://katalog.samåpne.no:5000`) to use the servers backend instead of running it locally.
+
+If you are running frontend on a server, you may find a configuration file in `../config/server/frontend/.env.local`, which you may use instead. Make sure the DOTNET_HOST variable is accurate, and the PORT number is not in use by other programs.
+
+## To run the frontend in development
 
 ```bash
 npm run dev
@@ -19,6 +26,13 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+## To run the frontend in production
+
+```bash
+npm run build
+npm run start
+```
 
 ## Running tests
 

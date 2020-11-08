@@ -1,14 +1,32 @@
 # Welcome to BACKEND
 
-## To run the backend
+## Before running backend
+If you are running backend locally, navigate to `../config/backend` and copy the appsettings.Development.json into the backend folder. 
+You will need to add a connection string for PostgreSQL to this file.   
+If you are running backend on a server, navigate to `../config/server/backend` and copy the appsettings.Production.json into the backend folder.  
+Additionally, you should read the `../config/README.md` file, to figure out how to create a https certificate for your server. (If necessary, we may not need a 
 
-```
+## To run the backend in devevelopment
+```bash
 cd backend
 dotnet restore
 dotnet run
 ```
 Then go to ```https://localhost:5001/swagger/index.html``` to look for the api documentation. 
 In order to use the post, put and delete you have to use something like [Postman](https://www.postman.com/downloads/).
+
+## To run the backend in production
+```bash
+cd backend
+dotnet build
+dotnet bin/Debug/netcoreapp3.1/netcoreapp3.1/OpenData.API.dll &
+```
+or,  
+```bash
+cd backend
+buildBackend.sh
+runBackend.sh
+```
 
 ## To test the backend
 
@@ -74,6 +92,9 @@ Entity type: Dataset, Publisher etc..
   * NUnit test files to detect problems with the basic functionality of important classes
 * Program.cs - Contains the main method for the application.
 * StartUp.cs - Add configurations and services to the program. _Also where to map from an interface to the class using it_.
+* appsettings.json - These are the default configuration values for the program. This is tracked in git, and should rarely be changed.
+* appsettings.Development.json - gitignored. These are local configuration changes for running the program locally. This should be copied from `../config/backend`. It will require a PostgreSQL connection string provided from elsewhere.
+* appsettings.Producction.json - gitignored. These are local configuration changes for running the program on a server. This should be copied from `../config/server/backend`. It will require the same connection string, and may be given an https certificate as well.
 
 ## An example path for saving a Dataset.
 A dataset request is sent to the backend, containing a `SaveDatasetResource`.  
