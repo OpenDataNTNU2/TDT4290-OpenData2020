@@ -38,8 +38,7 @@ namespace OpenData.API
                 options.AddDefaultPolicy(
                                 builder =>
                                 {
-                                     builder.WithOrigins("http://katalog.samåpne.no:3000/",
-                                             "http://localhost:3000/")
+                                     builder.AllowAnyOrigin()
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                 });
