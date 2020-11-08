@@ -29,8 +29,11 @@ namespace OpenData.API.Controllers
         }
 
         /// <summary>
-        /// Lists all coordinations.
+        /// Lists coordinations from the given page.
         /// </summary>
+        /// <remarks>
+        /// This method uses pagination.
+        /// </remarks>
         /// <param name="query">Query containing search, filters and page.</param>
         /// <returns>List of coordinations.</returns>
         [HttpGet]
