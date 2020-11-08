@@ -23,8 +23,8 @@ The key difference between running locally and running the server, is that the b
 After connecting to the server through PuTTY you have two options:  
 
 #### Using bash scripts
-Scripts are found in the folder `./server/scripts`, as well as in `~/shortcuts` (a shortcut to the scripts in the dev repository, specifically).  
-All scripts can take one command line argument, to specify both the git branch and the local folder name. The default is dev. Example: `run.sh dev`  
+Scripts are found in the folder `./server/scripts`, as well as in `~/shortcuts/scripts` (a shortcut to the scripts in the dev repository, specifically).  
+All scripts can take one command line argument, to specify both the git branch and the local folder name. The default is dev. Example: `./run.sh dev`  
 Use `update.sh` to pull the newest changes from git.  
 Then, use `build.sh` to compile production versions of frontend and backend.  
 These only need to be run once whenever you want to change or update the server repo.
