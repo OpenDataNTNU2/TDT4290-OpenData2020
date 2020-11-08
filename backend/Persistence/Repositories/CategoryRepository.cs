@@ -20,6 +20,7 @@ namespace OpenData.API.Persistence.Repositories
                     .Include(p => p.Broader)
                     .Include(c => c.Datasets)
                     .Include(c => c.Coordinations)
+                    // Simple way to include some depth in categories.
                     .Include(p => p.Narrower).ThenInclude(c => c.Datasets)
                     .Include(p => p.Narrower).ThenInclude(c => c.Coordinations)
                     .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
@@ -40,7 +41,6 @@ namespace OpenData.API.Persistence.Repositories
                     remove.Add(categories[i]);
                     continue;
                 }
-                // categories[i] = await getCategoryWithNarrowers(categories[i].Id);
             }
 
             foreach (Category r in remove)
@@ -51,6 +51,8 @@ namespace OpenData.API.Persistence.Repositories
             return categories;
         }
 
+        // Recursive way to include categories with unlimited depth. 
+        // Though this was very slow when connected to database because of many database calls.
         private async Task<Category> getCategoryWithNarrowers(int id)
         {
             Category cat = await _context.Categories

@@ -71,6 +71,7 @@ namespace OpenData.API.Services
             }
         }
 
+        // Method to add tags based on the id and a bit messy because it is sent as a string.
         public async Task<DatasetResponse> SaveAsync(Dataset dataset)
         {
             try
@@ -80,6 +81,7 @@ namespace OpenData.API.Services
                 {
                     return new DatasetResponse(check.error);
                 }
+                // Sets the date and time for the attributes published and last updated to current time.
                 dataset.DatePublished = DateTime.Now;
                 dataset.DateLastUpdated = DateTime.Now;
 
@@ -163,10 +165,12 @@ namespace OpenData.API.Services
                 {
                     return new DatasetResponse(check.error);
                 }
+                // Set last updated to current time
+                existingDataset.DateLastUpdated = DateTime.Now;
+
                 // Update attributes
                 existingDataset.Title = dataset.Title; 
                 existingDataset.Description = dataset.Description; 
-                existingDataset.DateLastUpdated = DateTime.Now;
                 existingDataset.PublisherId = dataset.PublisherId; 
                 existingDataset.PublicationStatus = dataset.PublicationStatus; 
                 existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
@@ -181,6 +185,7 @@ namespace OpenData.API.Services
 
                 _datasetRepository.Update(existingDataset);
 
+                // Send notifications
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
@@ -198,9 +203,13 @@ namespace OpenData.API.Services
         {
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
+            // Apply the update from the json patch document
             patch.ApplyTo(dataset);
+
+            // Set last updated to current time
             dataset.DateLastUpdated = DateTime.Now;
 
+            // Send notifications based on what was changed
             switch (patch.Operations[0].path)
             {
                 case "/coordinationId":
