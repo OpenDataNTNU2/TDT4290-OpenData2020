@@ -182,7 +182,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       },
     ];
     PatchApi(`${host}/api/coordinations/${data.id}`, d);
-    console.log('patched dataset');
   };
 
   function fixDate(date) {

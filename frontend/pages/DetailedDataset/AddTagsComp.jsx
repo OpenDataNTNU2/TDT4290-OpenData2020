@@ -12,7 +12,9 @@ const AddTagsComp = (props) => {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
   const [editBool, setEditBool] = useState(false);
-  const [editText] = useState(props.value ? props.value : []);
+  const [editText, setEditText] = useState(
+    props.value ? props.value.map((tag) => tag && tag.tags.name.toLowerCase()).join(', ') : []
+  );
 
   // variables/states for tags
   const [tags, setTags] = useState([]);
@@ -24,7 +26,6 @@ const AddTagsComp = (props) => {
   }, [props]);
 
   const submitTags = () => {
-    console.log(selectedTags);
     if (newTags.length !== 0) {
       addNewTags();
     }
@@ -48,6 +49,7 @@ const AddTagsComp = (props) => {
           tags={tags}
           setTags={setTags}
           onChange={setSelectedTags}
+          onChangeText={setEditText}
           selectedTags={selectedTags}
           newTags={newTags}
           setNewTags={setNewTags}
@@ -59,7 +61,7 @@ const AddTagsComp = (props) => {
     ) : (
       <p className={props.styles}>
         <span>Søkeord: </span>
-        {editText.map((tag) => tag && tag.tags.name.toLowerCase()).join(', ')}{' '}
+        {editText}
         {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
         <EditIcon className={styles.editIcon} fontSize="small" onClick={() => setEditBool(true)} />
       </p>
@@ -67,7 +69,7 @@ const AddTagsComp = (props) => {
   ) : (
     <p className={props.styles}>
       <span>Søkeord: </span>
-      {editText.map((tag) => tag && tag.tags.name.toLowerCase()).join(', ')}{' '}
+      {editText}
       {editText.length === 0 ? 'Ingen søkeord lagt til' : null}
     </p>
   );

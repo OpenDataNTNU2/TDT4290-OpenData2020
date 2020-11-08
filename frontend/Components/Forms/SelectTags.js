@@ -16,10 +16,7 @@ const SelectTags = (props) => {
   const handleSubmit = (newTag) => {
     setId(lastId + 1);
 
-    if (
-      !props.newTags.includes(newTag.newTagId) ||
-      !props.newTags.includes(newTag.newTagName)
-    ) {
+    if (!props.newTags.includes(newTag.newTagId) || !props.newTags.includes(newTag.newTagName)) {
       props.setNewTags([...props.newTags, { id: newTag.newTagId, name: newTag.newTagName }]);
     } else {
       console.log('Duplikat id eller navn');
@@ -35,12 +32,11 @@ const SelectTags = (props) => {
   };
 
   const handleChange = (value) => {
-    let tagId = '';
-    value.map((tag) => {
-      tagId += `${tag.id}, `;
-    });
+    let tagId = value.map((t) => t.id).join(',');
     props.onChange(tagId);
     removeNewTag(tagId);
+    let tagString = value.map((t) => (t.inputValue && t.inputValue.toLowerCase()) || t.name.toLowerCase()).join(', ');
+    props.onChangeText(tagString);
   };
 
   return (
