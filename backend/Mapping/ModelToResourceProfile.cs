@@ -10,14 +10,15 @@ namespace OpenData.API.Mapping
     {
         public ModelToResourceProfile()
         {
+            string gitlabUrl = Startup.Configuration["gitlabUrl"];
             CreateMap<Dataset, DatasetResource>()
                 // TODO: Enn så lenge får dette lov til å stå her. Men dette burde da gå an å gjøre pent med config elns
                 .ForMember(src => src.GitlabProjectUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath))
                 .ForMember(src => src.GitlabCreateIssueUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath + "/-/issues/new"))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath + "/-/issues/new"))
                 .ForMember(src => src.GitlabDiscussionBoardUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath + "/-/boards/" + src.GitlabDiscussionBoardId))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath + "/-/boards/" + src.GitlabDiscussionBoardId))
                 .ForMember(src => src.PublicationStatus,
                             opt => opt.MapFrom(src => src.PublicationStatus.ToDescriptionString()))
                 .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => src.AccessLevel.ToDescriptionString()));
@@ -47,11 +48,11 @@ namespace OpenData.API.Mapping
             CreateMap<Coordination, CoordinationResource>()
             // TODO: Samme her som for dataset
                 .ForMember(src => src.GitlabProjectUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath))
                 .ForMember(src => src.GitlabCreateIssueUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath + "/-/issues/new"))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath + "/-/issues/new"))
                 .ForMember(src => src.GitlabDiscussionBoardUrl,
-                            opt => opt.MapFrom(src => "http://gitlab.potrik.com/" + src.GitlabProjectPath + "/-/boards/" + src.GitlabDiscussionBoardId))
+                            opt => opt.MapFrom(src => gitlabUrl + src.GitlabProjectPath + "/-/boards/" + src.GitlabDiscussionBoardId))
                 .ForMember(src => src.AccessLevel, opt => opt.MapFrom(src => src.AccessLevel.ToDescriptionString()));
             CreateMap<CoordinationTags, CoordinationTagsResource>();
             
