@@ -234,7 +234,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       {/* Information about the coordination */}
       <Grid style={{ padding: '3% 0 3% 0' }} className={styles.attributes}>
-        <span>Utgiver av samordning: </span>
+        <span>Utgiver: </span>
         {data.publisher.name}
         <br />
         <span>Dato publisert: </span>
