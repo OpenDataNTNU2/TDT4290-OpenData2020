@@ -21,9 +21,11 @@ import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
 import Cookie from 'js-cookie';
+import { useRouter } from 'next/router';
 
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+  const router = useRouter();
 
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
@@ -154,11 +156,23 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
 
         {data.coordination ? (
           data.coordination.underCoordination ? (
-            <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
+            <div
+              className={styles.chip}
+              onClick={() =>
+                router.push('/DetailedCoordination/' + data.coordination.id).then(() => window.scrollTo(0, 0))
+              }
+              style={{ backgroundColor: '#B99EE5', cursor: 'pointer' }}
+            >
               Under samordning
             </div>
           ) : (
-            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+            <div
+              onClick={() =>
+                router.push('/DetailedCoordination/' + data.coordination.id).then(() => window.scrollTo(0, 0))
+              }
+              className={styles.chip}
+              style={{ backgroundColor: '#874BE9', cursor: 'pointer' }}
+            >
               Samordnet
             </div>
           )
