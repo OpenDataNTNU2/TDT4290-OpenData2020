@@ -34,7 +34,7 @@ namespace Tests
                 new CategoryRepository(Context),
                 new TagsRepository(Context),
                 new UnitOfWork(Context),
-                new GitlabService(new DatasetServiceTests.SoullessGitlabCLient()));
+                new GitlabService(new DatasetServiceTests.SoullessGitlabCLient(), new Microsoft.Extensions.Configuration.ConfigurationBuilder().Build()));
             ExampleV = new Coordination
             {
                 Id = 103,
