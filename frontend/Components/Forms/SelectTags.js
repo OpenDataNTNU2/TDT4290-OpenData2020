@@ -35,7 +35,7 @@ const SelectTags = (props) => {
     let tagId = value.map((t) => t.id).join(',');
     props.onChange(tagId);
     removeNewTag(tagId);
-    let tagString = value.map((t) => (t.inputValue && t.inputValue.toLowerCase()) || t.name.toLowerCase()).join(', ');
+    let tagString = value.map((t) => t.inputValue?.toLowerCase() || t.name.toLowerCase()).join(', ');
     props.onChangeText(tagString);
   };
 
@@ -43,6 +43,7 @@ const SelectTags = (props) => {
     <div style={{ display: 'inline-block', width: '50vh' }}>
       <Autocomplete
         multiple
+        defaultValue={props.default}
         onChange={(event, newValue) => {
           const lastAdded = newValue.length >= 1 ? newValue[newValue.length - 1] : null;
           if (lastAdded?.inputValue && !props.selectedTags.includes(lastAdded?.id)) {

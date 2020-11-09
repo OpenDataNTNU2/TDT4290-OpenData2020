@@ -18,10 +18,14 @@ const AddTagsComp = (props) => {
 
   // variables/states for tags
   const [tags, setTags] = useState([]);
-  const [selectedTags, setSelectedTags] = useState('');
+  const [selectedTags, setSelectedTags] = useState(
+    props.value ? props.value.map((tag) => tag && tag.tags.id).join(',') : ''
+  );
   const [newTags, setNewTags] = useState([]);
 
   useEffect(() => {
+    console.log(tags.filter((t) => selectedTags.split(',').includes('' + t.id)));
+    console.log(selectedTags.split(','));
     GetApi(`${host}/api/tags`, setTags);
   }, [props]);
 
@@ -47,6 +51,7 @@ const AddTagsComp = (props) => {
         <SelectTags
           mainLabel="Tags"
           tags={tags}
+          default={tags.filter((t) => selectedTags.split(',').includes('' + t.id))}
           setTags={setTags}
           onChange={setSelectedTags}
           onChangeText={setEditText}
