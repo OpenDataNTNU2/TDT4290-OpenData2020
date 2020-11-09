@@ -10,6 +10,7 @@ const CheckboxInput = (props) => {
       key={props.id}
       control={<Checkbox value={props.id} onClick={handleChange} name={props.name} />}
       label={props.name}
+      style={{ width: '80%' }}
     />
   );
 };

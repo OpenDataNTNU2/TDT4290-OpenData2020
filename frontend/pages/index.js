@@ -555,7 +555,7 @@ export default function Home() {
   return (
     <div className="datakatalog">
       <Grid container style={{ padding: '3%', marginTop: '50px' }} justify="space-evenly">
-        <Grid item xs={4} md={2} style={{ minWidth: '240px' }}>
+        <Grid item xs={4} md={2} style={{ minWidth: '280px' }}>
           <FilterPublisher url={filterPublishersUrl} setUrl={setFilterPublishersUrl} setPage={setPage} type={urlType} />
           <FilterCategory url={filterCategoriesUrl} setUrl={setFilterCategoriesUrl} type={urlType} />
 

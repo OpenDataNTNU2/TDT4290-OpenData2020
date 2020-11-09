@@ -24,8 +24,6 @@ const AddTagsComp = (props) => {
   const [newTags, setNewTags] = useState([]);
 
   useEffect(() => {
-    console.log(tags.filter((t) => selectedTags.split(',').includes('' + t.id)));
-    console.log(selectedTags.split(','));
     GetApi(`${host}/api/tags`, setTags);
   }, [props]);
 
