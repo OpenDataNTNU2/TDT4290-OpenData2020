@@ -27,6 +27,7 @@ namespace Tests
         // det burde da ikke være nøvdendig å lage noe sånt ...
         public class SoullessGitlabCLient : IGitlabClient {
             public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabProject>(gitlabProject)); }
+            public Task<GitlabResponse<GitlabProject>> UpdateGitlabProject(GitlabProject gitlabProject) { return Task.Run(() => new GitlabResponse<GitlabProject>(gitlabProject)); }
             public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup) { return Task.Run(() => new GitlabResponse<GitlabGroup>(gitlabGroup)); }
         }
 

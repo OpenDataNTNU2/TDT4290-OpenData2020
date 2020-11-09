@@ -144,6 +144,7 @@ namespace OpenData.API.Services
                 return new DatasetResponse(exsistingDataset);
             } else {
                 // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                // Denne kan nå også potensielt fjerne eksisterende datasett som ikke enda har fått en gitlab tilknytting om det oppstår en feil
                 _datasetRepository.Remove(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
                 return new DatasetResponse("GitLab project response failed:" + gitlabProjectResponse.Message);
@@ -188,6 +189,14 @@ namespace OpenData.API.Services
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
+
+                if (dataset.GitlabProjectId == null) {
+                    var createDatasetTask = Task.Run(() => {
+                        return existingDataset;
+                    });
+                    await CreateGitLabProject(createDatasetTask, existingDataset);
+                }
+                await _gitlabService.UpdateProject(existingDataset);
 
                 return new DatasetResponse(existingDataset);
             }
@@ -249,8 +258,17 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt endret.");
                     break;
             }
-            
+
             await _unitOfWork.CompleteAsync();
+
+            if (dataset.GitlabProjectId == null) 
+            {
+                var createDatasetTask = Task.Run(() => {
+                    return dataset;
+                });
+                await CreateGitLabProject(createDatasetTask, dataset);
+            }
+            await _gitlabService.UpdateProject(dataset);
             
             return new DatasetResponse(dataset);
         }

@@ -35,17 +35,24 @@ namespace OpenData.External.Gitlab
         {
             // api endpoint: POST /projects/user/:user_id
             var endpoint = "projects/user/" + gitlabProject.user_id;
-            return _PostGitlabObject(gitlabProject, endpoint);
+            return _SendGitlabObject(gitlabProject, endpoint, "POST");
+        }
+
+        public Task<GitlabResponse<GitlabProject>> UpdateGitlabProject(GitlabProject gitlabProject)
+        {
+            // api endpoint: PUT /projects/:id
+            var endpoint = "projects/" + gitlabProject.id;
+            return _SendGitlabObject(gitlabProject, endpoint, "PUT");
         }
 
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup)
         {
             // api endpoint: POST /groups
             var endpoint = "groups";
-            return _PostGitlabObject(gitlabGroup, endpoint);
+            return _SendGitlabObject(gitlabGroup, endpoint, "POST");
         }
 
-        private async Task<GitlabResponse<T>> _PostGitlabObject<T>(T gitlabObject, string endpoint)
+        private async Task<GitlabResponse<T>> _SendGitlabObject<T>(T gitlabObject, string endpoint, string method)
         {
             var gitlabObjectJson = new StringContent(
                     JsonSerializer.Serialize(gitlabObject, _jsonSerializerOptions),
@@ -54,7 +61,18 @@ namespace OpenData.External.Gitlab
 
             try {
                 // Console.WriteLine("\n" + (await gitlabObjectJson.ReadAsStringAsync()) + "\n");
-                var httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabObjectJson);
+                HttpResponseMessage httpResponse;
+                switch (method)
+                {
+                    case "PUT":
+                        httpResponse = await _gitlabApiHttpClient.PutAsync(endpoint, gitlabObjectJson);
+                        break;
+                    case "POST":
+                    default:
+                        httpResponse = await _gitlabApiHttpClient.PostAsync(endpoint, gitlabObjectJson);
+                        break;
+                }
+                
                 var content = await httpResponse.Content.ReadAsStringAsync();
                 // Console.WriteLine("\n" + content + "\n");
                 if (httpResponse.IsSuccessStatusCode) {
