@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab.Services
 {
@@ -15,20 +16,22 @@ namespace OpenData.External.Gitlab.Services
         private readonly GitlabProjectConfiguration _gitlabProjectConfig;
         private readonly GitlabGroupConfiguration _gitlabGroupConfig;
 
-        public GitlabService(IGitlabClient gitlabClient)
+        public GitlabService(IGitlabClient gitlabClient, IConfiguration configuration)
         {
-            _gitlabProjectConfig = new GitlabProjectConfiguration();
-            _gitlabGroupConfig = new GitlabGroupConfiguration();
+            var gitlabProjectsConfiguration = configuration.GetSection("Gitlab").GetSection("Projects");
+            _gitlabProjectConfig = new GitlabProjectConfiguration(gitlabProjectsConfiguration);
+            _gitlabGroupConfig = new GitlabGroupConfiguration(gitlabProjectsConfiguration);
 
             _gitlabClient = gitlabClient;
         }
 
-        public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
+        public async Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
             _PopulateGitlabProjectWithCatalogueItem(gitlabProject, dataset);
             gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
-            return _gitlabClient.CreateGitlabProject(gitlabProject);
+            return await await _gitlabClient.CreateGitlabProject(gitlabProject)
+                    .ContinueWith(_SetUpIssueDiscussionBoardForGitlabProject, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
         public Task<GitlabResponse<GitlabProject>> UpdateProject(ICatalogueItem catalogueItem)
@@ -48,11 +51,29 @@ namespace OpenData.External.Gitlab.Services
             return _gitlabClient.CreateGitlabGroup(gitlabGroup);
         }
 
-        public Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
+        public async Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultCoordinationGitlabProject();
             _PopulateGitlabProjectWithCatalogueItem(gitlabProject, coordination);
-            return _gitlabClient.CreateGitlabProject(gitlabProject);
+            gitlabProject.name = coordination.Title;
+            gitlabProject.description = coordination.Description;
+            return await await _gitlabClient.CreateGitlabProject(gitlabProject)
+                    .ContinueWith(_SetUpIssueDiscussionBoardForGitlabProject, TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        private async Task<GitlabResponse<GitlabProject>> _SetUpIssueDiscussionBoardForGitlabProject(Task<GitlabResponse<GitlabProject>> createGitlabProjectTask)
+        {
+            if (createGitlabProjectTask.Result.Success) {
+                var createdGitlabProject = createGitlabProjectTask.Result.Resource;
+                var issueBoardCreationResponse = await _gitlabClient.SetUpIssueDiscussionBoardForGitlabProject(createdGitlabProject);
+                if (issueBoardCreationResponse.Success) {
+                    createdGitlabProject.defaultGitlabIssueBoardId = issueBoardCreationResponse.Resource.id;
+                    return GitlabResponse<GitlabProject>.Successful(createdGitlabProject);
+                } else {
+                    // TODO: fjerne gitlab-prosjektet når opprettelse feiler
+                    return GitlabResponse<GitlabProject>.Error("Failed to set up gitlab issue board: " + issueBoardCreationResponse.Message);
+                }
+            } else return createGitlabProjectTask.Result;
         }
 
         private void _PopulateGitlabProjectWithCatalogueItem(GitlabProject gitlabProject, ICatalogueItem catalogueItem)

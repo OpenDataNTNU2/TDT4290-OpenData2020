@@ -9,5 +9,6 @@ namespace OpenData.External.Gitlab
         public Task<GitlabResponse<GitlabProject>> CreateGitlabProject(GitlabProject gitlabProject);
         public Task<GitlabResponse<GitlabProject>> UpdateGitlabProject(GitlabProject gitlabProject);
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroup(GitlabGroup gitlabGroup);
+        public Task<GitlabResponse<GitlabIssueBoard>> SetUpIssueDiscussionBoardForGitlabProject(GitlabProject gitlabProject);
     }
 }

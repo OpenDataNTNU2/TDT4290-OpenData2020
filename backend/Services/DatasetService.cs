@@ -94,7 +94,7 @@ namespace OpenData.API.Services
                     await _unitOfWork.CompleteAsync();
                     return dataset;
                 });
-                
+
                 return await CreateGitLabProject(createDatasetTask, dataset);
             }
             catch (Exception ex)
@@ -140,6 +140,7 @@ namespace OpenData.API.Services
             if (gitlabProjectResponse.Success) {
                 exsistingDataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
                 exsistingDataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                exsistingDataset.GitlabDiscussionBoardId = gitlabProjectResponse.Resource.defaultGitlabIssueBoardId;
                 _datasetRepository.Update(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
                 return new DatasetResponse(exsistingDataset);
@@ -285,6 +286,7 @@ namespace OpenData.API.Services
             {
                 _datasetRepository.Remove(existingDataset);
                 await _unitOfWork.CompleteAsync();
+                // TODO: slett datasett fra gitlab??
 
                 return new DatasetResponse(existingDataset);
             }
