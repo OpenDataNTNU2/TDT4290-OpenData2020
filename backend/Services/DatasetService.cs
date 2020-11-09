@@ -286,6 +286,7 @@ namespace OpenData.API.Services
             {
                 _datasetRepository.Remove(existingDataset);
                 await _unitOfWork.CompleteAsync();
+                // TODO: slett datasett fra gitlab??
 
                 return new DatasetResponse(existingDataset);
             }
