@@ -26,8 +26,19 @@ namespace OpenData.External.Gitlab.Services
         public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
-            _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, dataset);
+            gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
             return _gitlabClient.CreateGitlabProject(gitlabProject);
+        }
+
+        public Task<GitlabResponse<GitlabProject>> UpdateProject(ICatalogueItem catalogueItem)
+        {
+            GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, catalogueItem);
+            gitlabProject.id = catalogueItem.GitlabProjectId;
+            // TODO: Usikker på om pathen burde endres eller ikke. Kjipt med urler som endres og rart med urler som ikke gjenspeiler innholdet o.O
+            // gitlabProject.path = dataset.Title.ToLower().Trim().Replace(' ', '-').Replace("æ", "ae").Replace("ø", "o").Replace("å", "aa"); 
+            return _gitlabClient.UpdateGitlabProject(gitlabProject);
         }
 
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroupForPublisher(Publisher publisher)
@@ -40,17 +51,22 @@ namespace OpenData.External.Gitlab.Services
         public Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultCoordinationGitlabProject();
-            gitlabProject.name = coordination.Title;
-            gitlabProject.description = coordination.Description;
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, coordination);
             return _gitlabClient.CreateGitlabProject(gitlabProject);
         }
 
-        private void _PopulateGitlabProjectWithDataset(GitlabProject gitlabProject, Dataset dataset)
+        private void _PopulateGitlabProjectWithCatalogueItem(GitlabProject gitlabProject, ICatalogueItem catalogueItem)
         {
-            gitlabProject.name = dataset.Title;
-            gitlabProject.description = dataset.Description.Substring(0, Math.Min(2000, dataset.Description.Length)); // This is the max number of characters in the gitlab project
-            gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
-            gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
+            gitlabProject.name = catalogueItem.Title;
+            gitlabProject.description = catalogueItem.Description.Substring(0, Math.Min(2000, catalogueItem.Description.Length)); // This is the max number of characters in the gitlab project
+            if (catalogueItem is Dataset){
+                var dataset = (Dataset)catalogueItem;
+                gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
+            }
+            if (catalogueItem is Coordination){
+                var coordination = (Coordination)catalogueItem;
+                gitlabProject.tag_list = coordination.CoordinationTags.Select(tag => tag.Tags.Name).ToList();
+            }
         }
 
         private void _PopulateGitlabGroupWithPublisherInformation(GitlabGroup gitlabGroup, Publisher publisher)
