@@ -251,7 +251,7 @@ namespace OpenData.API.Services
                     int hash = p.LastIndexOf("#");
                     int index = Math.Max(slash,hash) + 1;
                     p = p.Substring(index);
-                    // TODO: This should probably be handled properly, see rAt function
+                    // TODO: This should probably be handled differently, see rAt function
                     if (rAt(t.Object.ToString()) == "") continue;
                     if(attributes.ContainsKey(p))
                     {
@@ -285,7 +285,7 @@ namespace OpenData.API.Services
         }
 
 
-        // TODO: This should probably be handled properly
+        // TODO: This should probably be handled differently
         // Just removing @nn and @en here.
         private String rAt(String s)
         {

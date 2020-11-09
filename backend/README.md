@@ -12,8 +12,7 @@ cd backend
 dotnet restore
 dotnet run
 ```
-Then go to ```https://localhost:5001/swagger/index.html``` to look for the api documentation. 
-In order to use the post, put and delete you have to use something like [Postman](https://www.postman.com/downloads/).
+Then go to ```https://localhost:5001/swagger/index.html``` to see an overview of the api endpoints. It is also possible to test the endpoints by expanding/clicking it. Then click on the `Try it out` button to the right and inputting proper query/body parameters before clicking `Execute`. Just below you will get the response. Alternatively it is possible to use a program like [Postman](https://www.postman.com/downloads/).
 
 ## To run the backend in production
 ```bash
@@ -66,6 +65,8 @@ Entity type: Dataset, Publisher etc..
   * Controller files for different endpoints based on entity types. Such as the /api/datasets with different methods for CRUD. It handles the request and sends it to the appropriate method in the corresponding service for the entity type.
 * __Domain__
   * __Models__
+    * __Queries__ 
+      * Query models for Dataset and Coordination with search, filters and pagination.
     * Entity models for the different entity types. Each files contains a list of attributes that entity has.
   * __Repositories__
     * Interfaces for repositories.
@@ -74,7 +75,12 @@ Entity type: Dataset, Publisher etc..
     * __Communication__
       * Responses sent between service and controller.
 * __Extensions__
-  * Not important
+* __External\Gitlab__
+  * __Models__
+    * Models for Gitlab groups and projects
+  * __Services__
+    * Gitlab services
+  * Gitlab client and configurations
 * __Infrastructure__
   * CacheKeys.cs - Telling what keys should be cached.
 * __Mapping__
@@ -89,7 +95,9 @@ Entity type: Dataset, Publisher etc..
 * __Services__
   * Service files for each entiity type with different methods for CRUD. If there is some processing to be done it is done here, before it calls the appropriate repository methods.
 * __Tests__
-  * NUnit test files to detect problems with the basic functionality of important classes
+  * NUnit test files to detect problems with the basic functionality of important classes.
+* __Util__
+  * Helper methods for handling the fetching and transformation from DCAT to be stores in the database.
 * Program.cs - Contains the main method for the application.
 * StartUp.cs - Add configurations and services to the program. _Also where to map from an interface to the class using it_.
 * appsettings.json - These are the default configuration values for the program. This is tracked in git, and should rarely be changed.

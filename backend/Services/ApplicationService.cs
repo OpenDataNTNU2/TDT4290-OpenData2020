@@ -60,6 +60,7 @@ namespace OpenData.API.Services
                     var dataset = await _datasetRepository.FindByIdAsync((int)application.DatasetId);
                     if (dataset == null)
                         return new ApplicationResponse("Dataset not found.");
+                    // Send notification
                     await _notificationService.AddPublisherNotificationsAsync(coordination, dataset, coordination.Title + " - " + coordination.Publisher.Name, "Datasettet '" + dataset.Title + "' har spurt om å være med i din samordning.");
                 }
                 else if (application.PublisherId != null && application.PublisherId != 0)
@@ -67,6 +68,7 @@ namespace OpenData.API.Services
                     var publisher = await _publisherRepository.FindByIdAsync((int)application.PublisherId);
                     if (publisher == null)
                         return new ApplicationResponse("Publisher not found.");
+                    // Send notification
                     await _notificationService.AddPublisherNotificationsAsync(publisher, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En bruker ønsker at du publiserer et dataset i samordningen '" + coordination.Title + "'.");
                 }
                 else

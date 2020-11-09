@@ -70,6 +70,7 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
+                // Sets the date and time for the attributes published and last updated to current time.
                 coordination.DatePublished = DateTime.Now;
                 coordination.DateLastUpdated = DateTime.Now;
 
@@ -117,7 +118,10 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
+                // Set last updated to current time
+                existingCoordination.DateLastUpdated = DateTime.Now;
 
+                // Update attributes
                 existingCoordination.Title = coordination.Title;
                 existingCoordination.Description = coordination.Description;
                 existingCoordination.PublisherId = coordination.PublisherId;
@@ -125,7 +129,6 @@ namespace OpenData.API.Services
                 existingCoordination.StatusDescription = coordination.StatusDescription;
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
-                existingCoordination.DateLastUpdated = DateTime.Now;
                 existingCoordination.AccessLevel = coordination.AccessLevel;
 
                 existingCoordination.CoordinationTags.Clear();
@@ -133,6 +136,7 @@ namespace OpenData.API.Services
 
                 _coordinationRepository.Update(existingCoordination);
 
+                // Send notifications
                 await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
@@ -150,9 +154,13 @@ namespace OpenData.API.Services
         {
             var coordination = await _coordinationRepository.FindByIdAsync(id);
 
+            // Apply the update from the json patch document
             patch.ApplyTo(coordination);
+
+            // Set last updated to current time
             coordination.DateLastUpdated = DateTime.Now;
 
+            // Send notifications based on what was changed
             switch(patch.Operations[0].path)
             {
                 case "/title":
@@ -207,6 +215,7 @@ namespace OpenData.API.Services
             return (true, "Success.");
         }
 
+        // Method to add tags based on the id and a bit messy because it is sent as a string.
         private async Task addTags(Coordination coordination)
         {
             try
