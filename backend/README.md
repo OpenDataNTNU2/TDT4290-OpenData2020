@@ -20,12 +20,6 @@ cd backend
 dotnet build
 dotnet bin/Debug/netcoreapp3.1/netcoreapp3.1/OpenData.API.dll &
 ```
-or,  
-```bash
-cd backend
-buildBackend.sh
-runBackend.sh
-```
 
 ## To test the backend
 
