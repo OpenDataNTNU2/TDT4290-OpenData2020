@@ -66,10 +66,10 @@ export default function Header({
           <Tab disableFocusRipple disableRipple label="Om prosjektet" value="/About" />
           <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
           {JSON.parse(prevPublisherId) <= 0 ? null : (
-            <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />
+            <Tab disableFocusRipple disableRipple label="Mine data" value="/MyDatasets" />
           )}
           {JSON.parse(prevPublisherId) <= 0 ? null : (
-            <Tab disableFocusRipple disableRipple label="Legg til nytt datasett" value="/AddNewDataset" />
+            <Tab disableFocusRipple disableRipple label="Publiser data" value="/AddNewDataset" />
           )}
         </Tabs>
       </div>
