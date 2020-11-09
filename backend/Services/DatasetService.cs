@@ -88,8 +88,7 @@ namespace OpenData.API.Services
                 var createDatasetTask = Task.Run(async() => {
                     dataset = await _datasetRepository.AddAsync(dataset);
                     await addTags(dataset);
-                    // NOTE: TODO: Config
-                    dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
+                    dataset.Identifier = Startup.Configuration["identifierUrl"] + dataset.Id;
                     _datasetRepository.Update(dataset);
                     await _unitOfWork.CompleteAsync();
                     return dataset;

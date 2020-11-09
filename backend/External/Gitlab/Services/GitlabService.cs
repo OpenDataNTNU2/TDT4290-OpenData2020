@@ -47,7 +47,7 @@ namespace OpenData.External.Gitlab.Services
 
         private void _PopulateGitlabProjectWithDataset(GitlabProject gitlabProject, Dataset dataset)
         {
-            gitlabProject.name = dataset.Title;
+            gitlabProject.name = dataset.Title.Replace(':', ' ');
             gitlabProject.description = dataset.Description.Substring(0, Math.Min(2000, dataset.Description.Length)); // This is the max number of characters in the gitlab project
             gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
             gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
