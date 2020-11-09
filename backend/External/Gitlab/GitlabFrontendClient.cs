@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab
 {
@@ -39,16 +40,17 @@ namespace OpenData.External.Gitlab
             else return new GitlabResponse<GitlabIssueBoard>($"Failed to create gitlab issue board: {responseContentString}");
         }
 
-        public static async Task<GitlabFrontendClient> CreateAuthorizedGitlabFrontendClientForGitlabProject(string gitlabHost, GitlabProject gitlabProject)
+        public static async Task<GitlabFrontendClient> CreateAuthorizedGitlabFrontendClientForGitlabProject(IConfiguration gitlabConfiguration, GitlabProject gitlabProject)
         {
-            var authorizedGitlabFrontendHttpClient = await _CreateAuthorizedGitlabFrontendHttpClient(gitlabHost, gitlabProject);
+            var authorizedGitlabFrontendHttpClient = await _CreateAuthorizedGitlabFrontendHttpClient(gitlabConfiguration, gitlabProject);
             return new GitlabFrontendClient(authorizedGitlabFrontendHttpClient);
         }
 
-        private static async Task<HttpClient> _CreateAuthorizedGitlabFrontendHttpClient(string gitlabHost, GitlabProject gitlabProject)
+        private static async Task<HttpClient> _CreateAuthorizedGitlabFrontendHttpClient(IConfiguration gitlabConfiguration, GitlabProject gitlabProject)
         {
             // lager først en ny HttpClient som kan benytte seg av cookies.
             // dette er for å kunne huske session cookie for å autentisere requests.
+            string gitlabHost = gitlabConfiguration["GitlabHost"];
             var cookieContainer = new CookieContainer();
             var httpClientHandler = new HttpClientHandler() { 
                 CookieContainer = cookieContainer,
@@ -64,9 +66,9 @@ namespace OpenData.External.Gitlab
             var authenticityToken = _ExtractAuthenticityTokenFromContentString(responseContentString);
 
             // prøver så å logge inn for å autentisere (da vil session cookie være autentisert)
-            // TODO: hent brukernavn og passord fra et temmelig hemmelig sted
-            const string gitlabOpenDataUser = "opendata";
-            const string gitlabOpenDataPassword = "63NH6SaHFHnetqN";
+            var gitlabProjectConfiguration = gitlabConfiguration.GetSection("Projects");
+            string gitlabOpenDataUser = gitlabProjectConfiguration["OpenDataUsername"];
+            string gitlabOpenDataPassword = gitlabProjectConfiguration["OpenDataPassword"];
             var loginContent = new StringContent($"user[login]={gitlabOpenDataUser}&user[password]={gitlabOpenDataPassword}",
                         Encoding.UTF8, "application/x-www-form-urlencoded");
             var httpRequest = new HttpRequestMessage(HttpMethod.Post, "/users/sign_in");

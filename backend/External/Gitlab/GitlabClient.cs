@@ -16,15 +16,20 @@ namespace OpenData.External.Gitlab
     {
         private readonly HttpClient _gitlabApiHttpClient;
         private readonly JsonSerializerOptions _jsonSerializerOptions;
-        private readonly string _gitlabHost;
+        private readonly IConfiguration _gitlabConfiguration;
+        private readonly IConfiguration _gitlabProjectsConfiguration;
         public GitlabClient(IHttpClientFactory httpClientFactory, IConfiguration configuration)
         {
             HttpClient client = httpClientFactory.CreateClient();
 
-            _gitlabHost = configuration["gitlabUrl"];
-            string bearerToken = configuration["gitlabToken"];
+            _gitlabConfiguration = configuration.GetSection("Gitlab");
+            _gitlabProjectsConfiguration = _gitlabConfiguration.GetSection("Projects");
 
-            client.BaseAddress = new Uri(_gitlabHost + "api/v4/");
+            var gitlabHost = _gitlabConfiguration["GitlabHost"];
+            string bearerToken = _gitlabConfiguration["GitlabApiToken"];
+            string gitlabApi = _gitlabConfiguration["GitlabApi"];
+
+            client.BaseAddress = new Uri(gitlabHost + gitlabApi);
             client.DefaultRequestHeaders.Add("Accept", "application/json");
             client.DefaultRequestHeaders.Add("Authorization", "Bearer " + bearerToken);
 
@@ -60,7 +65,7 @@ namespace OpenData.External.Gitlab
             // lag en ny gitlab frontend client som er autentisert
             GitlabFrontendClient authorizedGitlabFrontendClient;
             try {
-                authorizedGitlabFrontendClient = await GitlabFrontendClient.CreateAuthorizedGitlabFrontendClientForGitlabProject(_gitlabHost, gitlabProject);
+                authorizedGitlabFrontendClient = await GitlabFrontendClient.CreateAuthorizedGitlabFrontendClientForGitlabProject(_gitlabConfiguration, gitlabProject);
             } catch (Exception e) {
                 return GitlabResponse<GitlabIssueBoard>.Error($"Failed to authorize gitlab frontent client: ${e.Message}");
             }
@@ -99,7 +104,7 @@ namespace OpenData.External.Gitlab
         private async Task<GitlabResponse> _CreateNewIssueListsForAllOpenDataLabelsOnIssueBoardInGitlabProject(GitlabProject gitlabProject, GitlabIssueBoard issueBoard)
         {
             // hent først ned en liste over alle labels i open-data gruppen
-            var openDataGroupId = 7; // TODO: hent denne på en smart måte
+            int openDataGroupId = _gitlabProjectsConfiguration.GetValue<int>("OpenDataNamespaceId");
             var getGroupLabelsEndpoint = $"groups/{openDataGroupId}/labels";
             var groupLabelsResponse = await _GetGitlabObject<List<GitlabLabel>>(getGroupLabelsEndpoint);
             if (!groupLabelsResponse.Success) return GitlabResponse.Error($"Failed to get gitlab labels for open data group: {groupLabelsResponse.Message}");
@@ -137,8 +142,7 @@ namespace OpenData.External.Gitlab
         private Task<GitlabResponse<GitlabIssueBoard>> _CreateNewDiscussionIssueBoardWithCorrectNameForProject(GitlabProject gitlabProject, GitlabFrontendClient authorizedGitlabFrontendClient)
         {
             // Opprett først et nytt issue board med riktig navn
-            // TODO: config kanskje?
-            var newIssueBoardName = "Diskusjon";
+            var newIssueBoardName = _gitlabProjectsConfiguration["IssueDiscussionBoardName"];
             return authorizedGitlabFrontendClient.CreateGitlabIssueBoardWithNameForProject(gitlabProject, newIssueBoardName);
         }
 

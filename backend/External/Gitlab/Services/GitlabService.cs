@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab.Services
 {
@@ -15,10 +16,11 @@ namespace OpenData.External.Gitlab.Services
         private readonly GitlabProjectConfiguration _gitlabProjectConfig;
         private readonly GitlabGroupConfiguration _gitlabGroupConfig;
 
-        public GitlabService(IGitlabClient gitlabClient)
+        public GitlabService(IGitlabClient gitlabClient, IConfiguration configuration)
         {
-            _gitlabProjectConfig = new GitlabProjectConfiguration();
-            _gitlabGroupConfig = new GitlabGroupConfiguration();
+            var gitlabProjectsConfiguration = configuration.GetSection("Gitlab").GetSection("Projects");
+            _gitlabProjectConfig = new GitlabProjectConfiguration(gitlabProjectsConfiguration);
+            _gitlabGroupConfig = new GitlabGroupConfiguration(gitlabProjectsConfiguration);
 
             _gitlabClient = gitlabClient;
         }

@@ -1,4 +1,5 @@
 using OpenData.External.Gitlab.Models;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab
 {
@@ -7,11 +8,10 @@ namespace OpenData.External.Gitlab
         public readonly int open_data_user_id;
         public readonly int open_data_namespace_id;
 
-        public GitlabGroupConfiguration()
+        public GitlabGroupConfiguration(IConfiguration gitlabProjectConfiguration)
         {
-            // TODO: hent dette fra config
-            open_data_user_id = 5;
-            open_data_namespace_id = 7;
+            open_data_user_id = gitlabProjectConfiguration.GetValue<int>("OpenDataUserId");
+            open_data_namespace_id = gitlabProjectConfiguration.GetValue<int>("OpenDataNamespaceId");
         }
 
         public GitlabGroup generateDefaultGitlabGroup()
