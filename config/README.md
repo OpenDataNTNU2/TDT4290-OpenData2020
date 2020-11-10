@@ -5,16 +5,15 @@ Single #-signs are used to comment out a line.
 
 ## Backend
 Find the `appsettings.Development.json` file in `./backend`, and copy it directly into the backend folder.  
-The default settings are mostly not needed for development, except:  
-You have to put in a string value of the `PostgreSQL` object in order to connect to the PostgreSQL database. This is found on slack->backend or by asking one in the team if you are not in the slack channel.
+The default settings are mostly not needed for development, but there are three secrets that must be filled in, which you can read about in `../backend/README.md`.  
 
 ## Server
 The `.env.local file` in frontend should be copied from `./server/frontend`.
 The `appsettings.Development.json` file should instead be `appsettings.Production.json`, an example of which an be found in `./server/backend`.  
-You will still need to put in the `PostgreSQL` string.  
+You will still need to put in the secrets, as specified in `../backend/README.md`.  
 If the server should eventually need a https certificate, these things should change:  
 * `frontend/pages/api/serverSideProps.js`, use require('https') instead of 'http'
-* `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced.
+* `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced, and an http endpoint must be configured.
 * Follow [this StackOverflow question](https://stackoverflow.com/questions/55485511/how-to-run-dotnet-dev-certs-https-trust), using the workaround for non-windows OS's. A localhost.conf file is provided in `config/server/`, but an official certificate must be provided by third parties, or users will have to override their browsers security protection.
 
 ### Server routes
