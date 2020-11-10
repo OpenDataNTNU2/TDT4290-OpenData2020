@@ -60,6 +60,15 @@ namespace OpenData.External.Gitlab
             return _PostGitlabObject(gitlabGroup, endpoint);
         }
 
+        public async Task<GitlabResponse<int>> GetIssueCountForGitlabProjectId(int gitlabProjectId)
+        {
+            // api endpoint: GET /projects/:id/issues_statistics
+            var endpoint = $"/projects{gitlabProjectId}/issues_statistics";
+            var res = await _GetGitlabObject<GitlabIssuesStatistics>(endpoint);
+            if (res.Success) return GitlabResponse<int>.Successful(res.Resource.statistics.counts.all);
+            else return GitlabResponse<int>.Error("Failed to get issue counts for project: " + res.Message);
+        }
+
         public async Task<GitlabResponse<GitlabIssueBoard>> SetUpIssueDiscussionBoardForGitlabProject(GitlabProject gitlabProject)
         {
             // lag en ny gitlab frontend client som er autentisert
