@@ -64,6 +64,13 @@ Common text is description of content in folder.
 - **\_\_tests\_\_**
   - Contains Jest unit tests (and possibly snapshots) for our code
 - **Components**
+  - **AddNewDatasett**
+    - Components for the creating and importing datasets and creating coordinations.
+  - **ApiCalls**
+    - Components for each of the API calls (get, post, put, patch and delete)
+  - **Filters**
+    - Components for the filters in the catalogue.
+
   - **Forms**
     - Input field components that we create go here
   - Normal components we create go here, e.g. Header
@@ -71,14 +78,19 @@ Common text is description of content in folder.
   - Contains packages from the dependencies, auto generated, gitignored
 - **pages**
   - **api**
-    - Not important yet, since we are using .NET for backend and api handling
+    - Handles props sent to components and pages. This is where we send information about our cookies. 
+  - **DetailedCoordination**
+    - Contains the dynamic page for detailed coordination and the components assosiated.
+  - **DetailedDataset**
+    - Contains the dynamic page for detailed dataset and the components assosiated.
+    
   - This is where all out pages is located, this allows us to use next features like dynamic routing and SSR
 - **public**
   - Not important
 - **styles**
-  - Not important, might delete since we are using material ui
+  - Containes the style modules
 - **utils**
-  - This will handle global state for logged in users
+  - Utility components
 - .env
   - This contains environment variables used to connect to the backend
 - .env.local
