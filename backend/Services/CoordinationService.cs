@@ -81,28 +81,36 @@ namespace OpenData.API.Services
                     return coordination;
                 });
 
-                var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
-                    return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-
-                if (gitlabProjectResponse.Success) {
-                    coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
-                    _coordinationRepository.Update(coordination);
-                    await _unitOfWork.CompleteAsync();
-                    return new CoordinationResponse(coordination);
-                } else {
-                    // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
-                    _coordinationRepository.Remove(coordination);
-                    await _unitOfWork.CompleteAsync();
-                    return new CoordinationResponse(gitlabProjectResponse.Message);
-                }
+                return await CreateGitLabProject(createCoordinationTask, coordination);
+                
             }
             catch(Exception ex)
             {
                 return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
             }
         }
+
+        public async Task<CoordinationResponse> CreateGitLabProject(Task<Coordination> createCoordinationTask, Coordination coordination)
+        {
+            var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
+                return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            if (gitlabProjectResponse.Success) {
+                coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                coordination.GitlabDiscussionBoardId = gitlabProjectResponse.Resource.defaultGitlabIssueBoardId;
+                _coordinationRepository.Update(coordination);
+                await _unitOfWork.CompleteAsync();
+                return new CoordinationResponse(coordination);
+            } else {
+                // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
+                _coordinationRepository.Remove(coordination);
+                await _unitOfWork.CompleteAsync();
+                return new CoordinationResponse(gitlabProjectResponse.Message);
+            }
+        }
+
 
         public async Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination)
         {
@@ -140,6 +148,15 @@ namespace OpenData.API.Services
                 await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
+
+                if (coordination.GitlabProjectId == null)
+                {
+                    var createCoordinationTask = Task.Run(() => {
+                        return existingCoordination;
+                    });
+                    await CreateGitLabProject(createCoordinationTask, existingCoordination);
+                }
+                await _gitlabService.UpdateProject(existingCoordination);
 
                 return new CoordinationResponse(existingCoordination);
             }
@@ -197,6 +214,15 @@ namespace OpenData.API.Services
 
             await _unitOfWork.CompleteAsync();
             
+            if (coordination.GitlabProjectId == null)
+            {
+                var createCoordinationTask = Task.Run(() => {
+                    return coordination;
+                });
+                await CreateGitLabProject(createCoordinationTask, coordination);
+            }
+            await _gitlabService.UpdateProject(coordination);
+
             return new CoordinationResponse(coordination);
         }
 

@@ -1,10 +1,17 @@
 # Welcome to BACKEND
 
 ## Before running backend
-If you are running backend locally, navigate to `../config/backend` and copy the appsettings.Development.json into the backend folder. 
-You will need to add a connection string for PostgreSQL to this file.   
+If you are running backend locally, navigate to `../config/backend` and copy the appsettings.Development.json into the backend folder.    
 If you are running backend on a server, navigate to `../config/server/backend` and copy the appsettings.Production.json into the backend folder.  
-Additionally, you should read the `../config/README.md` file, to figure out how to create a https certificate for your server. (If necessary, we may not need a 
+For both of these, there are three secrets that must be filled in: `PostgreSQL`, `GitlabApiToken`, and `OpenDataPassword`.  
+`PostgreSQL` is a connection string on the form `Host=[1];Database=[2];Username=[3];Password=[4]`.  
+* [1] is the address of the postgres server, e.g.: `Host=postgres.potrik.com`.
+* [2] is the id of the database to use on this server: `Database=opendata_db`.
+* [3] is the username for the user which the backend accesses the database through: `Username=opendata`.
+* [4] is the password for this user, which we will not store on this public git repository.
+`GitlabApiToken` is a token used to access a the API of a gitlab server, and must be generated using the admin tools on gitlab.  
+`OpenDataPassword` is the password used to give end users access to viewing the gitlab projects.  
+The way to get these secrets is primarily by asking members of the team, but new ones can still be generated as needed.
 
 ## To run the backend in devevelopment
 ```bash

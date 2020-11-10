@@ -88,12 +88,12 @@ namespace OpenData.API.Services
                 var createDatasetTask = Task.Run(async() => {
                     dataset = await _datasetRepository.AddAsync(dataset);
                     await addTags(dataset);
-                    dataset.Identifier = Startup.Configuration["identifierUrl"] + dataset.Id;
+                    dataset.Identifier = (Startup.Configuration != null ? Startup.Configuration["identifierUrl"] : "http://www.test.no/" ) + dataset.Id;
                     _datasetRepository.Update(dataset);
                     await _unitOfWork.CompleteAsync();
                     return dataset;
                 });
-                
+
                 return await CreateGitLabProject(createDatasetTask, dataset);
             }
             catch (Exception ex)
@@ -139,11 +139,13 @@ namespace OpenData.API.Services
             if (gitlabProjectResponse.Success) {
                 exsistingDataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
                 exsistingDataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                exsistingDataset.GitlabDiscussionBoardId = gitlabProjectResponse.Resource.defaultGitlabIssueBoardId;
                 _datasetRepository.Update(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
                 return new DatasetResponse(exsistingDataset);
             } else {
                 // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                // Denne kan nå også potensielt fjerne eksisterende datasett som ikke enda har fått en gitlab tilknytting om det oppstår en feil
                 _datasetRepository.Remove(exsistingDataset);
                 await _unitOfWork.CompleteAsync();
                 return new DatasetResponse("GitLab project response failed:" + gitlabProjectResponse.Message);
@@ -188,6 +190,14 @@ namespace OpenData.API.Services
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
+
+                if (dataset.GitlabProjectId == null) {
+                    var createDatasetTask = Task.Run(() => {
+                        return existingDataset;
+                    });
+                    await CreateGitLabProject(createDatasetTask, existingDataset);
+                }
+                await _gitlabService.UpdateProject(existingDataset);
 
                 return new DatasetResponse(existingDataset);
             }
@@ -249,8 +259,17 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt endret.");
                     break;
             }
-            
+
             await _unitOfWork.CompleteAsync();
+
+            if (dataset.GitlabProjectId == null) 
+            {
+                var createDatasetTask = Task.Run(() => {
+                    return dataset;
+                });
+                await CreateGitLabProject(createDatasetTask, dataset);
+            }
+            await _gitlabService.UpdateProject(dataset);
             
             return new DatasetResponse(dataset);
         }
@@ -266,6 +285,7 @@ namespace OpenData.API.Services
             {
                 _datasetRepository.Remove(existingDataset);
                 await _unitOfWork.CompleteAsync();
+                // TODO: slett datasett fra gitlab??
 
                 return new DatasetResponse(existingDataset);
             }
