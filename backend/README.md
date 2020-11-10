@@ -8,9 +8,11 @@ For both of these, there are three secrets that must be filled in: `PostgreSQL`,
 * [1] is the address of the postgres server, e.g.: `Host=postgres.potrik.com`.
 * [2] is the id of the database to use on this server: `Database=opendata_db`.
 * [3] is the username for the user which the backend accesses the database through: `Username=opendata`.
-* [4] is the password for this user, which we will not store on this public git repository.
+* [4] is the password for this user, which we will not store on this public git repository.  
+
 `GitlabApiToken` is a token used to access a the API of a gitlab server, and must be generated using the admin tools on gitlab.  
-`OpenDataPassword` is the password used to give end users access to viewing the gitlab projects.  
+`OpenDataPassword` is the password used to give end users access to viewing the gitlab projects.
+
 The way to get these secrets is primarily by asking members of the team, but new ones can still be generated as needed.
 
 ## To run the backend in devevelopment
