@@ -78,7 +78,7 @@ namespace OpenData.External.Gitlab.Services
 
         private void _PopulateGitlabProjectWithCatalogueItem(GitlabProject gitlabProject, ICatalogueItem catalogueItem)
         {
-            gitlabProject.name = catalogueItem.Title;
+            gitlabProject.name = catalogueItem.Title.Replace(':', ' ');
             gitlabProject.description = catalogueItem.Description.Substring(0, Math.Min(2000, catalogueItem.Description.Length)); // This is the max number of characters in the gitlab project
             if (catalogueItem is Dataset){
                 var dataset = (Dataset)catalogueItem;
