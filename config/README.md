@@ -17,13 +17,23 @@ If the server should eventually need a https certificate, these things should ch
 * `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced.
 * Follow [this StackOverflow question](https://stackoverflow.com/questions/55485511/how-to-run-dotnet-dev-certs-https-trust), using the workaround for non-windows OS's. A localhost.conf file is provided in `config/server/`, but an official certificate must be provided by third parties, or users will have to override their browsers security protection.
 
+### Server routes
+The server has multiple ports dedicated to this project:
+* 80: This port is still being used for the default Apache2 ubuntu page, visible when accessing [katalog.samåpne.no](katalog.samåpne.no). Ideally, the release frontend of the program gets registered to this port.
+* 8080: This port is used for webhook POST requests. Specifically 8080/git-push.
+* 3000: This is the port configured for the frontend of the dev branch. Go to [katalog.samåpne.no:3000](katalog.samåpne.no:3000) to access the working system.
+* 5000: This is the port configured for the backend of the dev branch. Go to [katalog.samåpne.no:5000/swagger/index.html](http://katalog.xn--sampne-kua.no:5000/swagger/index.html) to access the API documentation.
+* 3001: This is the port configured for the frontend of the release branch. [katalog.samåpne.no:3001](katalog.samåpne.no:3001)
+* 5001: This is the port configured for the backend of the release branch. [katalog.samåpne.no:5001/swagger/index.html](http://katalog.xn--sampne-kua.no:5001/swagger/index.html)
+All branches use http, not https.
+
 
 ### Running the server
 The key difference between running locally and running the server, is that the backend cannot easily be run in development mode, as this mode stops executing once other tasks are started in ubuntu.  
 After connecting to the server through PuTTY you have two options:  
 
 #### Using bash scripts
-Scripts are found in the folder `./server/scripts`, as well as in `~/shortcuts/scripts` (a shortcut to the scripts in the dev repository, specifically).  
+Scripts are found in the folder `./server/scripts`, as well as in `~/shortcuts/scripts` (a shortcut to the scripts in the dev repository, specifically). When developing the project further, a dedicated branch to use for updating the scripts on the server would be ideal.  
 All scripts can take one command line argument, to specify both the git branch and the local folder name. The default is dev. Example: `./run.sh dev`  
 Use `update.sh` to pull the newest changes from git.  
 Then, use `build.sh` to compile production versions of frontend and backend.  
@@ -32,6 +42,12 @@ These only need to be run once whenever you want to change or update the server 
 Use `run.sh` to start the frontend and backend as background processes.  
 The logs for the most recent call of run are found in the frontend and backend folder each, and named `output.log`.  
 Use `stop.sh` to stop all background processes that use dotnet or npm commands.
+
+The server has a script for listening to webhooks and automatically deploying new pushes to dev (and release). This script is in the same folder, and named `runWebhookListener.sh`.  
+It calls a python program found in `./server/webhooks`. To be able to run this after pulling a fresh repository copy, a python environment must be built.  
+To do this, navigate to the webhooks folder, and run `source ./bin/activate`.  
+The server automatically runs the `runWebhookListener.sh` script any time the server restarts, with a one minute delay.  
+The script responsible for this can be found in `/etc/init.d` named `github_webhook.sh`.
 
 #### Using commands
 
