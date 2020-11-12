@@ -8,7 +8,7 @@ Find the `appsettings.Development.json` file in `./backend`, and copy it directl
 The default settings are mostly not needed for development, but there are three secrets that must be filled in, which you can read about in `../backend/README.md`.  
 
 ## Server
-The `.env.local file` in frontend should be copied from `./server/frontend`.
+The `.env.local file` in frontend should be copied from `./server/frontend`.  
 The `appsettings.Development.json` file should instead be `appsettings.Production.json`, an example of which an be found in `./server/backend`.  
 You will still need to put in the secrets, as specified in `../backend/README.md`.  
 If the server should eventually need a https certificate, these things should change:  
