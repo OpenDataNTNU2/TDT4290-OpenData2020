@@ -15,7 +15,7 @@ Additionally, you need to fill in the "Url" with the address and chosen ip of yo
 
 If the server should eventually need a https certificate, these things should change:  
 * `frontend/pages/api/serverSideProps.js`, use require('https') instead of 'http'
-* `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced, and an http endpoint must be configured.
+* `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced, and an https endpoint must be configured.
 * Follow [this StackOverflow question](https://stackoverflow.com/questions/55485511/how-to-run-dotnet-dev-certs-https-trust), using the workaround for non-windows OS's. A localhost.conf file is provided in `config/server/`, but an official certificate must be provided by third parties, or users will have to override their browsers security protection.
 
 ### Server routes
