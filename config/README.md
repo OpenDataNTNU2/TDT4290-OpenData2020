@@ -11,6 +11,8 @@ The default settings are mostly not needed for development, but there are three 
 The `.env.local file` in frontend should be copied from `./server/frontend`.  
 The `appsettings.Development.json` file should instead be `appsettings.Production.json`, an example of which an be found in `./server/backend`.  
 You will still need to put in the secrets, as specified in `../backend/README.md`.  
+Additionally, you need to fill in the "Url" with the address and chosen ip of your backend server. An important note if your address uses special characters like æ, ø, å: this string should not be in punycode, e.g. it should be "samåpne.no", not "xn--sampne-kua.no".
+
 If the server should eventually need a https certificate, these things should change:  
 * `frontend/pages/api/serverSideProps.js`, use require('https') instead of 'http'
 * `backend/appsettings.Production.json`, in Kestrel, a certificate must be made and referenced, and an http endpoint must be configured.
