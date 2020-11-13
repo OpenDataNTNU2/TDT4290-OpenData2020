@@ -14,7 +14,7 @@ When a card in the list is clicked a page showing more information about that ca
 
 ![Dataset](images/datasett_info.png "Dataset")
 
-If logged in and the dataset is not yet published it is possible to show interest in the dataset by clicking the 'Etterspør datasett' button, see \autoref{fig:etterspør}. 
+If logged in and the dataset is not yet published it is possible to show interest in the dataset by clicking the 'Etterspør datasett' button, see the picture below. 
 
 ![Request](images/datasett_etterspør.png "Request")
 
