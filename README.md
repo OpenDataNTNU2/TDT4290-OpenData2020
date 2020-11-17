@@ -14,4 +14,7 @@ There are three main README files in this repository.
 2. In the folder `frontend` is information on setting up and running the frontend of the program for development.  
 3. In the folder `config` is information on how to set up the backend and frontend for both development, and for release, as well as information on setting up and running a server.  
 
+There is also an `INSTALLATION_GUIDE.md` in this folder, which holds detailed instructions on how to set up the system from scratch.  
+Besides this, there is a `USER_GUIDE.md` which explains the interface and functionality from the perspective of a user.  
+
 Additionally, the GitHub page has a Wiki that contains some information on our branch management methods.  

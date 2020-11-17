@@ -21,7 +21,7 @@ cd backend
 dotnet restore
 dotnet run
 ```
-Then go to ```https://localhost:5001/swagger/index.html``` to see an overview of the api endpoints. It is also possible to test the endpoints by expanding/clicking it. Then click on the `Try it out` button to the right and inputting proper query/body parameters before clicking `Execute`. Just below you will get the response. Alternatively it is possible to use a program like [Postman](https://www.postman.com/downloads/).
+Then go to ```http://localhost:5000/swagger/index.html``` to see an overview of the api endpoints. It is also possible to test the endpoints by expanding/clicking it. Then click on the `Try it out` button to the right and inputting proper query/body parameters before clicking `Execute`. Just below you will get the response. Alternatively it is possible to use a program like [Postman](https://www.postman.com/downloads/).
 
 ## To run the backend in production
 ```bash
