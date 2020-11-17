@@ -6,7 +6,6 @@ const DistributionCard = (props) => {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
   const removeDistribution = () => {
-    // få inn en måte å oppdatere siden på slik at bruker slipper å refreshe for å se at distribusjonen er borte.
     DeleteApi(`${host}/api/distributions/` + props.id);
   };
 

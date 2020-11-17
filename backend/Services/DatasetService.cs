@@ -71,6 +71,7 @@ namespace OpenData.API.Services
             }
         }
 
+        // Method to add tags based on the id and a bit messy because it is sent as a string.
         public async Task<DatasetResponse> SaveAsync(Dataset dataset)
         {
             try
@@ -80,65 +81,74 @@ namespace OpenData.API.Services
                 {
                     return new DatasetResponse(check.error);
                 }
+                // Sets the date and time for the attributes published and last updated to current time.
                 dataset.DatePublished = DateTime.Now;
                 dataset.DateLastUpdated = DateTime.Now;
 
                 var createDatasetTask = Task.Run(async() => {
                     dataset = await _datasetRepository.AddAsync(dataset);
                     await addTags(dataset);
-                    // NOTE: TODO: Config
-                    dataset.Identifier = "https://katalog.samåpne.no/api/datasets/" + dataset.Id;
+                    dataset.Identifier = (Startup.Configuration != null ? Startup.Configuration["identifierUrl"] : "http://www.test.no/" ) + dataset.Id;
                     _datasetRepository.Update(dataset);
                     await _unitOfWork.CompleteAsync();
                     return dataset;
                 });
 
-                // NOTE: Her venter jeg på at datasettet skal opprettes uten feil,
-                // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
-                // i gitlab.
-                // Dette kan kanskje gjøres smoothere.
-                var gitlabProjectResponse = await await createDatasetTask.ContinueWith(async(antecedent) => {
-                    var dataset = antecedent.Result;
-
-                    // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
-                    // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
-                    // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
-                    // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
-                    if (dataset.Publisher.GitlabGroupNamespaceId == null) {
-                        var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(dataset.Publisher);
-                        if (gitlabGroupResponse.Success) {
-                            dataset.Publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
-                            dataset.Publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
-                            _publisherRepository.Update(dataset.Publisher);
-                            await _unitOfWork.CompleteAsync();
-                        } else {
-                            // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
-                            // typisk skjer dette hvis det allerede eksisterer en gruppe i gitlab for publisher,
-                            // men dette er ikke reflektert i databasen.
-                            return new GitlabResponse<GitlabProject>(gitlabGroupResponse.Message + " ======> Noe har gått veldig galt med sære ting: Nei, vil ikke (Erna Solberg, 2018)");
-                        }
-                    }
-
-                    return await _gitlabService.CreateDatasetProject(dataset);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-
-                if (gitlabProjectResponse.Success) {
-                    dataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    dataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
-                    _datasetRepository.Update(dataset);
-                    await _unitOfWork.CompleteAsync();
-                    return new DatasetResponse(dataset);
-                } else {
-                    // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
-                    _datasetRepository.Remove(dataset);
-                    await _unitOfWork.CompleteAsync();
-                    return new DatasetResponse(gitlabProjectResponse.Message);
-                }
+                return await CreateGitLabProject(createDatasetTask, dataset);
             }
             catch (Exception ex)
             {
                 // Do some logging stuff
                 return new DatasetResponse($"An error occurred when saving the dataset: {ex.Message}");
+            }
+        }
+
+        public async Task<DatasetResponse> CreateGitLabProject(Task<Dataset> createDatasetTask, Dataset exsistingDataset)
+        {
+            // NOTE: Her venter jeg på at datasettet skal opprettes uten feil,
+            // før det opprettes i gitlab, for å hindre at det eksisterer løse prosjekter
+            // i gitlab.
+            // Dette kan kanskje gjøres smoothere.
+            var gitlabProjectResponse = await await createDatasetTask.ContinueWith(async(antecedent) => {
+                var dataset = antecedent.Result;
+
+                var publisher = await _publisherRepository.FindByIdAsync(dataset.PublisherId);
+
+                // NOTE: Enn så lenge så må vi verifisere at det eksisterer en gitlab-gruppe for publisher
+                // før vi kan lage et prosjekt i riktig gruppe. I produksjon vil ikke dette være nødvendig,
+                // og det bør heller ikke kjøre, fordi hvis det ikke eksisterer betyr det at noe har gått
+                // galt ved opprettelse av publisher. (TODO: ordne dette en gang)
+                if (publisher.GitlabGroupNamespaceId == null) {
+                    var gitlabGroupResponse = await _gitlabService.CreateGitlabGroupForPublisher(publisher);
+                    if (gitlabGroupResponse.Success) {
+                        publisher.GitlabGroupPath = gitlabGroupResponse.Resource.full_path;
+                        publisher.GitlabGroupNamespaceId = gitlabGroupResponse.Resource.id;
+                        _publisherRepository.Update(publisher);
+                        await _unitOfWork.CompleteAsync();
+                    } else {
+                        // hvis vi havner her så har ting gått veldig galt. (Dette er midlertidige saker uansett.)
+                        // typisk skjer dette hvis det allerede eksisterer en gruppe i gitlab for publisher,
+                        // men dette er ikke reflektert i databasen.
+                        return new GitlabResponse<GitlabProject>(gitlabGroupResponse.Message + " ======> Noe har gått veldig galt med sære ting: Nei, vil ikke (Erna Solberg, 2018)");
+                    }
+                }
+
+                return await _gitlabService.CreateDatasetProject(dataset);
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            if (gitlabProjectResponse.Success) {
+                exsistingDataset.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                exsistingDataset.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                exsistingDataset.GitlabDiscussionBoardId = gitlabProjectResponse.Resource.defaultGitlabIssueBoardId;
+                _datasetRepository.Update(exsistingDataset);
+                await _unitOfWork.CompleteAsync();
+                return new DatasetResponse(exsistingDataset);
+            } else {
+                // Hvis opprettelse av prosjekt i gitlab feiler bør datasettet fjernes fra databasen
+                // Denne kan nå også potensielt fjerne eksisterende datasett som ikke enda har fått en gitlab tilknytting om det oppstår en feil
+                _datasetRepository.Remove(exsistingDataset);
+                await _unitOfWork.CompleteAsync();
+                return new DatasetResponse("GitLab project response failed:" + gitlabProjectResponse.Message);
             }
         }
 
@@ -156,10 +166,12 @@ namespace OpenData.API.Services
                 {
                     return new DatasetResponse(check.error);
                 }
+                // Set last updated to current time
+                existingDataset.DateLastUpdated = DateTime.Now;
+
                 // Update attributes
                 existingDataset.Title = dataset.Title; 
                 existingDataset.Description = dataset.Description; 
-                existingDataset.DateLastUpdated = DateTime.Now;
                 existingDataset.PublisherId = dataset.PublisherId; 
                 existingDataset.PublicationStatus = dataset.PublicationStatus; 
                 existingDataset.DatePlannedPublished = dataset.DatePlannedPublished; 
@@ -174,9 +186,18 @@ namespace OpenData.API.Services
 
                 _datasetRepository.Update(existingDataset);
 
+                // Send notifications
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
+
+                if (dataset.GitlabProjectId == null) {
+                    var createDatasetTask = Task.Run(() => {
+                        return existingDataset;
+                    });
+                    await CreateGitLabProject(createDatasetTask, existingDataset);
+                }
+                await _gitlabService.UpdateProject(existingDataset);
 
                 return new DatasetResponse(existingDataset);
             }
@@ -191,9 +212,13 @@ namespace OpenData.API.Services
         {
             var dataset = await _datasetRepository.FindByIdAsync(id);
 
+            // Apply the update from the json patch document
             patch.ApplyTo(dataset);
+
+            // Set last updated to current time
             dataset.DateLastUpdated = DateTime.Now;
 
+            // Send notifications based on what was changed
             switch (patch.Operations[0].path)
             {
                 case "/coordinationId":
@@ -234,8 +259,17 @@ namespace OpenData.API.Services
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "Datasettet ditt '" + dataset.Title + "' har blitt endret.");
                     break;
             }
-            
+
             await _unitOfWork.CompleteAsync();
+
+            if (dataset.GitlabProjectId == null) 
+            {
+                var createDatasetTask = Task.Run(() => {
+                    return dataset;
+                });
+                await CreateGitLabProject(createDatasetTask, dataset);
+            }
+            await _gitlabService.UpdateProject(dataset);
             
             return new DatasetResponse(dataset);
         }
@@ -251,6 +285,7 @@ namespace OpenData.API.Services
             {
                 _datasetRepository.Remove(existingDataset);
                 await _unitOfWork.CompleteAsync();
+                // TODO: slett datasett fra gitlab??
 
                 return new DatasetResponse(existingDataset);
             }

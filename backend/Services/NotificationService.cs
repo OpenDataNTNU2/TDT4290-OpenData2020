@@ -47,6 +47,7 @@ namespace OpenData.API.Services
             }
         }
 
+        // Target is what catalogue item the user opens when clicking on the notification
         private async Task AddNotificationAsync(ICatalogueItem target, int userId, string title, string msg)
         {
             Notification notification = new Notification 

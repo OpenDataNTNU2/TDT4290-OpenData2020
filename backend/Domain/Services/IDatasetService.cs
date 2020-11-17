@@ -14,6 +14,7 @@ namespace OpenData.API.Domain.Services
         Task<QueryResult<Dataset>> ListAsync(DatasetQuery query);
         Task<DatasetResponse> FindByIdAsync(int id);
         Task<DatasetResponse> SaveAsync(Dataset dataset);
+        Task<DatasetResponse> CreateGitLabProject(Task<Dataset> createDatasetTask, Dataset dataset);
         Task<DatasetResponse> UpdateAsync(int id, Dataset dataset);
         Task<DatasetResponse> UpdateAsync(int id, JsonPatchDocument<Dataset> patch);
         Task<DatasetResponse> DeleteAsync(int id);

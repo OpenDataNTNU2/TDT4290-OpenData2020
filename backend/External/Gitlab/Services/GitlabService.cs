@@ -5,6 +5,8 @@ using OpenData.External.Gitlab.Services.Communication;
 using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
+using System;
+using Microsoft.Extensions.Configuration;
 
 namespace OpenData.External.Gitlab.Services
 {
@@ -14,19 +16,32 @@ namespace OpenData.External.Gitlab.Services
         private readonly GitlabProjectConfiguration _gitlabProjectConfig;
         private readonly GitlabGroupConfiguration _gitlabGroupConfig;
 
-        public GitlabService(IGitlabClient gitlabClient)
+        public GitlabService(IGitlabClient gitlabClient, IConfiguration configuration)
         {
-            _gitlabProjectConfig = new GitlabProjectConfiguration();
-            _gitlabGroupConfig = new GitlabGroupConfiguration();
+            var gitlabProjectsConfiguration = configuration.GetSection("Gitlab").GetSection("Projects");
+            _gitlabProjectConfig = new GitlabProjectConfiguration(gitlabProjectsConfiguration);
+            _gitlabGroupConfig = new GitlabGroupConfiguration(gitlabProjectsConfiguration);
 
             _gitlabClient = gitlabClient;
         }
 
-        public Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
+        public async Task<GitlabResponse<GitlabProject>> CreateDatasetProject(Dataset dataset)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
-            _PopulateGitlabProjectWithDataset(gitlabProject, dataset);
-            return _gitlabClient.CreateGitlabProject(gitlabProject);
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, dataset);
+            gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
+            return await await _gitlabClient.CreateGitlabProject(gitlabProject)
+                    .ContinueWith(_SetUpIssueDiscussionBoardForGitlabProject, TaskContinuationOptions.OnlyOnRanToCompletion);
+        }
+
+        public Task<GitlabResponse<GitlabProject>> UpdateProject(ICatalogueItem catalogueItem)
+        {
+            GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultGitlabProject();
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, catalogueItem);
+            gitlabProject.id = catalogueItem.GitlabProjectId;
+            // TODO: Usikker på om pathen burde endres eller ikke. Kjipt med urler som endres og rart med urler som ikke gjenspeiler innholdet o.O
+            // gitlabProject.path = dataset.Title.ToLower().Trim().Replace(' ', '-').Replace("æ", "ae").Replace("ø", "o").Replace("å", "aa"); 
+            return _gitlabClient.UpdateGitlabProject(gitlabProject);
         }
 
         public Task<GitlabResponse<GitlabGroup>> CreateGitlabGroupForPublisher(Publisher publisher)
@@ -36,26 +51,49 @@ namespace OpenData.External.Gitlab.Services
             return _gitlabClient.CreateGitlabGroup(gitlabGroup);
         }
 
-        public Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
+        public async Task<GitlabResponse<GitlabProject>> CreateGitlabProjectForCoordination(Coordination coordination)
         {
             GitlabProject gitlabProject = _gitlabProjectConfig.GenerateDefaultCoordinationGitlabProject();
+            _PopulateGitlabProjectWithCatalogueItem(gitlabProject, coordination);
             gitlabProject.name = coordination.Title;
             gitlabProject.description = coordination.Description;
-            return _gitlabClient.CreateGitlabProject(gitlabProject);
+            return await await _gitlabClient.CreateGitlabProject(gitlabProject)
+                    .ContinueWith(_SetUpIssueDiscussionBoardForGitlabProject, TaskContinuationOptions.OnlyOnRanToCompletion);
         }
 
-        private void _PopulateGitlabProjectWithDataset(GitlabProject gitlabProject, Dataset dataset)
+        private async Task<GitlabResponse<GitlabProject>> _SetUpIssueDiscussionBoardForGitlabProject(Task<GitlabResponse<GitlabProject>> createGitlabProjectTask)
         {
-            gitlabProject.name = dataset.Title;
-            gitlabProject.description = dataset.Description;
-            gitlabProject.namespace_id = dataset.Publisher.GitlabGroupNamespaceId;
-            gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
+            if (createGitlabProjectTask.Result.Success) {
+                var createdGitlabProject = createGitlabProjectTask.Result.Resource;
+                var issueBoardCreationResponse = await _gitlabClient.SetUpIssueDiscussionBoardForGitlabProject(createdGitlabProject);
+                if (issueBoardCreationResponse.Success) {
+                    createdGitlabProject.defaultGitlabIssueBoardId = issueBoardCreationResponse.Resource.id;
+                    return GitlabResponse<GitlabProject>.Successful(createdGitlabProject);
+                } else {
+                    // TODO: fjerne gitlab-prosjektet når opprettelse feiler
+                    return GitlabResponse<GitlabProject>.Error("Failed to set up gitlab issue board: " + issueBoardCreationResponse.Message);
+                }
+            } else return createGitlabProjectTask.Result;
+        }
+
+        private void _PopulateGitlabProjectWithCatalogueItem(GitlabProject gitlabProject, ICatalogueItem catalogueItem)
+        {
+            gitlabProject.name = catalogueItem.Title.Replace(':', ' ');
+            gitlabProject.description = catalogueItem.Description.Substring(0, Math.Min(2000, catalogueItem.Description.Length)); // This is the max number of characters in the gitlab project
+            if (catalogueItem is Dataset){
+                var dataset = (Dataset)catalogueItem;
+                gitlabProject.tag_list = dataset.DatasetTags.Select(tag => tag.Tags.Name).ToList();
+            }
+            if (catalogueItem is Coordination){
+                var coordination = (Coordination)catalogueItem;
+                gitlabProject.tag_list = coordination.CoordinationTags.Select(tag => tag.Tags.Name).ToList();
+            }
         }
 
         private void _PopulateGitlabGroupWithPublisherInformation(GitlabGroup gitlabGroup, Publisher publisher)
         {
             gitlabGroup.name = publisher.Name;
-            gitlabGroup.path = publisher.Name.Replace(' ', '-');
+            gitlabGroup.path = publisher.Name.ToLower().Trim().Replace(' ', '-').Replace("æ", "ae").Replace("ø", "o").Replace("å", "aa");
         }
     }
 }

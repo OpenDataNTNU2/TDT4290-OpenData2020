@@ -9,7 +9,7 @@ export async function PageRender(page, context) {
   } else if (page === 'CoordinationID') {
     uri = `${host}/api/coordinations/${context.params.id}`;
   }
-  const res = await fetch(uri, createRequestOptions(true));
+  const res = await fetch(uri, createRequestOptions());
   const data = await res.json();
 
   const cookies = parseCookies(context.req);
@@ -48,13 +48,13 @@ export function parseCookies(req) {
   return cookie.parse(req ? req.headers.cookie || '' : document.cookie);
 }
 
-// ALERT: This ships HTTPS validation and should not be used when we are handling personal information and authentication etc.
-function createRequestOptions(skipHttpsValidation) {
+// ALERT: This uses HTTP validation only, and should not be used when we are handling personal information and authentication etc.
+function createRequestOptions() {
   const isNode = typeof window === 'undefined';
   if (isNode) {
-    const { Agent } = require('https');
+    const { Agent } = require('http'); // Change to require('https') for HTTPS agent
     return {
-      agent: new Agent({ rejectUnauthorized: !skipHttpsValidation }),
+      agent: new Agent(),
     };
   }
   return null;

@@ -21,16 +21,19 @@ import AddDistributionsComp from './AddDistributionsComp';
 import AddTagsComp from './AddTagsComp';
 
 import Cookie from 'js-cookie';
-
+import { useRouter } from 'next/router';
 
 export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsername, prevPublisherId }) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
+  const router = useRouter();
 
   const [interestCounter, setInterestCounter] = useState(parseInt(data.interestCounter));
   const [disabled, setDisabled] = useState(false);
+
   // show/hide snackbar with successfull put message
   const [open, setOpen] = useState(false);
 
+  // logged in user are owner of coordination
   const [userAreOwner, setUserAreOwner] = useState(false);
 
   let requestButton;
@@ -38,14 +41,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
   const distributionCards = [];
   let cardOrNoCard;
 
-
-
   // variable set to false if user already are subscribed, and/or when user subscribes
   const [subscribed, setSubscribed] = useState(false);
 
+  // increments the interestcounter by 1.
   const updateData = async () => {
-    // publicationStatus er 0 uansett hvis denne knappen kan trykkes på.
-    // litt usikker på hva detailedPublicationStatus skal stå på hehe. Kan hende vi må mappe over siden den ligger under distributions.
     const data2 = [
       {
         value: interestCounter + 1,
@@ -53,33 +53,32 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         op: 'replace',
       },
     ];
-    /* console.log("Interest counter FØR setInterestCounter: "+ interestCounter);
-      setInterestCounter(interestCounter + 1); */
     console.log(`Interest counter er nå: ${data2.interestCounter}`);
     setOpen(true);
     PatchApi(uri, data2);
     console.log('Requests er oppdatert!');
 
-    let newArr = Cookie.get('userHaveRequested')
+    let newArr = Cookie.get('userHaveRequested');
     if (newArr === 'false') {
-      Cookie.set('userHaveRequested', data.id + '|')
-    }
-    else {
-      Cookie.set('userHaveRequested', newArr + data.id + '|')
+      Cookie.set('userHaveRequested', data.id + '|');
+    } else {
+      Cookie.set('userHaveRequested', newArr + data.id + '|');
     }
   };
 
   // puts data into the api with datasets
   const handleChange = async () => {
-    // setInterestCounter brukes ikke i praksis, oppdaterer manuelt når jeg sender data i put.
     setInterestCounter(parseInt(interestCounter) + 1);
     setDisabled(!disabled);
     setOpen(true);
     updateData();
   };
 
+  /**
+   * if published show all distributions, else show the request button
+   * @param {string} pub - publication status
+   */
   const ifPublished = (pub) => {
-
     if (pub === 'Published') {
       requestButton = null;
       publishedStatus = 'Publisert';
@@ -104,12 +103,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
       }
     } else {
       let dis = false;
-      if (typeof Cookie.get('userHaveRequested') !== "undefined") {
-        let newArr = Cookie.get('userHaveRequested')
-        let splitArr = newArr.split('|')
+      if (typeof Cookie.get('userHaveRequested') !== 'undefined') {
+        let newArr = Cookie.get('userHaveRequested');
+        let splitArr = newArr.split('|');
         for (let i = 0; i < splitArr.length; i++) {
           if (parseInt(splitArr[i]) === data.id) {
-            dis = true
+            dis = true;
           }
         }
       }
@@ -119,6 +118,7 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     }
   };
 
+  // get chips based on publicationStatus, accessLevel and wheter or not the dataset is in a coordination
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -154,27 +154,38 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           </div>
         ) : null}
 
-        {data.coordination ? data.coordination.underCoordination ? (
-          <div className={styles.chip} style={{ backgroundColor: '#B99EE5' }}>
-            Under samordning
-          </div>
-        ) : (
-            <div className={styles.chip} style={{ backgroundColor: '#874BE9' }}>
+        {data.coordination ? (
+          data.coordination.underCoordination ? (
+            <div
+              className={styles.chip}
+              onClick={() =>
+                router.push('/DetailedCoordination/' + data.coordination.id).then(() => window.scrollTo(0, 0))
+              }
+              style={{ backgroundColor: '#B99EE5', cursor: 'pointer' }}
+            >
+              Under samordning
+            </div>
+          ) : (
+            <div
+              onClick={() =>
+                router.push('/DetailedCoordination/' + data.coordination.id).then(() => window.scrollTo(0, 0))
+              }
+              className={styles.chip}
+              style={{ backgroundColor: '#874BE9', cursor: 'pointer' }}
+            >
               Samordnet
             </div>
           )
-          : (
-            <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
-              Ikke samordnet
-            </div>
-          )}
+        ) : (
+          <div className={styles.chip} style={{ backgroundColor: '#83749B' }}>
+            Ikke samordnet
+          </div>
+        )}
       </div>
     );
   };
 
   const subscribe = (url, desc) => {
-    // gjør en sjekk her
-
     let d = {
       userId: prevUserId,
       datasetId: data.id,
@@ -193,13 +204,17 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(true);
   }
 
+  /**
+   * runs when component mounts and when subscribed updates
+   * fetch the logged in user, to check if there is already are a subscription
+   * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+   */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, checkUserSubscription);
       if (data.publisher.id === parseInt(prevPublisherId)) setUserAreOwner(true);
     }
   }, [data, subscribed]);
-
 
   function checkUserSubscription(response) {
     for (let i = 0; i < response.subscriptions.length; i++) {
@@ -211,6 +226,11 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     setSubscribed(false);
   }
 
+  /**
+   * updates editPath in dataset with new value
+   * @param {string} newValue - new value
+   * @param {string} editPath - what is changing
+   */
   const updateDataset = (newValue, editPath) => {
     const d = [
       {
@@ -223,17 +243,14 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
     console.log('patched dataset');
   };
 
-  // fixing layour of date so it doesnt look so wiiiiierd
+  // changing format of date to dd mm yyyy
   function fixDate(date) {
-    const fixing = new Date(date);
-    const dd = fixing.getDate() < 10 ? `0${fixing.getDate()}` : fixing.getDate();
-    let mm = fixing.getMonth();
-    mm = mm < 10 ? `0${parseInt(mm) + 1}` : parseInt(mm) + 1;
-    const yyyy = fixing.getFullYear();
-    return dd + '-' + mm + '-' + yyyy;
+    let notificationDate = new Date(date);
+    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let result = notificationDate.toLocaleDateString('no', options);
+    return result.substr(0, 1).toUpperCase() + result.substr(1);
   }
 
-  console.log(data);
   ifPublished(data.publicationStatus);
 
   return (
@@ -247,7 +264,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
           padding: '5% 10% 5% 10%',
           backgroundColor: 'white',
         }}
-
       >
         {getChips()}
 
@@ -271,60 +287,64 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <Divider variant="fullWidth" />
         <br />
 
-        <EditTextFieldComp
-          value={data.description}
-          styles={styles.attributes}
-          type="span"
-          staticText="Beskrivelse: "
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/description"
-          multiline={true}
-        />
-
-        <EditPublishedStatusComp
-          value={publishedStatus}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/publicationStatus"
-        />
-
-        <EditCategoryComp
-          value={data.category.name}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          categoryId={data.category.id}
-          updateDataset={updateDataset}
-          path="/categoryId"
-        />
-
-        <AddTagsComp
-          value={data.datasetTags}
-          styles={styles.attributes}
-          canEdit={userAreOwner}
-          updateDataset={updateDataset}
-          path="/tagsIds"
-        />
-
         <div className={styles.attributes}>
-          <span>Eier: </span>
+          <span>Utgiver: </span>
           {capitalize(data.publisher.name)}
           <br />
-          <span>Dato publisert: </span>
-          {fixDate(data.datePublished)}
-          <br />
-          <span>Sist oppdatert: </span>
-          {fixDate(data.dateLastUpdated)}
-          <br />
-          {data.coordination && (
+
+          {userAreOwner && (
+            <EditPublishedStatusComp
+              value={publishedStatus}
+              styles={styles.attributes}
+              canEdit={userAreOwner}
+              updateDataset={updateDataset}
+              path="/publicationStatus"
+            />
+          )}
+
+          {/* {data.coordination && (
             <div>
               <span className={styles.attributeTitle}>Samordningsstatus: </span>{' '}
               {data.coordination.underCoordination
                 ? `Pågående samordning - ${data.coordination.statusDescription}`
                 : 'Samordnet'}
             </div>
-          )}
+          )} */}
+
+          <span>Dato publisert: </span>
+          {fixDate(data.datePublished)}
+          <br />
+          <span>Sist oppdatert: </span>
+          {fixDate(data.dateLastUpdated)}
+          <br />
+
+          <EditCategoryComp
+            value={data.category.name}
+            styles={styles.attributes}
+            canEdit={userAreOwner}
+            categoryId={data.category.id}
+            updateDataset={updateDataset}
+            path="/categoryId"
+          />
+
+          <EditTextFieldComp
+            value={data.description}
+            styles={styles.attributes}
+            type="span"
+            staticText="Beskrivelse: "
+            canEdit={userAreOwner}
+            updateDataset={updateDataset}
+            path="/description"
+            multiline={true}
+          />
+
+          <AddTagsComp
+            value={data.datasetTags}
+            styles={styles.attributes}
+            canEdit={userAreOwner}
+            updateDataset={updateDataset}
+            path="/tagsIds"
+          />
         </div>
         <br />
 
@@ -337,8 +357,6 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
             <br />
           </Grid>
 
-
-
           <Grid>
             <br />
             <Divider variant="fullWidth" />
@@ -348,10 +366,12 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
                 Dette datasettet har ingen usecase enda. <br />
               </div>
             ) : (
-                Object.values(data.subscriptions).map((sub) => {
-                  return <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />;
-                })
-              )}
+              Object.values(data.subscriptions).map((sub) => {
+                return (
+                  <UseCaseCard key={sub.id} id={sub.id} url={sub.url} useCaseDescription={sub.useCaseDescription} />
+                );
+              })
+            )}
             <br />
           </Grid>
         </Grid>
@@ -372,13 +392,13 @@ export default function DetailedDataset({ data, uri, prevUserId, prevLoggedUsern
         <div>
           <br />
           {data.gitlabDiscussionBoardUrl && (
-            <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+            <Button color="primary" href={data.gitlabDiscussionBoardUrl} target="_blank">
               Diskuter dette datasettet
             </Button>
           )}
           <br />
           {data.gitlabCreateIssueUrl && (
-            <Button color="primary" href={data.gitlabCreateIssueUrl}>
+            <Button color="primary" href={data.gitlabCreateIssueUrl} target="_blank">
               Gi tilbakemeldinger på dette datasettet
             </Button>
           )}

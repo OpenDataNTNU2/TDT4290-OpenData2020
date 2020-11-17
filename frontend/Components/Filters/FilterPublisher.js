@@ -18,6 +18,10 @@ export default function FilterPublisher(props) {
 
   const [res, setRes] = useState({});
 
+  /**
+ * Adds the publisher id of the selected publisher and sends it to props.setUrl
+ * @param {event} event - The id of the publisher checked
+ */
   const handleChange = (event) => {
     const newArr = addedFilters;
     newArr.push(event.target.value);
@@ -35,17 +39,22 @@ export default function FilterPublisher(props) {
     props.setUrl(newUrlString);
   };
 
+  /**
+   * runs when the component mounts
+   * fetch all publishers and setPublishers
+   */
   useEffect(() => {
     GetApi(`${host}/api/publishers`, setRes);
-
     const pubs = mapResponseToPublishers(res, props.type);
-
     setPublishers(pubs);
     if (res.length < 5) {
       setShowItems(res.length);
     }
   }, [props]);
 
+  /**
+   * displays the amount of publishers  from @const {int} showItems  
+   */
   const items = publishers
     .slice(0, showItems)
     .map((pub) => (
@@ -78,10 +87,12 @@ export default function FilterPublisher(props) {
   );
 }
 
+/**
+ *  map the response to publishers. Only adds publishers if they have content in type
+ * @param {*} res - response from the Get request, datasets or coordinations
+ * @param {string} type - which type of result are searched for when filtering
+ */
 export function mapResponseToPublishers(res, type) {
-  // extracted from line 39 in useEffect
-  // this is a transformation of data from the server, and can be unit tested
-  // ideally, all transformations are extracted into functions, so they can be tested
   if (JSON.stringify(res) === '{}') return [];
   let pubs = res
     .map((entry) => {

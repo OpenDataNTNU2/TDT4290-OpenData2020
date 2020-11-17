@@ -4,31 +4,105 @@ import { parseCookies } from './api/serverSideProps';
 import GetApi from '../Components/ApiCalls/GetApi';
 import DatasetCard from '../Components/DatasetCard';
 import CoordinationCard from '../Components/CoordinationCard';
-
-// NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
+import InfiniteScroll from 'react-infinite-scroll-component';
+import { FormControl, InputLabel, Select, MenuItem } from '@material-ui/core';
 
 export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPublisherId = 0 }) {
   const router = useRouter();
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
-  const [datasets, setDatasets] = useState([]);
 
+  // Pagination variables
+  const [whatToShow, setWhatToShow] = useState('datasets');
+  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(1);
+  const loader = 'Loading...';
+
+  const [datasets, setDatasets] = useState([]);
   const [coordinations, setCoordinations] = useState([]);
 
+  const [totalItemsDatasets, setTotalItemsDatasets] = useState(0)
+  const [totalItemsCoordinations, setTotalItemsCoordinations] = useState(0)
+
+  /**
+   * if page = 1 overwrite datasets, if its more add datasets to existing list
+   * @param {Object} d - response containing datasets 
+   */
   const setMyDatasets = (d) => {
-    setDatasets(d.items);
+    if (page !== 1) {
+      if (totalItemsDatasets > datasets.length) {
+        if (d.totalItems > 10) {
+          const newArr = datasets;
+          for (let i = 0; i < 10; i += 1) {
+            newArr.push(d.items[i]);
+          }
+          setDatasets(newArr);
+          if (newArr.length < d.totalItems) {
+            setHasMore(true);
+          }
+        }
+      }
+      setTotalItemsDatasets(d.totalItems);
+    } else {
+      setDatasets(d.items);
+      setTotalItemsDatasets(d.totalItems);
+      if (d.items.length < d.totalItems) {
+        setHasMore(true);
+      }
+    }
   };
 
+  /**
+   * if page = 1 overwrite coordinations, if its more add coordinations to existing list
+   * @param {Object} c - response containing coordinations 
+   */
   const setMyCoordinations = (c) => {
-    const newArr = c.items;
-
-    setCoordinations(newArr);
+    if (page !== 1) {
+      if (totalItemsCoordinations > coordinations.length) {
+        if (c.totalItems > 10) {
+          const newArr = coordinations;
+          for (let i = 0; i < 10; i += 1) {
+            newArr.push(c.items[i]);
+          }
+          setCoordinations(newArr);
+          if (newArr.length < c.totalItems) {
+            setHasMore(true);
+          }
+        }
+      }
+      setTotalItemsCoordinations(c.totalItems);
+    } else {
+      setCoordinations(c.items);
+      setTotalItemsCoordinations(c.totalItems);
+      if (c.items.length < c.totalItems) {
+        setHasMore(true);
+      }
+    }
   };
 
-  // NB!!! The coordinations here are ALL coordinations, backend does not support fetching only one publishers coordinations yet
+  // fetch datasets og coordinations depending on whatToShow
+  const fetchContent = async () => {
+    if (whatToShow === 'datasets') {
+      GetApi(`${host}/api/datasets?PublisherIds=${prevPublisherId}&Page=${page}`, setMyDatasets);
+    } else if (whatToShow === 'coordinations') {
+      GetApi(`${host}/api/coordinations?PublisherIds=${prevPublisherId}&Page=${page}`, setMyCoordinations);
+    }
+  }
+
+  /**
+   * run when page mounts and when page or whatToShow updates
+   * sets setHasMore if there are more datasets or coordinations to be fetched with pagination
+   * run the function fetchContent 
+   */
   useEffect(() => {
-    GetApi(`${host}/api/datasets?PublisherIds=${prevPublisherId}`, setMyDatasets);
-    GetApi(`${host}/api/coordinations?PublisherIds=${prevPublisherId}`, setMyCoordinations);
-  }, [prevPublisherId]);
+    if (whatToShow === 'datasets' && datasets.length < totalItemsDatasets) {
+      setHasMore(true);
+    } else if (whatToShow === 'coordinations' && coordinations.length < totalItemsCoordinations) {
+      setHasMore(true);
+    } else {
+      setHasMore(false);
+    }
+    fetchContent();
+  }, [page, prevPublisherId, whatToShow, prevLoggedIn]);
 
   const onClick = (path, id) => {
     router.push(path + id).then(() => window.scrollTo(0, 0));
@@ -37,6 +111,26 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
   const getUser = () => {
     let user = JSON.parse(prevLoggedUsername).split('_').slice(-2).join(' ');
     return user.charAt(0).toUpperCase() + user.slice(1);
+  };
+
+  const changeWhatToShow = (value) => {
+    setWhatToShow(value);
+    setPage(1);
+    setHasMore(false);
+    setDatasets([]);
+    setCoordinations([]);
+  };
+
+  // check if there are more content to be fetched, and if there are increments the page
+  const checkIsMore = () => {
+    if (whatToShow === 'datasets' && totalItemsDatasets > datasets.length) {
+      setPage(page + 1);
+      setHasMore(true);
+    } else if (whatToShow === 'coordinations' && totalItemsCoordinations > coordinations.length) {
+      setPage(page + 1);
+    } else {
+      setHasMore(false);
+    }
   };
 
   return (
@@ -48,35 +142,72 @@ export default function MyDatasets({ prevLoggedIn, prevLoggedUsername, prevPubli
         margin: '50px 20vw',
       }}
     >
-      {prevLoggedIn ? (
-        <h1 style={{ fontWeight: 500, margin: '30px 10px 50px 10px' }}>{getUser()} sine datasett:</h1>
-      ) : null}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          alignItems: 'center',
+        }}
+      >
+        {prevLoggedIn ? (
+          <h2
+            style={{
+              fontWeight: 500,
+              margin: '30px 10px 50px 10px',
+            }}
+          >
+            {getUser()} sine {whatToShow === 'datasets' ? 'datasett:' : 'samordninger:'}
+          </h2>
+        ) : null}
 
-      {Object.values(coordinations).map(
-        (c) =>
-          c && (
-            <CoordinationCard
-              key={c.id}
-              id={c.id}
-              coordination={c}
-              onClick={() => onClick('/DetailedCoordination/', c.id)}
-            />
-          )
-      )}
+        <div style={{ marginLeft: 'auto', marginRight: '10px' }}>
+          <FormControl variant="outlined" style={{ width: '200px' }}>
+            <InputLabel id="demo-simple-select-label">Datasett / Samordning</InputLabel>
+            <Select
+              labelId="chooseWhatToView"
+              label="Datasett / Samordning"
+              id="chooseWhatToViewId"
+              value={whatToShow}
+              onChange={(event) => changeWhatToShow(event.target.value)}
+            >
+              <MenuItem value="datasets">Datasett</MenuItem>
+              <MenuItem value="coordinations">Samordning</MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      </div>
 
-      {Object.values(datasets).map(
-        (d) =>
-          d && (
-            <DatasetCard
-              key={d.id}
-              dataset={d}
-              onClick={() => onClick('/DetailedDataset/', d.id)}
-              pathName="/MyDatasets"
-            />
-          )
-      )}
+      <InfiniteScroll dataLength={page * 10} next={checkIsMore} hasMore={hasMore} loader={<h4>{loader}</h4>}>
+        {whatToShow === 'datasets' &&
+          Object.values(datasets).map(
+            (d) =>
+              d && (
+                <DatasetCard
+                  key={d.id}
+                  dataset={d}
+                  onClick={() => onClick('/DetailedDataset/', d.id)}
+                  pathName="/MyDatasets"
+                />
+              )
+          )}
 
-      {datasets.length === 0 ? <h3 style={{ fontWeight: 'normal' }}>Ingen datasett</h3> : null}
+        {whatToShow === 'coordinations' &&
+          Object.values(coordinations).map(
+            (c) =>
+              c && (
+                <CoordinationCard
+                  key={c.id}
+                  id={c.id}
+                  coordination={c}
+                  onClick={() => onClick('/DetailedCoordination/', c.id)}
+                />
+              )
+          )}
+        {datasets.length === 0 && whatToShow === 'datasets' && <h3 style={{ fontWeight: 'normal' }}>Ingen datasett</h3>}
+        {coordinations.length === 0 && whatToShow === 'coordinations' && (
+          <h3 style={{ fontWeight: 'normal' }}>Ingen samordninger</h3>
+        )}
+      </InfiniteScroll>
     </div>
   );
 }

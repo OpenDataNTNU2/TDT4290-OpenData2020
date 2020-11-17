@@ -14,7 +14,7 @@ import Alert from '@material-ui/lab/Alert';
 
 import { useEffect, useState } from 'react';
 
-// import forms
+// import form components
 import Distribution from '../Forms/Distribution';
 import Input from '../Forms/Input';
 import RadioInput from '../Forms/RadioInput';
@@ -27,25 +27,28 @@ import PostApi from '../ApiCalls/PostApi';
 export default function CreateDataset(props) {
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
 
-  // variables/states for "main data", will add more here
+  // variables/states for "main data"
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [published, setPublished] = useState('1');
-
-  // accesslevel
   const [accessLevel, setAccessLevel] = useState('1');
 
   const date = new Date();
 
+  /**
+ * Change the date to the format YYYY MM DD
+ * @param {Object} fixingDate - The current date from new Date()
+ */
   function fixDate(fixingDate) {
     const dd = fixingDate.getDate() < 10 ? `0${fixingDate.getDate()}` : fixingDate.getDate();
     let mm = fixingDate.getMonth() < 10 ? `0${fixingDate.getMonth()}` : fixingDate.getMonth();
-    // month is from 0-11 in javascript but 1-12 in html:)
+    // month is from 0-11 in javascript but 1-12 in html
     mm = parseInt(mm) + 1;
     const yyyy = fixingDate.getFullYear();
     return `${yyyy}-${mm}-${dd}`;
   }
 
+  // current date
   const [startDate, setStartDate] = useState(fixDate(date));
 
   // variables/states for the distribution
@@ -93,15 +96,14 @@ export default function CreateDataset(props) {
 
   const setPublishedStatus = (value) => {
     setPublished(value);
-    if (value === '1') setStartDate('2020-10-12');
-    else if (value === '2') {
-      return null;
-    } else {
-      setStartDate('2020-10-12');
-    }
   };
 
-  // this is run inside of PostApi for datasets, adds distributions
+
+  /**
+* Maps through the distributions and posts them.
+* If there are a request to join a coordination it also sends a application to join.
+* @param {int} dataId - The id of the newly created dataset for which the coordinations are added to-
+*/
   const addDistributions = (dataId) => {
     for (let i = 0; i < distribution; i += 1) {
       const data2 = {
@@ -130,8 +132,10 @@ export default function CreateDataset(props) {
     newTags.map((tag) => PostApi(`${host}/api/tags`, { name: tag.name }, postDistributions));
   };
 
-  // posts data into the api with datasets
-  // and if successfull runs addDistributions
+  /** 
+  *  posts @const {Object} data into the api with datasets
+  *  and if successfull runs addDistributions
+  */
   const handleChange = async () => {
     console.log(`data: ${data}`);
     console.log(data);
@@ -143,6 +147,8 @@ export default function CreateDataset(props) {
     }
   };
 
+
+  // Checks if the required fields are filled out. 
   function checkRequiredVariables() {
     if (title !== '' && description !== '' && selectedCategory !== '') {
       if (wantToRequestCoordination === '2' && selectedCoordination !== '' && joinCoordinationReason !== '') {
@@ -155,13 +161,18 @@ export default function CreateDataset(props) {
     return false;
   }
 
-  // every time prevLoggedIn changes / aka the page refreshes, it fetches tags, categories and coordinations
+  // runs when the components mounts, fetches tags, categories and coordinations
   useEffect(() => {
     GetApi(`${host}/api/tags`, setTags);
     GetApi(`${host}/api/categories`, setCategories);
     GetApi(`${host}/api/coordinations`, setCoordinations);
   }, [props.prevLoggedIn]);
 
+
+  /**
+  * Submits an application to join a coordination
+  * @param {int} id - The id of the dataset in the application
+  */
   function submitApplicationToJoinCoordination(id) {
     const d = {
       reason: joinCoordinationReason,
@@ -194,7 +205,6 @@ export default function CreateDataset(props) {
   };
 
   // resets all the states, this is executed after successfully submitting a dataset
-  // it is no restrictions for input fields missing etc, so in theory, it is successfull no matter what now..
   function clearStates() {
     setTitle('');
     setDescription('');
@@ -219,11 +229,55 @@ export default function CreateDataset(props) {
       alignItems="center"
       style={{ minHeight: '70vh', minWidth: '60vh', marginTop: '5vh' }}
     >
-      <Input id="title" label="Tittel (*)" value={title} handleChange={setTitle} multiline={false} />
+      <Input id="title" label="Tittel på datasett*" value={title} handleChange={setTitle} multiline={false} />
       <br />
+      <Input
+        id="description"
+        label="Beskrivelse av datasett*"
+        value={description}
+        handleChange={setDescription}
+        multiline
+      />
+      <br />
+      <SelectCategory
+        id="category"
+        mainLabel="Kategori*"
+        value={categories}
+        setSelectedCategory={setSelectedCategory}
+        selected={selectedCategory}
+        label={['Option 1', 'Option 2', 'Option 3']}
+      />
+      <br />
+      <SelectTags
+        mainLabel="Tags"
+        tags={tags}
+        setTags={setTags}
+        onChange={setSelectedTags}
+        selectedTags={selectedTags}
+        newTags={newTags}
+        setNewTags={setNewTags}
+      />
+      <br />
+      <br />
+
+      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
+        <FormLabel component="legend">Tilgangsnivå*</FormLabel>
+        <RadioInput
+          id="accessLevel"
+          mainValue={accessLevel}
+          handleChange={setAccessLevel}
+          value={['1', '2', '3']}
+          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
+          color={['green', 'yellow', 'red']}
+        />
+      </FormControl>
+
+      <br />
+      <br />
+
       {/* Denne er basert på kundemail */}
       <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Status for publisering</FormLabel>
+        <FormLabel component="legend">Status for publisering*</FormLabel>
         <RadioInput
           id="publishStatus"
           mainValue={published}
@@ -234,7 +288,6 @@ export default function CreateDataset(props) {
         />
       </FormControl>
       <br />
-      {/* Dette feltet skal være valgfritt å ha med, og skal kun sendes med hvis status er "publisering planlagt" */}
       {published === '2' ? (
         <FormControl variant="outlined" style={{ width: '50vh' }}>
           <TextField
@@ -252,43 +305,10 @@ export default function CreateDataset(props) {
         </FormControl>
       ) : null}
 
-      <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-        <FormLabel component="legend">Tilgangsnivå</FormLabel>
-        <RadioInput
-          id="accessLevel"
-          mainValue={accessLevel}
-          handleChange={setAccessLevel}
-          value={['1', '2', '3']}
-          label={['Kan deles offentlig', 'Begrenset offentlighet', 'Unntatt offentlighet']}
-          color={['green', 'yellow', 'red']}
-        />
-      </FormControl>
-
-      <br />
-      <Input id="description" label="Beskrivelse (*)" value={description} handleChange={setDescription} multiline />
-      <br />
-      <SelectCategory
-        id="category"
-        mainLabel="Kategori (*)"
-        value={categories}
-        setSelectedCategory={setSelectedCategory}
-        selected={selectedCategory}
-        label={['Option 1', 'Option 2', 'Option 3']}
-      />
-      <br />
-      <SelectTags
-        mainLabel="Tags"
-        tags={tags}
-        setTags={setTags}
-        onChange={setSelectedTags}
-        selectedTags={selectedTags}
-        newTags={newTags}
-        setNewTags={setNewTags}
-      />
       <br />
       {published === '1' && accessLevel === '1' ? (
         <FormControl component="fieldset" style={{ minWidth: '50vh' }}>
-          <FormLabel component="legend">Forespørsel om å bli med i samordning</FormLabel>
+          <FormLabel component="legend">Forespørsel om å bli med i samordning*</FormLabel>
           <RadioInput
             id="joinCoordination"
             mainValue={wantToRequestCoordination}
@@ -299,14 +319,14 @@ export default function CreateDataset(props) {
           />
         </FormControl>
       ) : null}
-      {/* Send forespørsel om å bli med i samordningen */}
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
         <FormControl variant="outlined" style={{ width: '50vh' }}>
-          <InputLabel id="requestToJoinCoordinationLabel">Velg samordning (*)</InputLabel>
+          <br />
+          <br />
+          <InputLabel id="requestToJoinCoordinationLabelID">Velg samordning*</InputLabel>
           <Select
             labelId="requestToJoinCoordinationLabelID"
-            label="Velg samordning (*)"
             id="requestToJoinCoordinationID"
             value={selectedCoordination}
             onChange={(event) => setSelectedCoordination(event.target.value)}
@@ -325,63 +345,90 @@ export default function CreateDataset(props) {
       <br />
 
       {wantToRequestCoordination === '2' && published === '1' && accessLevel === '1' ? (
-        <Input
-          id="joinCoordinationId"
-          multiline
-          label="Begrunnelse for forespørsel (*)"
-          value={joinCoordinationReason}
-          handleChange={setJoinCoordinationReason}
-        />
+        <div>
+          <Input
+            id="joinCoordinationId"
+            multiline
+            label="Begrunnelse for forespørsel*"
+            value={joinCoordinationReason}
+            handleChange={setJoinCoordinationReason}
+          />
+          <br />
+          <br />
+          <br />
+        </div>
       ) : null}
       <br />
 
       {published === '1' && distribution === 0 ? (
-        <Button variant="contained" color="primary" onClick={() => setDistribution(1)}>
-          Legg til distribusjon
-        </Button>
-      ) : null}
-      {distribution === 0 ? null : (
-        <Grid>
-          <br />
-          <h1 style={{ fontWeight: 'normal', textAlign: 'center' }}>Legg til distribusjon</h1>
-          {Array.from(Array(distribution), (e, i) => {
-            return (
-              <div key={`dist${i.toString()}`}>
-                <Divider variant="middle" />
-                <Distribution
-                  title={distTitle}
-                  setTitle={setDistTitle}
-                  uri={distUri}
-                  setUri={setDistUri}
-                  fileFormat={distFileFormat}
-                  setFileFormat={setDistFileFormat}
-                  number={i}
-                />
-              </div>
-            );
-          })}
-        </Grid>
-      )}
-      {distribution !== 0 && published === '1' ? (
-        <div>
-          <Button variant="contained" color="secondary" onClick={removeDistribution}>
-            Fjern
-          </Button>
-          <Button variant="contained" color="primary" onClick={addNewMoreDistributions}>
+        <FormControl variant="outlined" style={{ width: '50vh' }}>
+          <FormLabel component="legend">Legg til distribusjon: </FormLabel>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={() => setDistribution(1)}
+            style={{ marginTop: '14px', width: '100px' }}
+          >
             Legg til
           </Button>
+          <br />
+          <br />
+        </FormControl>
+      ) : null}
+
+      {distribution > 0 && published === '1' ? (
+        <div>
+          <FormControl variant="outlined" style={{ width: '50vh' }}>
+            <FormLabel component="legend">Legg til distribusjon: </FormLabel>
+            <br />
+            {Array.from(Array(distribution), (e, i) => {
+              return (
+                <div key={`dist${i.toString()}`} style={{ marginTop: '6px' }}>
+                  <Divider variant="middle" />
+                  <Distribution
+                    title={distTitle}
+                    setTitle={setDistTitle}
+                    uri={distUri}
+                    setUri={setDistUri}
+                    fileFormat={distFileFormat}
+                    setFileFormat={setDistFileFormat}
+                    number={i}
+                  />
+                </div>
+              );
+            })}
+          </FormControl>
         </div>
       ) : null}
+
+      {distribution !== 0 && published === '1' ? (
+        <div>
+          <Button variant="outlined" style={{ marginRight: '15px' }} onClick={removeDistribution}>
+            Fjern
+          </Button>
+          <Button variant="outlined" color="primary" onClick={addNewMoreDistributions}>
+            Legg til
+          </Button>
+          <br />
+          <br />
+          <br />
+          <br />
+        </div>
+      ) : null}
+
       <br />
-      <Button variant="contained" color="primary" onClick={handleChange}>
-        Send inn
+      <Button variant="contained" size="large" color="primary" onClick={handleChange} fullWidth>
+        Opprett datasett
       </Button>
+
       <br />
       <Snackbar open={open} autoHideDuration={5000} onClose={() => setOpen(false)}>
         <Alert elevation={1} severity="success">
           Datasett publisert
         </Alert>
       </Snackbar>
+
       <Snackbar open={feedbackRequired} autoHideDuration={5000} onClose={() => setFeedbackRequired(false)}>
         <Alert elevation={1} severity="error">
           Husk å fylle inn alle feltene som kreves (*)

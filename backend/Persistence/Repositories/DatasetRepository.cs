@@ -153,6 +153,7 @@ namespace OpenData.API.Persistence.Repositories
 
         private async Task<Category> getCategoryWithNarrowers(int id)
         {
+            // Simple way to include some depth in categories.
             Category cat = await _context.Categories
                         .Include(c => c.Narrower)
                         .Include(p => p.Narrower).ThenInclude(c => c.Datasets)
@@ -166,13 +167,6 @@ namespace OpenData.API.Persistence.Repositories
                         .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Datasets)
                         .Include(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(p => p.Narrower).ThenInclude(c => c.Coordinations)
                         .FirstOrDefaultAsync(c => c.Id == id);
-            // for (var i = 0; i < cat.Narrower.Count; i++)
-            // {
-            //     if (cat.Narrower[i] != null)
-            //     {
-            //         cat.Narrower[i] = await getCategoryWithNarrowers(cat.Narrower[i].Id);
-            //     }
-            // }
             return cat;
         }
 

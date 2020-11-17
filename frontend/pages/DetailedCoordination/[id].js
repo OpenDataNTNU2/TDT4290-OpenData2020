@@ -48,6 +48,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   // logged in user are owner of coordination
   const [userAreOwner, setUserAreOwner] = useState(false);
 
+  /**
+   * runs when component mounts and when subscribed updates
+   * fetch datasets to choose from when creating an application
+   * fetch the logged in user, to check if there is already are a subscription
+   * also sets the userAreOwner if the logged in publisher are the creator of the coordination
+   */
   useEffect(() => {
     if (prevLoggedUsername !== 'false') {
       if (parseInt(JSON.parse(prevPublisherId)) > 0 && parseInt(prevPublisherId) !== data.publisher.id) {
@@ -69,6 +75,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setSubscribed(false);
   }
 
+  // submits a post req with application
   const submitApplicationToJoinCoordination = () => {
     const d = {
       reason: joinCoordinationReason,
@@ -85,6 +92,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setOpenCreateApplicationFeedback(true);
   }
 
+  /**
+   * adds dataset to coordination and deletes the application
+   * @param {int} datasetId - id of datasett in application
+   * @param {int} applicationId - id of application
+   */
   const approveApplication = (datasetId, applicationId) => {
     const d = [
       {
@@ -101,8 +113,6 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
   };
 
   const subscribe = (url, desc) => {
-    // gjør en sjekk her
-
     let d = {
       userId: prevUserId,
       coordinationId: data.id,
@@ -121,10 +131,12 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     setSubscribed(true);
   }
 
+  // routes to path/id with dynamic routing from next.js
   const onClick = (path, id) => {
     router.push(path + id).then(() => window.scrollTo(0, 0));
   };
 
+  // get chips depending on coordination status and accesslevel
   const getChips = () => {
     return (
       <div className={styles.chipsContainer}>
@@ -156,6 +168,11 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
     );
   };
 
+  /**
+   * updates editPath in coordination with new value
+   * @param {string} newValue - new value
+   * @param {string} editPath - what is changing
+   */
   const updateCoordination = (newValue, editPath) => {
     const d = [
       {
@@ -165,12 +182,18 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       },
     ];
     PatchApi(`${host}/api/coordinations/${data.id}`, d);
-    console.log('patched dataset');
   };
+
+  function fixDate(date) {
+    let notificationDate = new Date(date);
+    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let result = notificationDate.toLocaleDateString('no', options);
+    return result.substr(0, 1).toUpperCase() + result.substr(1);
+  }
 
   return (
     <Grid container direction="column" style={{ minHeight: '70vh', minWidth: '90vh', padding: '5% 10% 5% 10%' }}>
-      {/* Tags og overskrift */}
+      {/* Tags and headline */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         {getChips()}
 
@@ -208,8 +231,16 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <Divider variant="fullWidth" />
       <br />
 
-      {/* Informasjon om samordningen */}
-      <Grid style={{ padding: '3% 0 3% 0' }}>
+      {/* Information about the coordination */}
+      <Grid style={{ padding: '3% 0 3% 0' }} className={styles.attributes}>
+        <span>Utgiver: </span>
+        {data.publisher.name}
+        <br />
+        <span>Dato publisert: </span>
+        {fixDate(data.datePublished)}
+        <br />
+        <span>Sist oppdatert: </span>
+        {fixDate(data.dateLastUpdated)}
         <EditTextFieldComp
           value={coordinationData.description}
           styles={styles.attributes}
@@ -220,6 +251,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           multiline={true}
           staticText="Beskrivelse: "
         />
+
         <AddTagsComp
           value={coordinationData.coordinationTags}
           styles={styles.attributes}
@@ -227,18 +259,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
           updateDataset={updateCoordination}
           path="/tagsIds"
         />
-        <p>
-          <b>Utgiver av samordning: </b>
-          {data.publisher.name}
-        </p>
-        <p>
-          <b>Deltakere i samordningen: </b>
-          {coordinationData.datasets.length === 0 ? (
-            <i>Ingen deltakere med i samordningen</i>
-          ) : (
-            coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
-          )}
-        </p>
+
+        <span>Deltakere i samordningen: </span>
+        {coordinationData.datasets.length === 0 ? (
+          <i>Ingen deltakere med i samordningen</i>
+        ) : (
+          coordinationData.datasets.map((dataset) => dataset && `${capitalize(dataset.publisher.name)}, `)
+        )}
         <br />
         <p>
           <b>Distribusjonene i samordningen: </b>
@@ -272,7 +299,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <Divider variant="fullWidth" />
       <br />
 
-      {/* Datasettene som er med i samordningen */}
+      {/* The datasets which are part of the coordination */}
       <Grid style={{ padding: '3% 0 3% 0' }}>
         <h1 style={{ fontWeight: 'normal' }}>Samordnede data</h1>
         <p>Følgende datasett er med i samordningen</p>
@@ -307,7 +334,7 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
 
       <br />
 
-      {/* Send forespørsel om å bli med i samordningen */}
+      {/* Send application to join coordination */}
       {JSON.parse(prevPublisherId) === null ||
       parseInt(JSON.parse(prevPublisherId)) === -1 ||
       parseInt(prevPublisherId) === data.publisher.id ? null : (
@@ -356,13 +383,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
         </Grid>
       )}
 
-      {/* Forespørsler om å bli med i samordningen */}
+      {/* applications to join the coordination */}
       {parseInt(prevPublisherId) === coordinationData.publisher.id ? (
         <Grid style={{ padding: '3% 0 3% 0' }}>
           <h1 style={{ fontWeight: 'normal' }}>Forespørsler om å bli med i samordningen</h1>
-          {coordinationData.applications.length !== 0 ? (
+          {Object.values(coordinationData.applications).filter((a) => a.dataset).length !== 0 ? (
             Object.values(coordinationData.applications)
-              .filter((a) => a.datasetId)
+              .filter((a) => a.dataset)
               .map(
                 (application) =>
                   applicationsToJoin && (
@@ -414,13 +441,13 @@ export default function DetailedCoordination({ data, prevPublisherId, prevUserId
       <div>
         <br />
         {data.gitlabDiscussionBoardUrl && (
-          <Button color="primary" href={data.gitlabDiscussionBoardUrl}>
+          <Button color="primary" href={data.gitlabDiscussionBoardUrl} target="_blank">
             Diskuter denne samordningen
           </Button>
         )}
         <br />
         {data.gitlabCreateIssueUrl && (
-          <Button color="primary" href={data.gitlabCreateIssueUrl}>
+          <Button color="primary" href={data.gitlabCreateIssueUrl} target="_blank">
             Gi tilbakemeldinger på denne samordningen
           </Button>
         )}

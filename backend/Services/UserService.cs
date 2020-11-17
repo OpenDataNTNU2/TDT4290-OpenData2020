@@ -73,6 +73,9 @@ namespace OpenData.API.Services
             var existingUser = await _userRepository.FindByUsernameAsync(username);
             
             if (existingUser == null){
+                // This is a simple login system without any authentication
+                // If a user types in an existing user it is logged into that user id
+                // If a user types in an existing municipality in a new username, a new user is created and connected to that municipality.
                 if (user.Username.ToLower().Contains("kommune")){
                     try {
                         String mun = (String) user.Username.Split('_').GetValue(1);
@@ -125,6 +128,7 @@ namespace OpenData.API.Services
                     var dataset = await _datasetRepository.FindByIdAsync((int)subscription.DatasetId);
                     if (dataset == null)
                         return new UserResponse("Dataset not found.");
+                    // Send notification
                     await _notificationService.AddPublisherNotificationsAsync(dataset, dataset, dataset.Title + " - " + dataset.Publisher.Name, "En bruker '" + user.Username + "' har abonnert på ditt dataset.");
                 }
                 else if (subscription.CoordinationId != null && subscription.CoordinationId != 0)
@@ -132,6 +136,7 @@ namespace OpenData.API.Services
                     var coordination = await _coordinationRepository.FindByIdAsync((int)subscription.CoordinationId);
                     if (coordination == null)
                         return new UserResponse("Coordination not found.");
+                    // Send notification
                     await _notificationService.AddPublisherNotificationsAsync(coordination, coordination, coordination.Title + " - " + coordination.Publisher.Name, "En bruker '" + user.Username + "' har abonnert på din samordning.");
                 }
                 else

@@ -1,4 +1,4 @@
-import { AppBar, Tab } from '@material-ui/core';
+import { Tab } from '@material-ui/core';
 import { TabPanel, TabContext, TabList } from '@material-ui/lab';
 
 import { useState } from 'react';
@@ -8,6 +8,8 @@ import { parseCookies } from './api/serverSideProps';
 import CreateDataset from '../Components/AddNewDataset/CreateDataset';
 import ImportDataset from '../Components/AddNewDataset/ImportDataset';
 import CreateCoordination from '../Components/AddNewDataset/CreateCoordination';
+
+import styles from '../styles/AddNew.module.css';
 
 export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
   const [page, setPage] = useState('1');
@@ -23,38 +25,46 @@ export default function AddNewDataset({ prevLoggedIn, prevPublisherId }) {
           <p>No access, please log into a municipality user</p>
         </div>
       ) : (
-        <div
-          style={{
-            minHeight: '70vh',
-            margin: '50px 0',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <div>
-            <TabContext value={page}>
-              <AppBar position="static" style={{ backgroundColor: '#90C7EF' }}>
-                <TabList onChange={handleChange} centered indicatorColor="primary" textColor="primary">
-                  <Tab value="1" label={<h3 style={{ fontWeight: 'normal' }}>Legg til dataset</h3>} />
-                  <Tab value="2" label={<h3 style={{ fontWeight: 'normal' }}>Importer dataset</h3>} />
-                  <Tab value="3" label={<h3 style={{ fontWeight: 'normal' }}>Opprett samordning</h3>} />
-                </TabList>
-              </AppBar>
+        <div className={styles.container}>
+          <TabContext value={page}>
+            <div className={styles.tabsContainer}>
+              <TabList onChange={handleChange} centered indicatorColor="primary" textColor="primary">
+                <Tab
+                  value="1"
+                  label="Legg til datasett"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
+                <Tab
+                  value="2"
+                  label="Legg til samordning"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
+                <Tab
+                  value="3"
+                  label="Importer datasett"
+                  disableFocusRipple
+                  disableRipple
+                  style={{ margin: '0 50px' }}
+                />
+              </TabList>
+            </div>
 
-              <TabPanel value="1">
-                <CreateDataset prevPublisherId={JSON.parse(prevPublisherId)} prevLoggedIn={prevLoggedIn} />
-              </TabPanel>
+            <TabPanel value="1">
+              <CreateDataset prevPublisherId={JSON.parse(prevPublisherId)} prevLoggedIn={prevLoggedIn} />
+            </TabPanel>
 
-              <TabPanel value="2">
-                <ImportDataset />
-              </TabPanel>
+            <TabPanel value="2">
+              <CreateCoordination publisherId={prevPublisherId} />
+            </TabPanel>
 
-              <TabPanel value="3">
-                <CreateCoordination publisherId={prevPublisherId} />
-              </TabPanel>
-            </TabContext>
-          </div>
+            <TabPanel value="3">
+              <ImportDataset />
+            </TabPanel>
+          </TabContext>
         </div>
       )}
     </div>

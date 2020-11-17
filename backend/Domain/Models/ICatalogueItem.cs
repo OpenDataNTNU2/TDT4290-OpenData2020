@@ -14,6 +14,9 @@ namespace OpenData.API.Domain.Models
         Category Category { get; set; }
         IList<Application> Applications { get; set; } 
         IList<Subscription> Subscriptions { get; set; }
+        int? GitlabProjectId { get; set; }
+        string GitlabProjectPath { get; set; }
+        int? GitlabDiscussionBoardId { get; set; }
 
     }
 }

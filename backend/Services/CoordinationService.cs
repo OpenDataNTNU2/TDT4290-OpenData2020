@@ -70,6 +70,7 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
+                // Sets the date and time for the attributes published and last updated to current time.
                 coordination.DatePublished = DateTime.Now;
                 coordination.DateLastUpdated = DateTime.Now;
 
@@ -80,28 +81,36 @@ namespace OpenData.API.Services
                     return coordination;
                 });
 
-                var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
-                    return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
-                }, TaskContinuationOptions.OnlyOnRanToCompletion);
-
-                if (gitlabProjectResponse.Success) {
-                    coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
-                    coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
-                    _coordinationRepository.Update(coordination);
-                    await _unitOfWork.CompleteAsync();
-                    return new CoordinationResponse(coordination);
-                } else {
-                    // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
-                    _coordinationRepository.Remove(coordination);
-                    await _unitOfWork.CompleteAsync();
-                    return new CoordinationResponse(gitlabProjectResponse.Message);
-                }
+                return await CreateGitLabProject(createCoordinationTask, coordination);
+                
             }
             catch(Exception ex)
             {
                 return new CoordinationResponse($"An error occured when saving the coordination: {ex.Message}");
             }
         }
+
+        public async Task<CoordinationResponse> CreateGitLabProject(Task<Coordination> createCoordinationTask, Coordination coordination)
+        {
+            var gitlabProjectResponse = await await createCoordinationTask.ContinueWith((antecedent) => {
+                return _gitlabService.CreateGitlabProjectForCoordination(antecedent.Result);
+            }, TaskContinuationOptions.OnlyOnRanToCompletion);
+
+            if (gitlabProjectResponse.Success) {
+                coordination.GitlabProjectId = gitlabProjectResponse.Resource.id;
+                coordination.GitlabProjectPath = gitlabProjectResponse.Resource.path_with_namespace;
+                coordination.GitlabDiscussionBoardId = gitlabProjectResponse.Resource.defaultGitlabIssueBoardId;
+                _coordinationRepository.Update(coordination);
+                await _unitOfWork.CompleteAsync();
+                return new CoordinationResponse(coordination);
+            } else {
+                // Hvis opprettelse av prosjekt i gitlab feiler bør samordningen fjernes fra databasen
+                _coordinationRepository.Remove(coordination);
+                await _unitOfWork.CompleteAsync();
+                return new CoordinationResponse(gitlabProjectResponse.Message);
+            }
+        }
+
 
         public async Task<CoordinationResponse> UpdateAsync(int id, Coordination coordination)
         {
@@ -117,7 +126,10 @@ namespace OpenData.API.Services
                 {
                     return new CoordinationResponse(check.error);
                 }
+                // Set last updated to current time
+                existingCoordination.DateLastUpdated = DateTime.Now;
 
+                // Update attributes
                 existingCoordination.Title = coordination.Title;
                 existingCoordination.Description = coordination.Description;
                 existingCoordination.PublisherId = coordination.PublisherId;
@@ -125,7 +137,6 @@ namespace OpenData.API.Services
                 existingCoordination.StatusDescription = coordination.StatusDescription;
                 existingCoordination.CategoryId = coordination.CategoryId;
                 existingCoordination.TagsIds = coordination.TagsIds;
-                existingCoordination.DateLastUpdated = DateTime.Now;
                 existingCoordination.AccessLevel = coordination.AccessLevel;
 
                 existingCoordination.CoordinationTags.Clear();
@@ -133,9 +144,19 @@ namespace OpenData.API.Services
 
                 _coordinationRepository.Update(existingCoordination);
 
+                // Send notifications
                 await _notificationService.AddUserNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _notificationService.AddPublisherNotificationsAsync(existingCoordination, existingCoordination, existingCoordination.Title + " - " + existingCoordination.Publisher.Name, "Samordningen din '" + existingCoordination.Title + "' har blitt oppdatert.");
                 await _unitOfWork.CompleteAsync();
+
+                if (coordination.GitlabProjectId == null)
+                {
+                    var createCoordinationTask = Task.Run(() => {
+                        return existingCoordination;
+                    });
+                    await CreateGitLabProject(createCoordinationTask, existingCoordination);
+                }
+                await _gitlabService.UpdateProject(existingCoordination);
 
                 return new CoordinationResponse(existingCoordination);
             }
@@ -150,9 +171,13 @@ namespace OpenData.API.Services
         {
             var coordination = await _coordinationRepository.FindByIdAsync(id);
 
+            // Apply the update from the json patch document
             patch.ApplyTo(coordination);
+
+            // Set last updated to current time
             coordination.DateLastUpdated = DateTime.Now;
 
+            // Send notifications based on what was changed
             switch(patch.Operations[0].path)
             {
                 case "/title":
@@ -189,6 +214,15 @@ namespace OpenData.API.Services
 
             await _unitOfWork.CompleteAsync();
             
+            if (coordination.GitlabProjectId == null)
+            {
+                var createCoordinationTask = Task.Run(() => {
+                    return coordination;
+                });
+                await CreateGitLabProject(createCoordinationTask, coordination);
+            }
+            await _gitlabService.UpdateProject(coordination);
+
             return new CoordinationResponse(coordination);
         }
 
@@ -207,6 +241,7 @@ namespace OpenData.API.Services
             return (true, "Success.");
         }
 
+        // Method to add tags based on the id and a bit messy because it is sent as a string.
         private async Task addTags(Coordination coordination)
         {
             try

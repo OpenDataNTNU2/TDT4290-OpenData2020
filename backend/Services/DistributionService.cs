@@ -56,6 +56,7 @@ namespace OpenData.API.Services
 
                 await _distributionRepository.AddAsync(distribution);
                 
+                // Send notification
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har lagt til en ny distribusjon.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har lagt til en ny distribusjon.");
 
@@ -111,6 +112,7 @@ namespace OpenData.API.Services
             {
                 _distributionRepository.Remove(existingDistribution);
 
+                // Send notification
                 await _notificationService.AddUserNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet '" + existingDataset.Title + "' har fjernet en distribusjon.");
                 await _notificationService.AddPublisherNotificationsAsync(existingDataset, existingDataset, existingDataset.Title + " - " + existingDataset.Publisher.Name, "Datasettet ditt '" + existingDataset.Title + "' har fjernet en distribusjon.");
 

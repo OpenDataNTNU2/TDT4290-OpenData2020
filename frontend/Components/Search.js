@@ -27,19 +27,24 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Search(props) {
   const [query, setQuery] = useState('');
-  // La stå! Blir brukt til å cancle precious søke requests.
   const [searchQuery, setSearchQuery] = useState({});
   const classes = useStyles();
 
-  // getDatasets(page, false, searchUrl, sortType, setDatasets, 'datasets')
-
+  /**
+   * runs the fetch with props.getDatasets with the search value
+   * @param {string} value - search text
+   */
   const sendQuery = async (value) => {
     const cancelPrevQuery = await props.getDatasets(value);
     return cancelPrevQuery;
   };
 
-  // denne funksjonen benytter seg av _debounce som starter en timer på 500 millisekunder når man begynner å søke, hvis søket endrer seg innen de 500 ms er ferdig,
-  // vil den starte de 500 ms på nytt. Hvis tiden er over 500 (tastatur idle i 500 eller mer), søker den på det som står skrevet.
+  /**
+   * This function uses _debounce with 500 ms.
+   * If a new request is sent before the previous request have completed,
+   * it will cancel the previous request and send a new one with the updated seach text.
+   * @param {*} value - search text 
+   */
   const onChange = ({ target: { value } }) => {
     setQuery(value);
 

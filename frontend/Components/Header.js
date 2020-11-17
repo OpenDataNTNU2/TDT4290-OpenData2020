@@ -20,6 +20,10 @@ export default function Header({
   const host = process.env.NEXT_PUBLIC_DOTNET_HOST;
   const [value, setValue] = useState('/');
 
+  /**
+   * routes to the newValue
+   * @param {string} newValue - path to page
+   */
   const handleChange = (event, newValue) => {
     setValue(newValue);
     router.push(newValue).then(() => window.scrollTo(0, 0));
@@ -40,6 +44,10 @@ export default function Header({
 
   const openNotificationCard = Boolean(anchorEl);
 
+  /**
+   * runs when component mounts
+   * if user is logged in, fetch the user and gets the user notifications
+   */
   useEffect(() => {
     if (prevLoggedIn === 'false') setNotifications([]);
     if (JSON.parse(prevUserId) > 0) GetApi(`${host}/api/users/${JSON.parse(prevLoggedUsername)}`, getUserNotifications);
@@ -58,10 +66,10 @@ export default function Header({
           <Tab disableFocusRipple disableRipple label="Om prosjektet" value="/About" />
           <Tab disableFocusRipple disableRipple label="Datakatalog" value="/" />
           {JSON.parse(prevPublisherId) <= 0 ? null : (
-            <Tab disableFocusRipple disableRipple label="Mine datasett" value="/MyDatasets" />
+            <Tab disableFocusRipple disableRipple label="Mine data" value="/MyDatasets" />
           )}
           {JSON.parse(prevPublisherId) <= 0 ? null : (
-            <Tab disableFocusRipple disableRipple label="Legg til nytt datasett" value="/AddNewDataset" />
+            <Tab disableFocusRipple disableRipple label="Publiser data" value="/AddNewDataset" />
           )}
         </Tabs>
       </div>
@@ -79,13 +87,13 @@ export default function Header({
               onClick={handleClick}
             />
           ) : (
-            <Notifications
-              className={styles.notificationBell}
-              color={openNotificationCard ? 'action' : 'inherit'}
-              fontSize="large"
-              onClick={handleClick}
-            />
-          )
+              <Notifications
+                className={styles.notificationBell}
+                color={openNotificationCard ? 'action' : 'inherit'}
+                fontSize="large"
+                onClick={handleClick}
+              />
+            )
         ) : null}
 
         <div className={styles.logInButton} onClick={() => router.push('/Login')}>
@@ -111,7 +119,10 @@ export default function Header({
     </div>
   );
 }
-
+/**
+ * sets the initial props from req
+ * @param {*} req - request which contains cookies 
+ */
 Header.getInitialProps = ({ req }) => {
   const cookies = parseCookies(req);
 

@@ -14,19 +14,17 @@ using OpenData.API.Persistence.Repositories;
 using OpenData.API.Services;
 using OpenData.External.Gitlab.Services;
 using OpenData.External.Gitlab;
-using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Options;
 using System.Linq;
-using System;
 
 namespace OpenData.API
 {
     public class Startup
     {
 
-        public IConfiguration Configuration { get; }
+        internal static IConfiguration Configuration { get; private set; }
 
         public Startup(IConfiguration configuration)
         {
@@ -40,7 +38,7 @@ namespace OpenData.API
                 options.AddDefaultPolicy(
                                 builder =>
                                 {
-                                    builder.WithOrigins("http://localhost:3000")
+                                     builder.AllowAnyOrigin()
                                             .AllowAnyHeader()
                                             .AllowAnyMethod();
                                 });

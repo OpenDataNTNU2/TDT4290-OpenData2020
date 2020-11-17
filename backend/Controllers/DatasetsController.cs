@@ -31,8 +31,11 @@ namespace OpenData.API.Controllers
         }
 
         /// <summary>
-        /// Lists all datasets.
+        /// Lists datasets from the given page.
         /// </summary>
+        /// <remarks>
+        /// This method uses pagination.
+        /// </remarks>
         /// <param name="query">Query containing search, filters and page.</param>
         /// <returns>List of datasets.</returns>
         [HttpGet]
